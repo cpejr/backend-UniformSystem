@@ -1,7 +1,7 @@
 
 exports.up = function(knex) {
   return knex.schema.createTable('address', function(table){
-    table.integer('address_id').primary();
+    table.increments('address_id').primary();
     table.string('street').notNullable();
     table.string('neighborhood').notNullable();
     table.string('city').notNullable();
