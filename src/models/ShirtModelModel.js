@@ -2,8 +2,9 @@ const connection = require("../database/connection");
 
 module.exports = {
 
-    async createOne(newShirtModel){
+    async createOne(newShirtModel, shirt_id){
         try{
+            await connection("shirt").where('shirt_id', shirt_id).select('*');
             const response = await connection("shirt_model").insert(newShirtModel);
             return response;
         }catch(err){
