@@ -1,7 +1,7 @@
 
 exports.up = function(knex) {
     return knex.schema.createTable('shirt_model', function(table){
-        table.integer('shirt_model_id').primary();
+        table.increments('shirt_model_id').primary();
         table.boolean('is_main').notNullable();
         table.string('img_link').notNullable();
         table.float('price').notNullable();
