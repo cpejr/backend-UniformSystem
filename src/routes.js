@@ -8,9 +8,14 @@ routes.post('/user', userController.create);
 
 // Shirt
 routes.post('/product', productController.createShirt);
-routes.post('/newmodel', productController.addShirtModel);
+routes.post('/newmodel/:shirt_id', productController.addShirtModel);
+
+routes.get('/shirt', productController.allShirts);
+routes.get('/shirtmodels/:shirt_id', productController.getShirtModel);
+
 routes.delete('/shirt/:shirt_id', productController.deleteShirt);
 routes.delete('/model/:model_id', productController.deleteModel);
+
 routes.put('/shirt', productController.updateShirt);
 routes.put('/model', productController.updateModel);
 

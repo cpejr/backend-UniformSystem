@@ -30,44 +30,78 @@ module.exports = {
   },
 
   async addShirtModel(req, res){
-    const shirtModel = req.body;
+    const { shirt_id } = req.params;
+    const shirt_model = req.body;
     try{
-      await ShirtModelModel.createOne(shirtModel);
+      const existingShirtId = await ShirtModel.findShirtId(shirt_id);
+
+      await ShirtModelModel.createOne(shirt_model, existingShirtId);
+
       res.status(200).json({
-        message: "Modelo adicionado com sucesso.",
-      })    
-    } catch (err){
+        message: "Model criado com sucesso!"
+      });
+
+    }catch(err){
       console.log(err.message);
+      res.status(400).json({
+        message: err.message
+      })
+    }
+  },
+
+  async allShirts(req, res){
+    try{
+      const shirts = await ShirtModel.getShirtsAndItsRespectiveMainModels();
+
+      res.status(200).json({
+        shirts
+      });
+
+
+    }catch(err){
+      console.log(err);
       res.status(500).json("Internal server error.")
     }
-
   },
 
-  async allShirts(){
+  async getShirtModel(req, res){
 
-  },
+    const { shirt_id } = req.params;
+    try{
 
-  async getShirtModel(){
+      const existingShirtId = await ShirtModel.findShirtId(shirt_id);
 
+      const shirtFound = await ShirtModel.getShirtsAndItsAllModels(existingShirtId);
+
+      res.status(200).json(shirtFound);
+    }catch(err){
+      console.log(err);
+      res.status(400).json({
+        message: err.message
+      });
+    }
   },
 
   async deleteShirt(req, res){
     const {shirt_id} = req.params;
     try{
-      await ShirtModel.delete(shirt_id);
+      const existingShirtId = await ShirtModel.findShirtId(shirt_id);
+      await ShirtModel.delete(existingShirtId);
       res.status(200).json({
         message: "Camisa apagada com sucesso."
       });
     } catch (err){
         console.log(err.message);
-        res.status(500).json("Internal server error.")
+        res.status(400).json({message: err.message})
     }
   },
 
   async deleteModel(req, res){
     const {model_id} = req.params;
     try{
-      await ShirtModelModel.delete(model_id);
+      const existingShirtModelId = await ShirtModelModel.findShirtModelId(model_id);
+
+      await ShirtModelModel.delete(existingShirtModelId);
       res.status(200).json({
         message: "Modelo da camisa apagado com sucesso."
       });
@@ -80,7 +114,9 @@ module.exports = {
   async updateShirt(req, res){
     const {shirt_id, updated_fields} = req.body;
     try{
-      await ShirtModel.update(shirt_id, updated_fields);
+
+      const existingShirtId = await ShirtModel.findShirtId(shirt_id);
+      await ShirtModel.update(existingShirtId, updated_fields);
       res.status(200).json("Informações da camisa atualizadas com sucesso");
     } catch (err){
         console.log(err.message);
@@ -91,7 +127,9 @@ module.exports = {
   async updateModel(req, res){
     const {model_id, updated_fields} = req.body;
     try{
-      await ShirtModelModel.update(model_id, updated_fields);
+      const existingShirtModelId = await ShirtModelModel.findShirtModelId(model_id);
+
+      await ShirtModelModel.update(existingShirtModelId, updated_fields);
       res.status(200).json("Informações do modelo da camisa atualizadas com sucesso");
     } catch (err){
         console.log(err.message);
