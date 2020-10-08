@@ -56,5 +56,13 @@ module.exports = {
             console.log(error.message);
             return error;
         }
+    },
+    async deleteByUserId(user_id){
+        try{
+            const adresses = await connection('address').where('user_id',user_id).del();
+        }catch(error){
+            console.log(error)
+            response.status(500).json('Internal server error')
+        }
     }
 }

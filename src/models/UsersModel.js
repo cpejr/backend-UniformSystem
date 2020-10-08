@@ -11,6 +11,7 @@ module.exports = {
             return error;
         }
     },
+
     async read(){
         try {
             const response = await connection ('user').select('*');
@@ -40,6 +41,7 @@ module.exports = {
             return error;
         }
     },
+
     async update(user_id, updated_user){ 
         try {
             const response = await connection ('users').where('user_id', user_id).update(updated_user);
@@ -49,6 +51,7 @@ module.exports = {
             return error;
         }
     },
+    
     async delete(user_id){
         try {
             const response = await connection ('users').where('user_id', user_id).del();

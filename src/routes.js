@@ -7,16 +7,22 @@ routes.post('/user', userController.createUser);
 
 routes.get('/user', userController.allClients);
 
-routes.get('/address', userController.getAdresses);
+routes.get('/address/:user_id', userController.getAdresses);
 
 routes.get('/adms', userController.allAdm);
 
-routes.delete('/delUser', userController.deleteUser);
+routes.delete('/delUserClient/:user_id', userController.deleteUserClient);
 
-routes.put('/upAddress', userController.updateAddress);
+routes.delete('/delUserAdm/:user_id', userController.deleteUserAdm);
 
-routes.put('/upUser', userController.updateUser);
+routes.put('/upAddress/:address_id', userController.updateAddress);
 
-routes.delete('/delAddress', userController.deleteAddress);
+routes.put('/upUser/:user_id', userController.updateUser);
+
+routes.delete('/delAddress/:address_id', userController.deleteAddress);
+
+routes.get('/allAddresses', userController.getAllAddresses)
+
+routes.post('/addAddress/:user_id', userController.addAddress)
 
 module.exports = routes;
