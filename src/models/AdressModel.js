@@ -1,64 +1,68 @@
+const { response } = require('express');
 const { create } = require('../controllers/userController');
 const connection = require ('../database/connection');
 
 module.exports = {
-    async create(user){
+    async create(adress){
         try {
-            const response = await connection ('users').insert(user);
+            const response = await connection ('address').insert(adress);
             return response;
         } catch (error) {
             console.log(error.message);
             return error;
         }
     },
-
     async read(){
         try {
-            const response = await connection ('user').select('*');
+            const response = await connection ('address').select('*');
             return response;
         } catch (error) {
             console.log(error.message);
             return error;
         }
     },
-
-    async getAllByTypes(type){
-        try {
-            const response = await connection ('users').where('user_type', type).select('*');
-            return response;
-        } catch (error) {
-            console.log(error.message);
-            return error;
-        }
-    },
-
     async getById(id){
         try {
-            const response = await connection ('users').where('user_id', id).select('*');
+            const response = await connection ('address').where('adress_id', id).select('*');
             return response;
         } catch (error) {
             console.log(error.message);
             return error;
         }
     },
-
-    async update(user_id, updated_user){ 
+    async getAdressByUserId(user_id){
         try {
-            const response = await connection ('users').where('user_id', user_id).update(updated_user);
+            const response = await connection ('address').where('user_id', user_id).select('*');
             return response;
         } catch (error) {
             console.log(error.message);
             return error;
         }
     },
-    
-    async delete(user_id){
+    async update(address_id, updated_address){
         try {
-            const response = await connection ('users').where('user_id', user_id).del();
+            await connection ('address').where('address_id', address_id).update(updated_address);
             return response;
         } catch (error) {
             console.log(error.message);
             return error;
+        }
+    },
+    async delete(address_id){
+        try {
+            const response = await connection ('address').where('address_id', address_id).del();
+            return response;
+        } catch (error) {
+            console.log(error.message);
+            return error;
+        }
+    },
+    async deleteByUserId(user_id){
+        try{
+            const adresses = await connection('address').where('user_id',user_id).del();
+        }catch(error){
+            console.log(error)
+            response.status(500).json('Internal server error')
         }
     }
 }
