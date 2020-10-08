@@ -16,7 +16,7 @@ routes.get('/shirtmodels/:shirt_id', productController.getShirtModel);
 routes.delete('/shirt/:shirt_id', productController.deleteShirt);
 routes.delete('/model/:model_id', productController.deleteModel);
 
-routes.put('/shirt', productController.updateShirt);
-routes.put('/model', productController.updateModel);
+routes.put('/shirt/:shirt_id', productController.updateShirt);
+routes.put('/model/:model_id', productController.updateModel);
 
 module.exports = routes;

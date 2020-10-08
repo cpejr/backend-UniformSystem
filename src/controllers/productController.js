@@ -11,10 +11,10 @@ module.exports = {
 
     const models = req.body.models;
     try {
-      await ShirtModel.create(shirt);
+      const createdShirtId = await ShirtModel.create(shirt);
 
       await models.forEach((model) => {
-        model.shirt_id = createdShirtId;
+        model.shirt_id = createdShirtId[0];
       });
 
       await ShirtModelModel.createAll(models);
@@ -112,7 +112,8 @@ module.exports = {
   },
 
   async updateShirt(req, res){
-    const {shirt_id, updated_fields} = req.body;
+    const {shirt_id} = req.params;
+    const {updated_fields} = req.body;
     try{
 
       const existingShirtId = await ShirtModel.findShirtId(shirt_id);
@@ -125,7 +126,8 @@ module.exports = {
   },
 
   async updateModel(req, res){
-    const {model_id, updated_fields} = req.body;
+    const {model_id} = req.params;
+    const {updated_fields} = req.body;
     try{
       const existingShirtModelId = await ShirtModelModel.findShirtModelId(model_id);
 
