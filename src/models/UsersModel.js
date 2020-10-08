@@ -4,7 +4,7 @@ const connection = require ('../database/connection');
 module.exports = {
     async create(user){
         try {
-            const response = await connection ('user').insert(user);
+            const response = await connection ('users').insert(user);
             return response;
         } catch (error) {
             console.log(error.message);
@@ -20,6 +20,17 @@ module.exports = {
             return error;
         }
     },
+
+    async getAllByTypes(type){
+        try {
+            const response = await connection ('users').where('user_type', type).select('*');
+            return response;
+        } catch (error) {
+            console.log(error.message);
+            return error;
+        }
+    },
+
     async getById(id){
         try {
             const response = await connection ('user').where('user_id', id).select('*');

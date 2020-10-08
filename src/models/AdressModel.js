@@ -4,7 +4,7 @@ const connection = require ('../database/connection');
 module.exports = {
     async create(adress){
         try {
-            const response = await connection ('adress').insert(adress);
+            const response = await connection ('adresses').insert(adress);
             return response;
         } catch (error) {
             console.log(error.message);
@@ -13,7 +13,7 @@ module.exports = {
     },
     async read(){
         try {
-            const response = await connection ('adress').select('*');
+            const response = await connection ('adresses').select('*');
             return response;
         } catch (error) {
             console.log(error.message);
@@ -22,7 +22,7 @@ module.exports = {
     },
     async getById(id){
         try {
-            const response = await connection ('adress').where('adress_id', id).select('*');
+            const response = await connection ('adresses').where('adress_id', id).select('*');
             return response;
         } catch (error) {
             console.log(error.message);
@@ -31,7 +31,7 @@ module.exports = {
     },
     async getAdressByUserId(user_id){
         try {
-            const response = await connection ('adress').where('user_id', user_id).select('*');
+            const response = await connection ('adresses').where('user_id', user_id).select('*');
             return response;
         } catch (error) {
             console.log(error.message);
@@ -40,7 +40,7 @@ module.exports = {
     },
     async update(adress_id, updated_adress){
         try {
-            const response = await connection ('adress').where('adress_id', adress_id).update(updated_adress);
+            const response = await connection ('adresses').where('adress_id', adress_id).update(updated_adress);
             return response;
         } catch (error) {
             console.log(error.message);
@@ -49,7 +49,7 @@ module.exports = {
     },
     async delete(id){
         try {
-            const response = await connection ('adress').where('adress_id', adress_id).del();
+            const response = await connection ('adresses').where('adress_id', adress_id).del();
             return response;
         } catch (error) {
             console.log(error.message);
