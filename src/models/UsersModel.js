@@ -33,25 +33,25 @@ module.exports = {
 
     async getById(id){
         try {
-            const response = await connection ('user').where('user_id', id).select('*');
+            const response = await connection ('users').where('user_id', id).select('*');
             return response;
         } catch (error) {
             console.log(error.message);
             return error;
         }
     },
-    async update(user_id, updated_user){
+    async update(user_id, updated_user){ 
         try {
-            const response = await connection ('user').where('user_id', user_id).update(updated_user);
+            const response = await connection ('users').where('user_id', user_id).update(updated_user);
             return response;
         } catch (error) {
             console.log(error.message);
             return error;
         }
     },
-    async delete(id){
+    async delete(user_id){
         try {
-            const response = await connection ('user').where('user_id', user_id).del();
+            const response = await connection ('users').where('user_id', user_id).del();
             return response;
         } catch (error) {
             console.log(error.message);
