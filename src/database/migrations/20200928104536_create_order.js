@@ -6,8 +6,9 @@ exports.up = function(knex) {
         table.foreign('user_id').references('user_id').inTable('users');
         table.boolean('is_paid').notNullable();
         table.string('order_address_id').notNullable();
-        table.foreign('order_address_id').references('order_address_id').inTable('order_address');
+        table.foreign('order_address_id').references('order_address_id').inTable('order_address').onDelete('cascade');
         table.string('status').notNullable();
+        table.float('shipping').notNullable();
         table.timestamps(true, true); //created_at
     });
 };

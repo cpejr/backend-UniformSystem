@@ -41,10 +41,7 @@ module.exports = {
             return error;
         }
     },
-<<<<<<< HEAD
 
-=======
->>>>>>> users_controllers_models
     async update(user_id, updated_user){ 
         try {
             const response = await connection ('users').where('user_id', user_id).update(updated_user);
@@ -54,10 +51,6 @@ module.exports = {
             return error;
         }
     },
-<<<<<<< HEAD
-    
-=======
->>>>>>> users_controllers_models
     async delete(user_id){
         try {
             const response = await connection ('users').where('user_id', user_id).del();

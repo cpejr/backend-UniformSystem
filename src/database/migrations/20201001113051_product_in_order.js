@@ -5,7 +5,7 @@ exports.up = function(knex) {
     table.integer('shirt_model').notNullable();
     table.foreign('shirt_model').references('shirt_model_id').inTable('shirt_model');
     table.string('order_id').primary();
-    table.foreign('order_id').references('order_id').inTable('order');
+    table.foreign('order_id').references('order_id').inTable('order').onDelete('cascade');
     table.string('product_id').notNullable();
     table.float('product_price').notNullable();
     table.integer('amount').notNullable();
