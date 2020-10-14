@@ -55,7 +55,6 @@ module.exports = {
             const response = await connection("product_in_cart")
                 .where("product_in_cart_id", idProdCart)
                 .select(select).first();
-            console.log(response);
             return response;
         } catch (err) {
             console.log(err.message);
