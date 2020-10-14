@@ -3,6 +3,7 @@ const routes = express.Router();
 
 const userController = require ('./controllers/userController')
 const productController = require ('./controllers/productController')
+const orderController = require ('./controllers/orderController')
 
 routes.post('/user', userController.createUser);
 
@@ -36,7 +37,7 @@ routes.put('/upAddress', userController.updateAddress);
 
 routes.put('/upUser', userController.updateUser);
 
-routes.delete('/delAddress', userController.deleteAddress);
+// routes.delete('/delAddress', userController.deleteAddress);
 
 // Shirt
 routes.post('/product', productController.createShirt);
@@ -50,5 +51,18 @@ routes.delete('/model/:model_id', productController.deleteModel);
 
 routes.put('/shirt/:shirt_id', productController.updateShirt);
 routes.put('/model/:model_id', productController.updateModel);
+
+// Order Address Model
+routes.post('/orderaddress', orderController.createOrderAddress);
+routes.put('/orderaddress/:order_address_id', orderController.updateOrderAddress);
+routes.delete('/orderaddress/:order_address_id', orderController.deleteOrderAddress);
+
+// Order 
+routes.post('/order', orderController.createOrder);
+routes.put('/order/:order_id', orderController.updateOrder);
+routes.delete('/order/:order_id', orderController.deleteOrder);
+routes.get('/order/:user_id', orderController.getOrders);
+routes.get('/userorder/:user_id', orderController.getUserOrder);
+routes.get('/productsfromorder/:order_id', orderController.getProductsFromOrder);
 
 module.exports = routes;

@@ -59,8 +59,9 @@ module.exports = {
 
     async getByIdArray(idList, fields){
 
+        console.log(fields)
         const response = await connection("shirt_model")
-            .whereIn('shirt_id', idList)
+            .whereIn('shirt_model_id', idList)
             .select(fields)
             
         return response;

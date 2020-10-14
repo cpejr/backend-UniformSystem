@@ -1,10 +1,15 @@
 const connection = require ('../database/connection');
 
+const uuid = require("react-uuid");
+
 module.exports = {
     async create(order){
         try {
-            const response = await connection('order').insert(order);
-            return response;
+            order.order_id = uuid();
+
+            await connection('order').insert(order);
+            
+            return order.order_id;
         } catch (error) {
             console.log(error.message);
             return error;
@@ -36,10 +41,10 @@ module.exports = {
         }
     },
 
-    async getByFields(fields, returningFields){
+    async getByFields(fields, returningFields = '*'){
         try {
             const response = await connection('order')
-            .join('order_address', 'order.order_address_id','order_address.order_address_id')
+            .join('shipping_data', 'order.shipping_data_id','shipping_data.shipping_data_id')
             .where(fields)
             .select(returningFields);
             return response;

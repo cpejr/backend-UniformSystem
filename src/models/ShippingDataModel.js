@@ -1,31 +1,31 @@
 const connection = require ('../database/connection');
 
 module.exports = {
-    async create(order_address){
+    async create(shipping_data){
         try {
-            const response = await connection('order_address').insert(order_address);
+            const response = await connection('shipping_data').insert(shipping_data);
             return response;
-        } catch (error) {
+        }catch (error) {
             console.log(error.message);
             return error;
         }
     },
 
-    async update(order_address_id, updated_order_address){ 
+    async update(shipping_data_id, updated_shipping_data){ 
         try {
-            const response = await connection('order_address')
-            .where('order_address_id', order_address_id)
-            .update(updated_order_address);
+            const response = await connection('shipping_data')
+            .where('shipping_data_id', shipping_data_id)
+            .update(updated_shipping_data);
             return response;
         } catch (error) {
             console.log(error.message);
             return error;
         }
     },
-    async delete(order_address_id){
+    async delete(shipping_data_id){
         try {
-            const response = await connection('order_address')
-            .where('order_address_id', order_address_id)
+            const response = await connection('shipping_data')
+            .where('shipping_data_id', shipping_data_id)
             .del();
             return response;
         } catch (error) {
