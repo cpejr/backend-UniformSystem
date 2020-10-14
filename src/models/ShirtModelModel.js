@@ -57,6 +57,16 @@ module.exports = {
         return response;
     },
 
+    async getByIdArray(idList, fields){
+
+        console.log(fields)
+        const response = await connection("shirt_model")
+            .whereIn('shirt_model_id', idList)
+            .select(fields)
+            
+        return response;
+    },
+
     async update(shirtModelId, updatedFields){
         const response = await connection("shirt_model")
         .where('shirt_model_id', shirtModelId)

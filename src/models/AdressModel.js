@@ -1,5 +1,4 @@
 const { response } = require('express');
-const { create } = require('../controllers/userController');
 const connection = require ('../database/connection');
 
 module.exports = {
@@ -23,7 +22,7 @@ module.exports = {
     },
     async getById(id){
         try {
-            const response = await connection ('address').where('adress_id', id).select('*');
+            const response = await connection ('address').where('address_id', id).select('*');
             return response;
         } catch (error) {
             console.log(error.message);
@@ -39,9 +38,9 @@ module.exports = {
             return error;
         }
     },
-    async update(address_id, updated_address){
+    async update(address_id, updated_fields){
         try {
-            await connection ('address').where('address_id', address_id).update(updated_address);
+            await connection ('address').where('address_id', address_id).update(updated_fields);
             return response;
         } catch (error) {
             console.log(error.message);

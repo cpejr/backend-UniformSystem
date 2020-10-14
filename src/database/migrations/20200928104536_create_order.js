@@ -5,9 +5,10 @@ exports.up = function(knex) {
         table.string('user_id').notNullable();
         table.foreign('user_id').references('user_id').inTable('users');
         table.boolean('is_paid').notNullable();
-        table.string('order_address_id').notNullable();
-        table.foreign('order_address_id').references('order_address_id').inTable('order_address');
+        table.string('shipping_data_id').notNullable();
+        table.foreign('shipping_data_id').references('shipping_data_id').inTable('shipping_data').onDelete('cascade');
         table.string('status').notNullable();
+        table.float('shipping').notNullable();
         table.timestamps(true, true); //created_at
     });
 };
