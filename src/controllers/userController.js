@@ -47,8 +47,8 @@ module.exports = {
   async getAdresses(request, response) {
       try {
         const { user_id } = request.params;
-      const adresses = await AdressModel.getAdressByUserId(user_id);
-      response.status(200).json({ adresses });
+        const adresses = await AdressModel.getAdressByUserId(user_id);
+        response.status(200).json({ adresses });
     } catch (error) {
       console.log(error.message);
       response.status(500).json("internal server error");
