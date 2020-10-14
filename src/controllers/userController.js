@@ -7,7 +7,6 @@ const uuid = require("react-uuid");
 //ação nao vem sendo feita
 
 module.exports = {
-    
   async createUser(request, response) {
     try {
       const user = {
