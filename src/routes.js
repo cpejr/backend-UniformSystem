@@ -9,7 +9,6 @@ const orderController = require ('./controllers/orderController')
 routes.post('/user', userController.createUser);
 routes.get('/user', userController.allClients);
 
-<<<<<<< HEAD
 routes.get('/address/:user_id', userController.getAdresses);
 
 routes.get('/adms', userController.allAdm);
@@ -26,19 +25,6 @@ routes.delete('/delAddress/:address_id', userController.deleteAddress);
 routes.get('/allAddresses', userController.getAllAddresses);
 
 routes.post('/addAddress/:user_id', userController.addAddress)
-=======
-routes.get('/address', userController.getAdresses);
-
-routes.get('/adms', userController.allAdm);
-
-routes.delete('/delUser', userController.deleteUser);
-
-routes.put('/upAddress', userController.updateAddress);
-
-routes.put('/upUser', userController.updateUser);
-
-routes.delete('/delAddress', userController.deleteAddress);
->>>>>>> users_controllers_models
 
 // Shirt
 routes.post('/product', productController.createShirt);

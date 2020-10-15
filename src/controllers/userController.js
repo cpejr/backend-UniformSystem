@@ -24,10 +24,15 @@ module.exports = {
 
         await AdressModel.create(address);
       }
+      const resposta = await UsersModel.create(user);
 
-      await UsersModel.create(user);
-
-      response.status(200).json("Usuário criado com sucesso");
+      if (resposta.errno == 19){
+        response.status(500).json("Cpf já existe.");
+      }else if (resposta.errno != null){
+        response.status(500).json("internal server error");
+      }else{
+        response.status(200).json("Usuário criado com sucesso");
+      }
     } catch (error) {
       console.log(error.message);
       response.status(500).json("internal server error");
