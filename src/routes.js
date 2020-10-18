@@ -1,30 +1,30 @@
 const express = require('express');
 const routes = express.Router();
+const { celebrate, Segments, Joi } = require('celebrate');
 
 const userController = require ('./controllers/userController')
 const productController = require ('./controllers/productController')
 const cartController = require ('./controllers/cartController')
 const orderController = require ('./controllers/orderController')
 
-routes.post('/user', userController.createUser);
+//importando validators
+const userValidate = require('./validators/userValidator')
+const addressValidate = require('./validators/addressValidator')
+const cartValidate = require('./validators/cartValidator')
+
+//Routes para o user
+routes.post('/user', celebrate(userValidate.create),userController.createUser);
+routes.delete('/delUserClient/:user_id', celebrate(userValidate.deleteClient),userController.deleteUserClient);
+routes.delete('/delUserAdm/:user_id', celebrate(userValidate.deleteAdmin),userController.deleteUserAdm);
+routes.put('/user/:user_id', celebrate(userValidate.update),userController.updateUser);
 routes.get('/user', userController.allClients);
-
 routes.get('/address/:user_id', userController.getAdresses);
-
 routes.get('/adms', userController.allAdm);
-routes.delete('/delUserClient/:user_id', userController.deleteUserClient);
-routes.delete('/delUserAdm/:user_id', userController.deleteUserAdm);
-routes.put('/upUser/:user_id', userController.updateUser);
 
 routes.get('/address/:user_id', userController.getAdresses);
-routes.post('/addAddress/:user_id', userController.addAddress);
-routes.put('/upAddress/:address_id', userController.updateAddress);
-routes.delete('/delAddress/:address_id', userController.deleteAddress);
-
-//Apagar o essa rota
-routes.get('/allAddresses', userController.getAllAddresses);
-
-routes.post('/addAddress/:user_id', userController.addAddress)
+routes.post('/address/:user_id', celebrate(addressValidate.create),userController.addAddress);
+routes.put('/address/:address_id', celebrate(addressValidate.update),userController.updateAddress);
+routes.delete('/address/:address_id',celebrate(addressValidate.delete), userController.deleteAddress);
 
 // Shirt
 routes.post('/product', productController.createShirt);
@@ -41,11 +41,11 @@ routes.put('/model/:model_id', productController.updateModel);
 
 
 //ProductInCart
-routes.get('/getcart', cartController.getCart);
-routes.put('/addtocart', cartController.addToCart);
-routes.put('/updatecart', cartController.updateCart);
-routes.delete('/removefromcart', cartController.removeFromCart);
-routes.delete('/emptycart', cartController.emptyCart);
+routes.get('/cart', cartController.getCart);
+routes.put('/addcart', celebrate(cartValidate.addCart),cartController.addToCart);
+routes.put('/cart', celebrate(cartValidate.updateCart),cartController.updateCart);
+routes.delete('/cart', celebrate(cartValidate.removeFromCart),cartController.removeFromCart);
+routes.delete('/emptycart', celebrate(cartValidate.emptyCart),cartController.emptyCart);
 
 
 // Order Address Model

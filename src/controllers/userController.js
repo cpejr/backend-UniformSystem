@@ -137,17 +137,6 @@ module.exports = {
     }
   },
 
-  async getAllAddresses(request, response) {
-    
-    try {
-      const addresses = await AdressModel.read();
-
-      response.status(200).json({ addresses });
-    } catch (error) {
-      console.log(error);
-      response.status(500).json(error.message);
-    }
-  },
   
   async addAddress(request, response) {
     
