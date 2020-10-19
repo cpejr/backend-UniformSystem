@@ -37,7 +37,9 @@ module.exports = {
             console.log(newShipping)
             
             // Criacao do order a partir dos dados recebidos na equisicao + adress criado logo acima
-            const user_id = 1;
+            const user_id = req.session.user_id;
+
+
             const shipping = 10.75
             const order = {
                 user_id: user_id,

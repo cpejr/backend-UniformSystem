@@ -5,60 +5,68 @@ const userController = require ('./controllers/userController')
 const productController = require ('./controllers/productController')
 const cartController = require ('./controllers/cartController')
 const orderController = require ('./controllers/orderController')
+const SessionController = require ('./controllers/SessionController')
 
+const { authenticateToken, isAdmin } = require('./middlewares/authentication');
+
+// User
 routes.post('/user', userController.createUser);
-routes.get('/user', userController.allClients);
+routes.get('/user', authenticateToken, isAdmin, userController.allClients);
 
-routes.get('/address/:user_id', userController.getAdresses);
+routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
 
-routes.get('/adms', userController.allAdm);
-routes.delete('/delUserClient/:user_id', userController.deleteUserClient);
-routes.delete('/delUserAdm/:user_id', userController.deleteUserAdm);
-routes.put('/upUser/:user_id', userController.updateUser);
+routes.get('/adms', authenticateToken, isAdmin, userController.allAdm);
+routes.delete('/delUserClient/:user_id', authenticateToken, userController.deleteUserClient);
+routes.delete('/delUserAdm/:user_id', authenticateToken, isAdmin, userController.deleteUserAdm);
+routes.put('/upUser/:user_id', authenticateToken, userController.updateUser);
 
-routes.get('/address/:user_id', userController.getAdresses);
-routes.post('/addAddress/:user_id', userController.addAddress);
-routes.put('/upAddress/:address_id', userController.updateAddress);
-routes.delete('/delAddress/:address_id', userController.deleteAddress);
+routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
+routes.post('/addAddress/:user_id', authenticateToken, userController.addAddress);
+routes.put('/upAddress/:address_id', authenticateToken, userController.updateAddress);
+routes.delete('/delAddress/:address_id', authenticateToken, userController.deleteAddress);
 
 //Apagar o essa rota
-routes.get('/allAddresses', userController.getAllAddresses);
+routes.get('/allAddresses', authenticateToken, userController.getAllAddresses);
 
-routes.post('/addAddress/:user_id', userController.addAddress)
+routes.post('/addAddress/:user_id', authenticateToken, userController.addAddress)
 
 // Shirt
-routes.post('/product', productController.createShirt);
-routes.post('/newmodel/:shirt_id', productController.addShirtModel);
+routes.post('/product', authenticateToken, isAdmin, productController.createShirt);
+routes.post('/newmodel/:shirt_id', authenticateToken, isAdmin, productController.addShirtModel);
 
-routes.get('/shirt', productController.allShirts);
-routes.get('/shirtmodels/:shirt_id', productController.getShirtModel);
+routes.get('/shirt', authenticateToken, productController.allShirts);
+routes.get('/shirtmodels/:shirt_id', authenticateToken, productController.getShirtModel);
 
-routes.delete('/shirt/:shirt_id', productController.deleteShirt);
-routes.delete('/model/:model_id', productController.deleteModel);
+routes.delete('/shirt/:shirt_id', authenticateToken, isAdmin, productController.deleteShirt);
+routes.delete('/model/:model_id', authenticateToken, isAdmin, productController.deleteModel);
 
-routes.put('/shirt/:shirt_id', productController.updateShirt);
-routes.put('/model/:model_id', productController.updateModel);
+routes.put('/shirt/:shirt_id', authenticateToken, isAdmin, productController.updateShirt);
+routes.put('/model/:model_id', authenticateToken, isAdmin, productController.updateModel);
 
 
 //ProductInCart
-routes.get('/getcart', cartController.getCart);
-routes.put('/addtocart', cartController.addToCart);
-routes.put('/updatecart', cartController.updateCart);
-routes.delete('/removefromcart', cartController.removeFromCart);
-routes.delete('/emptycart', cartController.emptyCart);
+routes.get('/getcart', authenticateToken, cartController.getCart);
+routes.put('/addtocart', authenticateToken, cartController.addToCart);
+routes.put('/updatecart', authenticateToken, cartController.updateCart);
+routes.delete('/removefromcart', authenticateToken, cartController.removeFromCart);
+routes.delete('/emptycart', authenticateToken, cartController.emptyCart);
 
 
 // Order Address Model
-routes.post('/orderaddress', orderController.createOrderAddress);
-routes.put('/orderaddress/:order_address_id', orderController.updateOrderAddress);
-routes.delete('/orderaddress/:order_address_id', orderController.deleteOrderAddress);
+routes.post('/orderaddress', authenticateToken, orderController.createOrderAddress);
+routes.put('/orderaddress/:order_address_id', authenticateToken, orderController.updateOrderAddress);
+routes.delete('/orderaddress/:order_address_id', authenticateToken, orderController.deleteOrderAddress);
 
 // Order 
-routes.post('/order', orderController.createOrder);
-routes.put('/order/:order_id', orderController.updateOrder);
-routes.delete('/order/:order_id', orderController.deleteOrder);
-routes.get('/order/:user_id', orderController.getOrders);
-routes.get('/userorder/:user_id', orderController.getUserOrder);
-routes.get('/productsfromorder/:order_id', orderController.getProductsFromOrder);
+routes.post('/order', authenticateToken, orderController.createOrder);
+routes.put('/order/:order_id', authenticateToken, isAdmin, orderController.updateOrder);
+routes.delete('/order/:order_id', authenticateToken, orderController.deleteOrder);
+routes.get('/order/:user_id', authenticateToken, orderController.getOrders);
+routes.get('/userorder/:user_id', authenticateToken, orderController.getUserOrder);
+routes.get('/productsfromorder/:order_id', authenticateToken, orderController.getProductsFromOrder);
+
+//Session
+routes.post('/login', SessionController.signin);
+routes.get('/verify', SessionController.verifyToken);
 
 module.exports = routes;

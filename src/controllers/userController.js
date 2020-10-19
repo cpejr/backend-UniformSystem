@@ -1,22 +1,35 @@
 const UsersModel = require("../models/UsersModel");
 const AdressModel = require("../models/AdressModel");
+const FirebaseModel = require("../models/FirebaseModel");
 
 const uuid = require("react-uuid");
+// const { delete } = require("../database/connection");
 
 //estamos recebendo alguns erros que não estão estourando na tela, apesar de que a
 //ação nao vem sendo feita
 
 module.exports = {
   async createUser(request, response) {
+
+
+    let firebaseUid;
+
     try {
       const user = {
         name: request.body.name,
         user_type: request.body.user_type,
         email: request.body.email,
         cpf: request.body.cpf,
+        password: request.body.password
       };
 
+      firebaseUid = await FirebaseModel.createNewUser(user.email, user.password);
+
+      console.log(firebaseUid)
+      delete user.password
+
       user.user_id = uuid();
+      user.firebase_uid = firebaseUid;
 
       if (user.user_type === "client") {
         const { address } = request.body;
@@ -34,8 +47,14 @@ module.exports = {
         response.status(200).json("Usuário criado com sucesso");
       }
     } catch (error) {
+
+      if (firebaseUid){
+        FirebaseModel.deleteUser(firebaseUid)
+        throw new Error(err.message)
+      }
+
       console.log(error.message);
-      response.status(500).json("internal server error");
+      response.status(500).json("Internal server error");
     }
   },
 
@@ -51,7 +70,10 @@ module.exports = {
 
   async getAdresses(request, response) {
       try {
-        const { user_id } = request.params;
+        // const { user_id } = request.params;
+
+        const user_id = request.session.user_id;
+
         const adresses = await AdressModel.getAdressByUserId(user_id);
         response.status(200).json({ adresses });
     } catch (error) {
@@ -72,7 +94,22 @@ module.exports = {
 
   async deleteUserClient(request, response) {
     try {
+      const loggedUserId = request.session.user_id;
+
       const { user_id } = request.params;
+
+      if(loggedUserId !== user_id){
+        throw new Error('Invalid action. You are not the owner from this ID.')
+      }
+
+      const foundUser = await UsersModel.getById(user_id)
+
+      if(!foundUser){
+        throw new Error("User not found.")
+      }
+      console.log('USER ACHADO')
+      console.log(foundUser)
+      await FirebaseModel.deleteUser(foundUser[0].firebase_uid)
 
       await UsersModel.delete(user_id);
 
@@ -113,6 +150,12 @@ module.exports = {
   async updateUser(request, response) {
     try {
       const { user_id } = request.params;
+      const loggedUserId = request.session.user_id;
+
+      if(user_id !== loggedUserId){
+        throw new Error('Invalid action. You are not the owner from this ID.')
+      }
+
       const { updatedFields } = request.body;
       updatedFields.user_id = user_id;
 
@@ -127,6 +170,12 @@ module.exports = {
   async deleteAddress(request, response) {
     try {
       const { address_id } = request.params;
+
+      // const loggedUserId = request.session.user_id;
+
+      // if(user_id !== loggedUserId){
+      //   throw new Error('Invalid action. You are not the owner from this ID.')
+      // }
 
       await AdressModel.delete(address_id);
 
@@ -153,9 +202,11 @@ module.exports = {
     
     try {
       const address = request.body.address;
-      const { user_id } = request.params;
+      // const { user_id } = request.params;
 
-      address.user_id = user_id;
+      const loggedUserId = request.session.user_id;
+
+      address.user_id = loggedUserId;
 
       await AdressModel.create(address);
 
