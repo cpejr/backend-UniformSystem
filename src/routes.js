@@ -33,6 +33,8 @@ routes.post('/newmodel/:shirt_id', productController.addShirtModel);
 routes.get('/shirt', productController.allShirts);
 routes.get('/shirtmodels/:shirt_id', productController.getShirtModel);
 
+routes.get('/count', productController.getAllShirtsCounted);
+
 routes.delete('/shirt/:shirt_id', productController.deleteShirt);
 routes.delete('/model/:model_id', productController.deleteModel);
 

@@ -1,3 +1,5 @@
+const { response } = require("express");
+const { getAllShirtsCount } = require("../models/ShirtModel");
 const ShirtModel = require("../models/ShirtModel");
 const ShirtModelModel = require("../models/ShirtModelModel");
 
@@ -52,12 +54,28 @@ module.exports = {
 
   async allShirts(req, res) {
     try {
-      const shirts = await ShirtModel.getShirtsAndItsRespectiveMainModels();
+      const {page} = req.query;
+      const shirts = await ShirtModel.getShirtsAndItsRespectiveMainModels(page);
 
       res.status(200).json({
         shirts,
       });
     } catch (err) {
+      console.log(err);
+      res.status(500).json("Internal server error.");
+    }
+  },
+
+  async getAllShirtsCounted(req,res){
+    try{
+      const count = await ShirtModel.getAllShirtsCount();
+      const totalPages = (count/process.env.ITENS_PER_PAGE);
+      
+      res.setHeader("X-Total-Count", totalPages);
+
+      res.status(200).json("Paginação ok.");
+
+    }catch (err) {
       console.log(err);
       res.status(500).json("Internal server error.");
     }
