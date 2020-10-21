@@ -37,6 +37,17 @@ module.exports = {
 
         await AdressModel.create(address);
       }
+
+      if (user.user_type === "adm") {
+        const loggedUser = request.session;
+        console.log(loggedUser)
+        
+        if(loggedUser.user_type !== "adm"){
+          response.status(403).json("Operação proibida.");
+        }
+
+      }
+
       const resposta = await UsersModel.create(user);
 
       if (resposta.errno == 19){
@@ -50,7 +61,7 @@ module.exports = {
 
       if (firebaseUid){
         FirebaseModel.deleteUser(firebaseUid)
-        throw new Error(err.message)
+        throw new Error('Erro no firebase')
       }
 
       console.log(error.message);
@@ -107,8 +118,6 @@ module.exports = {
       if(!foundUser){
         throw new Error("User not found.")
       }
-      console.log('USER ACHADO')
-      console.log(foundUser)
       await FirebaseModel.deleteUser(foundUser[0].firebase_uid)
 
       await UsersModel.delete(user_id);
@@ -125,6 +134,12 @@ module.exports = {
   async deleteUserAdm(request, response) {
     try {
       const { user_id } = request.params;
+      
+      const loggedUser = request.session;
+
+      if(loggedUser.user_type !== "adm"){
+        response.status(403).json("Operação proibida.");
+      }
 
       await UsersModel.delete(user_id);
 
@@ -139,6 +154,16 @@ module.exports = {
     try {
       const { address_id } = request.body;
       const { updatedFields } = request.body;
+
+      const loggedUserId = request.session.user_id;
+
+      // Get the user_id from address
+      const catchedAddress = await AdressModel.getById(address_id)
+
+      if(catchedAddress.user_id !== loggedUserId){
+        throw new Error('Invalid action. You are not the owner from this ID.')
+      }
+
       await AdressModel.update(address_id, updatedFields);
       response.status(200).json("alterado com sucesso");
     } catch (error) {
@@ -160,10 +185,10 @@ module.exports = {
       updatedFields.user_id = user_id;
 
       await UsersModel.update(user_id, updatedFields);
-      response.status(200).json("alterado com sucesso");
+      response.status(200).json("Alterado com sucesso");
     } catch (error) {
       console.log(error.message);
-      response.status(500).json("internal server error");
+      response.status(500).json("Internal server error");
     }
   },
   
@@ -171,11 +196,14 @@ module.exports = {
     try {
       const { address_id } = request.params;
 
-      // const loggedUserId = request.session.user_id;
+      const loggedUserId = request.session.user_id;
 
-      // if(user_id !== loggedUserId){
-      //   throw new Error('Invalid action. You are not the owner from this ID.')
-      // }
+      // Get the user_id from address
+      const catchedAddress = await AdressModel.getById(address_id)
+
+      if(catchedAddress.user_id !== loggedUserId){
+        throw new Error('Invalid action. You are not the owner from this ID.')
+      }
 
       await AdressModel.delete(address_id);
 

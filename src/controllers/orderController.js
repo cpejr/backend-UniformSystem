@@ -51,8 +51,6 @@ module.exports = {
 
 
             const createdOrder_id = await OrderModel.create(order);
-            console.log('AQUI O');
-            console.log(createdOrder_id)
             // Criação dos produtos do pedido:
             //Pega os id's dos products da requisicao para buscá-los no DB
             const productIds = products.map(item => {return item.shirt_model_id;});
