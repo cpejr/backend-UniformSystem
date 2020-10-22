@@ -14,16 +14,6 @@ module.exports = {
         
             const { address_id, products } = req.body;
 
-            // const initialOrder = {
-            //     address_id: address_id,
-            //     products: [{
-            //         shirt_model_id: '1',
-            //         amount: 12,
-            //         logo_link: www.google.com,
-            //         size: 'P',
-            //     }]
-            // };
-
             // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
             const address = await AdressModel.getById(address_id);
             delete address[0].user_id;
