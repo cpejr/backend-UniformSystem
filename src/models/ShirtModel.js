@@ -23,13 +23,15 @@ module.exports = {
         }
     },
 
-    async getShirtsAndItsRespectiveMainModels(){
+    async getShirtsAndItsRespectiveMainModels(page = 1){
 
         const response = await connection('shirt').select('*')
         .join('shirt_model', 'shirt.shirt_id','shirt_model.shirt_id')
         .where({
             is_main: true,
-        });
+        })
+        .limit(process.env.ITENS_PER_PAGE)
+        .offset((page - 1) * process.env.ITENS_PER_PAGE);
 
         const result = response.map(item => {
 
@@ -52,6 +54,15 @@ module.exports = {
         return result;
     },
 
+    async getAllShirtsCount(){
+        const response = await connection('shirt').select().count("shirt.shirt_id as count")
+        .join('shirt_model', 'shirt.shirt_id','shirt_model.shirt_id')
+        .where({
+            is_main: true,
+        }).first();
+
+        return response;
+    },
 
     async getShirtsAndItsAllModels(shirt_id){
 

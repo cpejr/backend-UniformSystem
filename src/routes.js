@@ -35,8 +35,15 @@ routes.post('/newmodel/:shirt_id',celebrate(productValidate.addShirtModel), prod
 routes.get('/shirt', productController.allShirts);
 routes.get('/shirtmodels/:shirt_id',celebrate(productValidate.getShirtModel), productController.getShirtModel);
 
+<<<<<<< HEAD
 routes.delete('/shirt/:shirt_id', celebrate(productValidate.deleteShirt),productController.deleteShirt);
 routes.delete('/model/:model_id', celebrate(productValidate.deleteModel),productController.deleteModel);
+=======
+routes.get('/count', productController.getAllShirtsCounted);
+
+routes.delete('/shirt/:shirt_id', productController.deleteShirt);
+routes.delete('/model/:model_id', productController.deleteModel);
+>>>>>>> master
 
 routes.put('/shirt/:shirt_id',celebrate(productValidate.updateShirt), productController.updateShirt);
 routes.put('/model/:model_id', celebrate(productValidate.updateModel),productController.updateModel);
