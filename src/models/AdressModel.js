@@ -22,7 +22,7 @@ module.exports = {
     },
     async getById(id){
         try {
-            const response = await connection ('address').where('address_id', id).select('*');
+            const response = await connection ('address').where('address_id', id).select('*').first();
             return response;
         } catch (error) {
             console.log(error.message);

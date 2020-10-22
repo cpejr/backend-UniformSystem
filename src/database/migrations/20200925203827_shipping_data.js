@@ -1,4 +1,4 @@
-
+ 
 exports.up = function(knex) {
     return knex.schema.createTable('shipping_data', function(table){
         table.integer('shipping_data_id').primary();

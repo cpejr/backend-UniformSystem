@@ -3,9 +3,7 @@ const ShippingDataModel = require("../models/ShippingDataModel");
 const OrderModel = require("../models/OrderModel");
 const ProductInOrderModel = require("../models/ProductInOrderModel");
 const ShirtModelModel = require("../models/ShirtModelModel");
-
-
-
+const Correios = require('node-correios');
 
 module.exports = {
 
@@ -26,6 +24,26 @@ module.exports = {
 
             // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
             const address = await AdressModel.getById(address_id);
+            console.log(req.body)
+            console.log(address)
+            //API CORREIOS
+            
+            const args = {
+                nCdServico: req.body.service_code,
+                sCepOrigem: process.env.CEPORIGEM ,
+                sCepDestino: address.zip_code,
+                nVlPeso: process.env.VLPESO,
+                nCdFormato: process.env.CDFORMATO,
+                nVlComprimento: process.env.VLCOMPRIMENTO,
+                nVlAltura: process.env.VLALTURA,
+                nVlLargura: process.env.VLLARGURA,
+                nVlDiametro: process.env.VLDIAMETRO,
+            };
+            console.log(args)
+            const correios = new Correios();
+            const result = await correios.calcPreco(args)
+            console.log(result)
+
             delete address[0].user_id;
             delete address[0].address_id;
             const newShipping ={
@@ -34,9 +52,11 @@ module.exports = {
                 service_code: '0',
             }
             const newOrderAddress_id = await ShippingDataModel.create(newShipping);
-            console.log(newShipping)
+
+           
             
-            // Criacao do order a partir dos dados recebidos na equisicao + adress criado logo acima
+            
+            // Criacao do order a partir dos dados recebidos na requisicao + adress criado logo acima
             const user_id = 1;
             const shipping = 10.75
             const order = {
@@ -49,17 +69,13 @@ module.exports = {
 
 
             const createdOrder_id = await OrderModel.create(order);
-            console.log('AQUI O');
-            console.log(createdOrder_id)
             // Criação dos produtos do pedido:
             //Pega os id's dos products da requisicao para buscá-los no DB
             const productIds = products.map(item => {return item.shirt_model_id;});
 
-            console.log(productIds);
             //Busca no DB os produtos comprados
             const boughtProducts = await ShirtModelModel.getByIdArray(productIds, "shirt_model_id price".split(' '));
-            //Criando o vetor de produtos no pedido, pegando dados do vetor retornado do DB e o respectivo objeto vindo da requisição
-            console.log(boughtProducts);
+            //Criando o vetor de produtos no pedido, pegando dados do vetor retornado do DB e o respectivo objeto vindo da requisição;
             let index;
             const productsInOrder = boughtProducts.map(item => {
                 index = productIds.indexOf(item.shirt_model_id);
