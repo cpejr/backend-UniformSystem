@@ -17,7 +17,6 @@ module.exports = {
       };
 
       user.user_id = uuid();
-
       if (user.user_type === "client") {
         const { address } = request.body;
         address.user_id = user.user_id;

@@ -2,11 +2,11 @@ const { Segments, Joi } = require("celebrate");
 
 const addressValidator = new Object();
 
-//Ainda nao foi testado
+//Foi testado, quase tudo ok
 
 //deixei o user_id comentado em alguns pois sei que vai ser necessario
 //em algum momento, mas nao agora
-addressValidator.addCart = {
+addressValidator.addToCart = { //ok
     [Segments.BODY]: Joi.object().keys({
         shirt_model_id: Joi.string().required(),
         /* size: Joi.string().required(), comentado pois talvez seja melhor*/
@@ -17,7 +17,7 @@ addressValidator.addCart = {
     }),
 };
 
-addressValidator.updateCart = {
+addressValidator.updateCart = {//ok
     /*  [Segments.PARAMS]: Joi.object().keys({
         user_id: Joi.string().required(),
     }), */
@@ -35,7 +35,7 @@ addressValidator.updateCart = {
     }),
 };
 
-addressValidator.removeFromCart = {
+addressValidator.removeFromCart = { //ok??
     /*  [Segments.PARAMS]: Joi.object().keys({
         user_id: Joi.string().required(),
     }), */
@@ -45,7 +45,7 @@ addressValidator.removeFromCart = {
     }),
 };
 
-addressValidator.emptyCart = {
+addressValidator.emptyCart = { //nao esta pronta??
     /*  [Segments.PARAMS]: Joi.object().keys({
         user_id: Joi.string().required(),
     }), */

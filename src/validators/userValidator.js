@@ -2,12 +2,14 @@ const { Segments, Joi } = require('celebrate');
 
 const userValidator = new Object();
 
+//foi testado, tudo ok
+
 userValidator.create = { //ok
     [Segments.BODY]: Joi.object().keys({
         name: Joi.string().required(),
         email: Joi.string().required(),
-        user_type: Joi.string().valid("client", "admin").required(),
-        cpf: Joi.number().integer().required(),/* //length fala o tamanho que deve ter
+        user_type: Joi.string().valid("client", "adm").required(),
+        cpf: Joi.string().length(11).regex(/^\d+$/).required(),/* //length fala o tamanho que deve ter
         //não coloquei endereço pois o user pode ser um admin */
         address: Joi.object(),
     })
@@ -21,7 +23,7 @@ userValidator.update = { //ok
     updatedFields: Joi.object({
         name: Joi.string().required(),
         email: Joi.string().required(),
-        cpf: Joi.number().integer().required(),
+        cpf: Joi.string().length(11).regex(/^\d+$/).required(),
     })
     })
 }
@@ -42,6 +44,5 @@ userValidator.deleteClient = { //ok??
 }
 
 //Vou por os validators para endereço aqui tbm
-
 
 module.exports = userValidator;

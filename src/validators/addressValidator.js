@@ -2,6 +2,8 @@ const { Segments, Joi } = require("celebrate");
 
 const addressValidator = new Object();
 
+//testado e ok
+
 addressValidator.create = {
     //ok
     [Segments.PARAMS]: Joi.object().keys({
