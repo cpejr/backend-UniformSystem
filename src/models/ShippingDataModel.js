@@ -1,6 +1,6 @@
 const connection = require ('../database/connection');
 
-module.exports = {
+module.exports = { 
     async create(shipping_data){
         try {
             const response = await connection('shipping_data').insert(shipping_data);
