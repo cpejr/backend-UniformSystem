@@ -12,16 +12,6 @@ module.exports = {
         
             const { address_id, products } = req.body;
 
-            // const initialOrder = {
-            //     address_id: address_id,
-            //     products: [{
-            //         shirt_model_id: '1',
-            //         amount: 12,
-            //         logo_link: www.google.com,
-            //         size: 'P',
-            //     }]
-            // };
-
             // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
             const address = await AdressModel.getById(address_id);
             console.log(req.body)
@@ -55,9 +45,10 @@ module.exports = {
 
            
             
-            
-            // Criacao do order a partir dos dados recebidos na requisicao + adress criado logo acima
-            const user_id = 1;
+            // Criacao do order a partir dos dados recebidos na equisicao + adress criado logo acima
+            const user_id = req.session.user_id;
+
+
             const shipping = 10.75
             const order = {
                 user_id: user_id,

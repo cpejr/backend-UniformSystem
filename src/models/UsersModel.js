@@ -41,6 +41,16 @@ module.exports = {
             return error;
         }
     },
+
+    async getUserByUid(firebase_id){
+        try {
+            const response = await connection ('users').where('firebase_uid', firebase_id).select('*');
+            return response;
+        } catch (error) {
+            console.log(error.message);
+            return error;
+        }
+    },
     async update(user_id, updated_user){ 
         try {
             const response = await connection ('users').where('user_id', user_id).update(updated_user);
