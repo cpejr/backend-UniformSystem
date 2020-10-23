@@ -23,35 +23,27 @@ module.exports = {
                 sCepOrigem: process.env.CEPORIGEM ,
                 sCepDestino: address.zip_code,
                 nVlPeso: process.env.VLPESO,
-                nCdFormato: parseInt(process.env.CDFORMATO),
-                nVlComprimento: parseFloat(process.env.VLCOMPRIMENTO),
-                nVlAltura: parseFloat(process.env.VLALTURA),
-                nVlLargura: parseFloat(process.env.VLLARGURA),
+                nCdFormato: process.env.CDFORMATO,
+                nVlComprimento: process.env.VLCOMPRIMENTO,
+                nVlAltura: process.env.VLALTURA,
+                nVlLargura: process.env.VLLARGURA,
+                nVlDiametro: process.env.VLDIAMETRO,
             };
             console.log(args)
             const correios = new Correios();
             const result = await correios.calcPreco(args)
             console.log(result)
-            if(result[0].Erro==='-33'){
-                return res.status(500).json({
-                    message: "Freight calculation failure, correios webservice is not available.",
-                });
-            }
-            else if(result[0].Erro!=='0' && result[0].Erro!==''){
-                return res.status(400).json({
-                    message: "Invalid address data.",
-                });
-            }
-            
-            delete address.user_id;
-            delete address.address_id;
-            
+
+            delete address[0].user_id;
+            delete address[0].address_id;
             const newShipping ={
-                ...address,
-                shipping_value: result[0].Valor,
-                service_code: '04014',
+                ...address[0],
+                shipping_value: 0,
+                service_code: '0',
             }
             const newOrderAddress_id = await ShippingDataModel.create(newShipping);
+
+           
             
             // Criacao do order a partir dos dados recebidos na equisicao + adress criado logo acima
             const user_id = req.session.user_id;
@@ -88,10 +80,9 @@ module.exports = {
                     size: products[index].size,
                 });
             });
-            
             // Manda o vetor para o model criar os produtos no DB
             await ProductInOrderModel.create(productsInOrder);
-           
+
             // Se tudo deu certo, retorna que deu tudo certo
             res.status(200).json({
                 message: "Pedido efetuado com sucesso",
