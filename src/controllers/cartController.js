@@ -3,7 +3,9 @@ const ProductInCartModel = require('../models/ProductInCartModel');
 module.exports={
     async addToCart(req, res){
         try{
-            const user_id = 1;
+            
+            const user_id = req.session.user_id;
+
             const productInCart = {
                 shirt_model_id: req.body.shirt_model_id,
                 size: req.body.size,
@@ -26,7 +28,9 @@ module.exports={
     async removeFromCart(req, res){
         try{
             const {product_in_cart_id} = req.body;
-            const user_id = 1;
+            // const user_id = 1;
+
+            const user_id = req.session.user_id;
 
             const user = await ProductInCartModel.getById(product_in_cart_id, "user_id");
 

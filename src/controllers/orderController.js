@@ -27,7 +27,9 @@ module.exports = {
             console.log(newShipping)
             
             // Criacao do order a partir dos dados recebidos na equisicao + adress criado logo acima
-            const user_id = 1;
+            const user_id = req.session.user_id;
+
+
             const shipping = 10.75
             const order = {
                 user_id: user_id,
@@ -39,8 +41,6 @@ module.exports = {
 
 
             const createdOrder_id = await OrderModel.create(order);
-            console.log('AQUI O');
-            console.log(createdOrder_id)
             // Criação dos produtos do pedido:
             //Pega os id's dos products da requisicao para buscá-los no DB
             const productIds = products.map(item => {return item.shirt_model_id;});
