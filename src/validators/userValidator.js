@@ -7,7 +7,8 @@ const userValidator = new Object();
 userValidator.create = { //ok
     [Segments.BODY]: Joi.object().keys({
         name: Joi.string().required(),
-        email: Joi.string().required(),
+        email: Joi.string().email().required(),
+        password: Joi.string().required(),
         user_type: Joi.string().valid("client", "adm").required(),
         cpf: Joi.string().length(11).regex(/^\d+$/).required(),/* //length fala o tamanho que deve ter
         //não coloquei endereço pois o user pode ser um admin */

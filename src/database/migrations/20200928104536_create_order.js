@@ -8,7 +8,6 @@ exports.up = function(knex) {
         table.string('shipping_data_id').notNullable();
         table.foreign('shipping_data_id').references('shipping_data_id').inTable('shipping_data').onDelete('cascade');
         table.string('status').notNullable();
-        table.float('shipping').notNullable();
         table.timestamps(true, true); //created_at
     });
 };
