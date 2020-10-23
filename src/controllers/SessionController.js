@@ -14,6 +14,7 @@ module.exports = {
                 return response.status(403).json({ message: 'Invalid Credentials' });
             }
             const user = await UserModel.getUserByUid(firebaseUid);
+            console.log(user)
 
             const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "30d" });
             return response.status(200).json({ accessToken, user });

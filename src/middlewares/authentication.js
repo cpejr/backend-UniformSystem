@@ -29,7 +29,7 @@ module.exports = {
     },
 
     async isAdmin(request, response, next) {
-        if (request.session.user[0].user_type !== 'admin') {
+        if (request.session.user_type !== 'adm') {
             response.status(403).json({ error: "Access denied!" });
         }
         else {

@@ -49,9 +49,11 @@ module.exports = {
       }
 
       const resposta = await UsersModel.create(user);
-
+      
       if (resposta.errno == 19){
         response.status(500).json("Cpf já existe.");
+        await UsersModel.deleteByUserId(user.user_id);
+        
       }else if (resposta.errno != null){
         response.status(500).json("internal server error");
       }else{
