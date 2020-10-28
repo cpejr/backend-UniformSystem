@@ -42,13 +42,14 @@ orderValidator.delete = { //ok
         order_id: Joi.string().required(),
      })
 },
-orderValidator.getOrders = { //???
-    [Segments.PARAMS]: Joi.object().keys({
-        user_id: Joi.string().required(),
-     }),
-     [Segments.QUERY]: Joi.object().keys({
-        filters: Joi.object().required(),
-     })
+orderValidator.getOrders = {
+    [Segments.QUERY]: Joi.object().keys({
+        user_id: Joi.string().optional(),
+        order_id: Joi.string().optional(),
+        user_id: Joi.string().optional(),
+        shipping_data_id: Joi.number().integer().optional(),
+        status: Joi.string().valid("waitingPayment", "preparing", 'delivered').required(),
+    }),
 },
 orderValidator.getProductsFromOrder = {//ok
     [Segments.PARAMS]: Joi.object().keys({
