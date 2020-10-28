@@ -1,12 +1,7 @@
 require('dotenv').config();
-const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
-const { uploadFile, deleteFile } = require('../utils/bucket.js');
+const { uploadFile, deleteFile, dowloadFile } = require('../utils/bucket.js');
 
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ID,
-  secretAccessKey: process.env.AWS_SECRET,
-});
 
 const download = async (req, res, next) => {
   try {
@@ -15,23 +10,21 @@ const download = async (req, res, next) => {
       type,
     } = req.query;
 
-    const params = {
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: `${file}.${type}`,
-    };
+    const resultDownload = await dowloadFile(file, type);
 
-    s3.getObject(params, (error, data) => {
-      if (error) res.status(500).send(error);
-      else {
-        res.attachment(`${file}.${type}`);
-        res.status(200).send(data.Body);
-      }
-    });
+    res.attachment(`${file}.${type}`);
+    res.status(200).send(resultDownload.Body);
+
   } catch (error) {
-    next({
-      message: error.message,
-      status: 500,
-    });
+      console.log(error.message);
+          
+      res.status(500).json({
+        message: error.message
+      });
+    // next({
+    //   message: error.message,
+    //   status: 500,
+    // });
   }
 };
 
@@ -42,8 +35,6 @@ const upload = async (req, res, next) => {
         let type;
         let newURL;
 
-        
-        console.log(file)
         if (file) {
             buffer = req.file.buffer;
             type = req.file.originalname.split('.');
@@ -51,13 +42,6 @@ const upload = async (req, res, next) => {
             newURL = await uploadFile(uuidv4(), type, buffer);
         };
         
-        // res.locals = {
-        //     ...res.locals,
-        //     data: {
-        //         url: newURL,
-        //     },
-        //     status: 200,
-        // };
 
         res.status(200).json({
             url: newURL,
@@ -75,16 +59,10 @@ const remove = async (req, res, next) => {
             type,
             name,
         } = req.query;
-        console.log(name)
-        console.log(type)
-        const resultDeleteMode = await deleteFile(name, type);
-        console.log('AQUI')
-        console.log(resultDeleteMode)
-        // res.locals = {
-        //     ...res.locals,
-        //     message: 'File removed',
-        //     status: 200,
-        // };
+
+        await dowloadFile(name, type);
+
+        await deleteFile(name, type);
 
         res.status(200).json({
             message: 'File removed.',
@@ -92,7 +70,17 @@ const remove = async (req, res, next) => {
 
         return next();
     } catch (error) {
-        return next(error);
+
+        console.log(error.message);
+        
+        res.status(500).json({
+          message: error.message
+        });
+
+        // return next({
+        //   message: error.message,
+        //   status: 500,
+        // });
     }
 };
 

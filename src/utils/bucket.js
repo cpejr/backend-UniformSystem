@@ -8,7 +8,7 @@ const s3 = new AWS.S3({
 });
 
 const uploadFile = async (name, type, buffer) => {
-    let params = {
+    const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: `${name}.${type}`,
         Body: buffer,
@@ -21,9 +21,29 @@ const uploadFile = async (name, type, buffer) => {
             if (error) return reject(error);
             return resolve(`https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${name}.${type}`);
         });
+
     });
 
-    console.log(result)
+    return result;
+};
+
+const dowloadFile = async (file, type) => {
+
+    const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: `${file}.${type}`,
+    };
+
+    const result = await new Promise((resolve, reject) => {
+        // eslint-disable-next-line no-unused-vars
+        const downloadFile = s3.getObject(params, (error, data) => {
+            if (error) reject(error);
+            return resolve(data);
+        });
+
+        return downloadFile;
+    });
+
     return result;
 };
 
@@ -35,11 +55,15 @@ const deleteFile = async (name, type) => {
 
     const result = await new Promise((resolve, reject) => {
         // eslint-disable-next-line no-unused-vars
-        s3.deleteObject(params, (error, _data) => {
-            if (error) return reject((error));
-            return resolve('Successfully deleted file');
+        const resultDelete = s3.deleteObject(params, (error, data) => {
+            
+            if (error) reject(error);
+            return resolve('Successfully removed.');
         });
+
+        return resultDelete
     });
+
 
     return result;
 };
@@ -47,4 +71,5 @@ const deleteFile = async (name, type) => {
 module.exports = {
     uploadFile,
     deleteFile,
+    dowloadFile,
 };
