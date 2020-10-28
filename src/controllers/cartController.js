@@ -7,7 +7,7 @@ module.exports={
             const user_id = req.session.user_id;
 
             const productInCart = {
-                shirt_model_id: req.body.shirt_model_id,
+                product_model_id: req.body.product_model_id,
                 size: req.body.size,
                 amount: req.body.amount,
                 logo_link: req.body.logo_link,

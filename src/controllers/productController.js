@@ -1,13 +1,13 @@
 const { response } = require("express");
-const { getAllShirtsCount } = require("../models/ShirtModel");
-const ShirtModel = require("../models/ShirtModel");
-const ShirtModelModel = require("../models/ShirtModelModel");
+const { getAllProductsCount } = require("../models/ProductModel");
+const ProductModel = require("../models/ProductModel");
+const ProductModelModel = require("../models/ProductModelModel");
 
 module.exports = {
   
-  async createShirt(req, res) {
+  async createProduct(req, res) {
     try {
-      const shirt = {
+      const product = {
         name: req.body.name,
         description: req.body.description,
         product_type: req.body.product_type,
@@ -15,13 +15,13 @@ module.exports = {
   
       const models = req.body.models;
 
-      const createdShirtId = await ShirtModel.create(shirt);
+      const createdProductId = await ProductModel.create(product);
 
       await models.forEach((model) => {
-        model.shirt_id = createdShirtId[0];
+        model.product_id = createdProductId[0];
       });
 
-      await ShirtModelModel.createAll(models);
+      await ProductModelModel.createAll(models);
 
       res.status(200).json({
         message: "Camisa criada com sucesso!",
@@ -32,14 +32,14 @@ module.exports = {
     }
   },
 
-  async addShirtModel(req, res) {
+  async addProductModel(req, res) {
     try {
-      const { shirt_id } = req.params;
-      const shirt_model = req.body;
+      const { product_id } = req.params;
+      const product_model = req.body;
       
-      const existingShirtId = await ShirtModel.findShirtId(shirt_id);
+      const existingProductId = await ProductModel.findProductId(product_id);
 
-      await ShirtModelModel.createOne(shirt_model, existingShirtId);
+      await ProductModelModel.createOne(product_model, existingProductId);
 
       res.status(200).json({
         message: "Model criado com sucesso!",
@@ -52,13 +52,13 @@ module.exports = {
     }
   },
 
-  async allShirts(req, res) {
+  async allProducts(req, res) {
     try {
       const {page} = req.query;
-      const shirts = await ShirtModel.getShirtsAndItsRespectiveMainModels(page);
+      const products = await ProductModel.getProductsAndItsRespectiveMainModels(page);
 
       res.status(200).json({
-        shirts,
+        products,
       });
     } catch (err) {
       console.log(err);
@@ -66,9 +66,9 @@ module.exports = {
     }
   },
 
-  async getAllShirtsCounted(req,res){
+  async getAllProductsCounted(req,res){
     try{
-      const count = await ShirtModel.getAllShirtsCount();
+      const count = await ProductModel.getAllProductsCount();
       const totalPages = (count/process.env.ITENS_PER_PAGE);
       
       res.setHeader("X-Total-Count", totalPages);
@@ -81,16 +81,16 @@ module.exports = {
     }
   },
 
-  async getShirtModel(req, res) {
-    const { shirt_id } = req.params;
+  async getProductModel(req, res) {
+    const { product_id } = req.params;
     try {
-      const existingShirtId = await ShirtModel.findShirtId(shirt_id);
+      const existingProductId = await ProductModel.findProductId(product_id);
 
-      const shirtFound = await ShirtModel.getShirtsAndItsAllModels(
-        existingShirtId
+      const productFound = await ProductModel.getProductsAndItsAllModels(
+        existingProductId
       );
 
-      res.status(200).json(shirtFound);
+      res.status(200).json(productFound);
     } catch (err) {
       console.log(err);
       res.status(400).json({
@@ -99,11 +99,11 @@ module.exports = {
     }
   },
 
-  async deleteShirt(req, res) {
-    const { shirt_id } = req.params;
+  async deleteProduct(req, res) {
+    const { product_id } = req.params;
     try {
-      const existingShirtId = await ShirtModel.findShirtId(shirt_id);
-      await ShirtModel.delete(existingShirtId);
+      const existingProductId = await ProductModel.findProductId(product_id);
+      await ProductModel.delete(existingProductId);
       res.status(200).json({
         message: "Camisa apagada com sucesso.",
       });
@@ -116,11 +116,11 @@ module.exports = {
   async deleteModel(req, res) {
     const { model_id } = req.params;
     try {
-      const existingShirtModelId = await ShirtModelModel.findShirtModelId(
+      const existingProductModelId = await ProductModelModel.findProductModelId(
         model_id
       );
 
-      await ShirtModelModel.delete(existingShirtModelId);
+      await ProductModelModel.delete(existingProductModelId);
       res.status(200).json({
         message: "Modelo da camisa apagado com sucesso.",
       });
@@ -130,12 +130,12 @@ module.exports = {
     }
   },
 
-  async updateShirt(req, res) {
-    const { shirt_id } = req.params;
+  async updateProduct(req, res) {
+    const { product_id } = req.params;
     const { updated_fields } = req.body;
     try {
-      const existingShirtId = await ShirtModel.findShirtId(shirt_id);
-      await ShirtModel.update(existingShirtId, updated_fields);
+      const existingProductId = await ProductModel.findProductId(product_id);
+      await ProductModel.update(existingProductId, updated_fields);
       res.status(200).json("Informações da camisa atualizadas com sucesso");
     } catch (err) {
       console.log(err.message);
@@ -147,11 +147,11 @@ module.exports = {
     const { model_id } = req.params;
     const { updated_fields } = req.body;
     try {
-      const existingShirtModelId = await ShirtModelModel.findShirtModelId(
+      const existingProductModelId = await ProductModelModel.findProductModelId(
         model_id
       );
 
-      await ShirtModelModel.update(existingShirtModelId, updated_fields);
+      await ProductModelModel.update(existingProductModelId, updated_fields);
       res
         .status(200)
         .json("Informações do modelo da camisa atualizadas com sucesso");

@@ -1,7 +1,7 @@
 
 const connection = require("../database/connection");
 /* const { create } = require('../controllers/userController'); */
-/* const { update, delete } = require('./ShirtModel'); */
+/* const { update, delete } = require('./ProductModel'); */
 /* const { response } = require("express");  */
 
 module.exports = {

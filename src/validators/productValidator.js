@@ -6,7 +6,7 @@ const { Segments, Joi } = require("celebrate");
 const productValidator = new Object();
 
 
-productValidator.createShirt = {//ok
+productValidator.createProduct = {//ok
     [Segments.BODY]: Joi.object().keys({
         name: Joi.string().required(),
         description: Joi.string().required(),
@@ -20,9 +20,9 @@ productValidator.createShirt = {//ok
         })
     })
 },
-productValidator.addShirtModel = {//ok
+productValidator.addProductModel = {//ok
     [Segments.PARAMS]: Joi.object().keys({
-        shirt_id: Joi.number().integer().required()
+        product_id: Joi.number().integer().required()
      }),
      [Segments.BODY]: Joi.object().keys({
         is_main: Joi.boolean().required(),
@@ -33,14 +33,14 @@ productValidator.addShirtModel = {//ok
      })
 
 },
-productValidator.getShirtModel = {//ok
+productValidator.getProductModel = {//ok
     [Segments.PARAMS]: Joi.object().keys({
-        shirt_id : Joi.number().integer().required()
+        product_id : Joi.number().integer().required()
      })    
 },
-productValidator.deleteShirt = {//ok
+productValidator.deleteProduct = {//ok
     [Segments.PARAMS]: Joi.object().keys({
-        shirt_id : Joi.number().integer().required()
+        product_id : Joi.number().integer().required()
      }),
 },
 productValidator.deleteModel = { //ok ? deu internal server error
@@ -48,13 +48,13 @@ productValidator.deleteModel = { //ok ? deu internal server error
         model_id : Joi.string().required()
      }),
 },
-productValidator.updateShirt = { //ok
+productValidator.updateProduct = { //ok
 /*   Comentado pra se caso for necessário mudar depois
      [Segments.PARAMS]: Joi.object().keys({
-        shirt_id : Joi.number().integer().required()
+        product_id : Joi.number().integer().required()
      }), */
     [Segments.BODY]: Joi.object().keys({
-       shirt_id : Joi.number().integer().required(),
+       product_id : Joi.number().integer().required(),
        updated_fields : Joi.object({
            name: Joi.string().required(),
        }).required()

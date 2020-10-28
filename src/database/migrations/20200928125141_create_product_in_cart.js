@@ -4,7 +4,7 @@ exports.up = function(knex) {
         table.increments('product_in_cart_id').primary();
         table.string('user_id').notNullable();
         table.foreign('user_id').references('user_id').inTable('users');
-        table.string('shirt_model_id').notNullable();
+        table.string('product_model_id').notNullable();
         table.integer('amount').notNullable();
         table.string('logo_link');
         table.string('text');

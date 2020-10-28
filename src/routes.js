@@ -33,19 +33,19 @@ routes.put('/address/:address_id', celebrate(addressValidate.update), authentica
 routes.delete('/address/:address_id',celebrate(addressValidate.delete), authenticateToken, userController.deleteAddress);
 
 
-// Shirt
-routes.post('/product', celebrate(productValidate.createShirt),productController.createShirt);
-routes.post('/newmodel/:shirt_id',celebrate(productValidate.addShirtModel), productController.addShirtModel);
-routes.post('/product', authenticateToken, isAdmin, productController.createShirt);
-routes.post('/newmodel/:shirt_id', authenticateToken, isAdmin, productController.addShirtModel);
+// Product
+routes.post('/product', celebrate(productValidate.createProduct), authenticateToken, isAdmin,productController.createProduct);
+routes.post('/newmodel/:product_id',celebrate(productValidate.addProductModel), productController.addProductModel);
+routes.post('/product', authenticateToken, isAdmin, productController.createProduct);
+routes.post('/newmodel/:product_id', authenticateToken, isAdmin, productController.addProductModel);
 
-routes.get('/shirt', productController.allShirts);
-routes.get('/shirtmodels/:shirt_id',celebrate(productValidate.getShirtModel), productController.getShirtModel);
+routes.get('/product', productController.allProducts);
+routes.get('/productmodels/:product_id',celebrate(productValidate.getProductModel), productController.getProductModel);
 
-routes.delete('/shirt/:shirt_id', celebrate(productValidate.deleteShirt), authenticateToken, isAdmin, productController.deleteShirt);
+routes.delete('/product/:product_id', celebrate(productValidate.deleteProduct), authenticateToken, isAdmin, productController.deleteProduct);
 routes.delete('/model/:model_id', celebrate(productValidate.deleteModel), authenticateToken, isAdmin, productController.deleteModel);
 
-routes.put('/shirt/:shirt_id',celebrate(productValidate.updateShirt), authenticateToken, isAdmin, productController.updateShirt);
+routes.put('/product/:product_id',celebrate(productValidate.updateProduct), authenticateToken, isAdmin, productController.updateProduct);
 routes.put('/model/:model_id', celebrate(productValidate.updateModel), authenticateToken, isAdmin, productController.updateModel);
 
 //ProductInCart
@@ -63,7 +63,7 @@ routes.delete('/orderaddress/:order_address_id', celebrate(orderValidate.deleteO
 
 
 // Order 
-routes.post('/order',celebrate(orderValidate.create),  authenticateToken, orderController.createOrder);
+routes.post('/order',celebrate(orderValidate.create), authenticateToken, orderController.createOrder);
 routes.put('/order/:order_id', celebrate(orderValidate.update), authenticateToken, isAdmin, orderController.updateOrder);
 routes.delete('/order/:order_id', celebrate(orderValidate.delete), authenticateToken, orderController.deleteOrder);
 routes.get('/order', celebrate(orderValidate.getOrders), authenticateToken, isAdmin, orderController.getOrders);
