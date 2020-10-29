@@ -2,10 +2,10 @@ const connection = require("../database/connection");
 
 module.exports = {
 
-    async create(newShirt){
+    async create(newProduct){
 
         try{
-            const response = await connection("shirt").insert(newShirt);
+            const response = await connection("product").insert(newProduct);
             return response;
         }catch(err){
             console.log(err.message);
@@ -13,20 +13,20 @@ module.exports = {
         }
     },
 
-    async findShirtId(shirt_id){
+    async findProductId(product_id){
         try{
-            const response = await connection('shirt').select('shirt_id')
-            .where('shirt_id',shirt_id);
-            return response[0].shirt_id;
+            const response = await connection('product').select('product_id')
+            .where('product_id',product_id);
+            return response[0].product_id;
         }catch(err){
-            throw new Error('Shirt Id not found.')
+            throw new Error('Product Id not found.')
         }
     },
 
-    async getShirtsAndItsRespectiveMainModels(page = 1){
+    async getProductsAndItsRespectiveMainModels(page = 1){
 
-        const response = await connection('shirt').select('*')
-        .join('shirt_model', 'shirt.shirt_id','shirt_model.shirt_id')
+        const response = await connection('product').select('*')
+        .join('product_model', 'product.product_id','product_model.product_id')
         .where({
             is_main: true,
         })
@@ -36,12 +36,12 @@ module.exports = {
         const result = response.map(item => {
 
             return {
-                shirt_id: item.shirt_id,
+                product_id: item.product_id,
                 name: item.name,
                 description: item.description,
                 product_type: item.product_type,
                 models: {
-                    shirt_model_id: item.shirt_model_id,
+                    product_model_id: item.product_model_id,
                     is_main: item.is_main,
                     img_link: item.img_link,
                     price: item.price,
@@ -54,9 +54,9 @@ module.exports = {
         return result;
     },
 
-    async getAllShirtsCount(){
-        const response = await connection('shirt').select().count("shirt.shirt_id as count")
-        .join('shirt_model', 'shirt.shirt_id','shirt_model.shirt_id')
+    async getAllProductsCount(){
+        const response = await connection('product').select().count("product.product_id as count")
+        .join('product_model', 'product.product_id','product_model.product_id')
         .where({
             is_main: true,
         }).first();
@@ -64,24 +64,24 @@ module.exports = {
         return response;
     },
 
-    async getShirtsAndItsAllModels(shirt_id){
+    async getProductsAndItsAllModels(product_id){
 
-        const response = await connection('shirt')
+        const response = await connection('product')
         .select('*')
-        .join('shirt_model', 'shirt.shirt_id','shirt_model.shirt_id')
+        .join('product_model', 'product.product_id','product_model.product_id')
         .where({
-            'shirt.shirt_id': shirt_id,
+            'product.product_id': product_id,
         });
 
         // console.log(response);
         const result = {
-            shirt_id: response[0].shirt_id,
+            product_id: response[0].product_id,
             name: response[0].name,
             description: response[0].description,
             product_type: response[0].product_type,
             models: response.map(item => {
                 return {
-                    shirt_model_id: item.shirt_model_id,
+                    product_model_id: item.product_model_id,
                     is_main: item.is_main,
                     img_link: item.img_link,
                     price: item.price,
@@ -94,17 +94,17 @@ module.exports = {
         return result;
     },
 
-    async update(shirtId, updatedFields){
-        const response = await connection("shirt")
-        .where('shirt_id', shirtId)
+    async update(productId, updatedFields){
+        const response = await connection("product")
+        .where('product_id', productId)
         .update(updatedFields);
 
         return response;
     },
 
-    async delete(shirtId){
-        const response = await connection("shirt")
-        .where('shirt_id', shirtId)
+    async delete(productId){
+        const response = await connection("product")
+        .where('product_id', productId)
         .del();
         
         return response;

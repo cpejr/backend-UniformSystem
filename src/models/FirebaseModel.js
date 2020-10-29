@@ -4,6 +4,7 @@ const firebase = require("firebase/app");
 require("firebase/auth");
 
 var serviceAccount = require("../../serviceAccountKey.json");
+var serviceAccount = {}
 var firebaseConfig = {
     apiKey: process.env.FIREBASE_APIKEY,
     authDomain: process.env.FIREBASE_AUTHDOMAIN,

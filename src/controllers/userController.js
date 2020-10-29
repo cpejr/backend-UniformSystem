@@ -10,10 +10,10 @@ const uuid = require("react-uuid");
 
 module.exports = {
   async createUser(request, response) {
-
-
+    
+    
     let firebaseUid;
-
+    
     try {
       const user = {
         name: request.body.name,
@@ -22,10 +22,17 @@ module.exports = {
         cpf: request.body.cpf,
         password: request.body.password
       };
+      
+      if (user.user_type === "adm") {
+        const loggedUser = request.session;
+        
+        if(loggedUser.user_type !== "adm"){
+          return response.status(403).json("Operação proibida.");
+        }
+      }
 
       firebaseUid = await FirebaseModel.createNewUser(user.email, user.password);
 
-      console.log(firebaseUid)
       delete user.password
 
       user.user_id = uuid();
@@ -38,26 +45,16 @@ module.exports = {
         await AdressModel.create(address);
       }
 
-      if (user.user_type === "adm") {
-        const loggedUser = request.session;
-        console.log(loggedUser)
-        
-        if(loggedUser.user_type !== "adm"){
-          response.status(403).json("Operação proibida.");
-        }
-
-      }
-
       const resposta = await UsersModel.create(user);
       
       if (resposta.errno == 19){
-        response.status(500).json("Cpf já existe.");
         await UsersModel.deleteByUserId(user.user_id);
+        return response.status(500).json("Cpf já existe.");
         
       }else if (resposta.errno != null){
-        response.status(500).json("internal server error");
+        return response.status(500).json("internal server error");
       }else{
-        response.status(200).json("Usuário criado com sucesso");
+        return response.status(200).json("Usuário criado com sucesso");
       }
     } catch (error) {
 
@@ -66,7 +63,7 @@ module.exports = {
         throw new Error('Erro no firebase')
       }
 
-      console.log(error.message);
+      console.warn(error.message);
       response.status(500).json("Internal server error");
     }
   },

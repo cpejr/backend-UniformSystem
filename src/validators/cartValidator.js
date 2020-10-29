@@ -8,7 +8,7 @@ const addressValidator = new Object();
 //em algum momento, mas nao agora
 addressValidator.addToCart = { //ok
     [Segments.BODY]: Joi.object().keys({
-        shirt_model_id: Joi.string().required(),
+        product_model_id: Joi.string().required(),
         /* size: Joi.string().required(), comentado pois talvez seja melhor*/
         //não se esses tamanhos já servem:
         size: Joi.string().valid("PP", "P", "M", "G", "GG", "XG").required(),

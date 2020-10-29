@@ -2,7 +2,7 @@ const AdressModel = require("../models/AdressModel");
 const ShippingDataModel = require("../models/ShippingDataModel");
 const OrderModel = require("../models/OrderModel");
 const ProductInOrderModel = require("../models/ProductInOrderModel");
-const ShirtModelModel = require("../models/ShirtModelModel");
+const ProductModelModel = require("../models/ProductModelModel");
 const Correios = require('node-correios');
 
 module.exports = {
@@ -62,17 +62,17 @@ module.exports = {
             const createdOrder_id = await OrderModel.create(order);
             // Criação dos produtos do pedido:
             //Pega os id's dos products da requisicao para buscá-los no DB
-            const productIds = products.map(item => {return item.shirt_model_id;});
+            const productIds = products.map(item => {return item.product_model_id;});
 
             //Busca no DB os produtos comprados
-            const boughtProducts = await ShirtModelModel.getByIdArray(productIds, "shirt_model_id price".split(' '));
+            const boughtProducts = await ProductModelModel.getByIdArray(productIds, "product_model_id price".split(' '));
             //Criando o vetor de produtos no pedido, pegando dados do vetor retornado do DB e o respectivo objeto vindo da requisição;
             let index;
             const productsInOrder = boughtProducts.map(item => {
-                index = productIds.indexOf(item.shirt_model_id);
+                index = productIds.indexOf(item.product_model_id);
                 return ({
                     order_id: createdOrder_id,
-                    shirt_model_id: item.shirt_model_id,
+                    product_model_id: item.product_model_id,
                     product_price: item.price,
                     amount: products[index].amount,
                     logo_link: products[index].logo_link,
