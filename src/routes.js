@@ -15,6 +15,11 @@ const cartValidate = require('./validators/cartValidator')
 const orderValidate = require('./validators/orderValidator')
 const productValidate = require('./validators/productValidator')
 
+
+const upload = require('./utils/multer');
+const  bucketController = require('./controllers/bucketController');
+
+
 const { authenticateToken, isAdmin, authenticateOptionalToken } = require('./middlewares/authentication');
 
 //Routes para o user
@@ -110,5 +115,11 @@ routes.get('/productsfromorder/:order_id', celebrate(orderValidate.getProductsFr
 //Session
 routes.post('/login', SessionController.signin);
 routes.get('/verify', SessionController.verifyToken);
+
+// AWS Connection
+routes.post('/bucket/upload', upload, bucketController.upload);
+routes.get('/bucket/download', bucketController.download);
+routes.delete('/bucket/remove', bucketController.remove);
+
 
 module.exports = routes;

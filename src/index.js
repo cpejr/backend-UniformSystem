@@ -1,8 +1,6 @@
 require("dotenv").config();
 const { errors } = require('celebrate');
 
-
-
 const express = require('express');
 const routes = require('./routes');
 const cors = require('cors');
