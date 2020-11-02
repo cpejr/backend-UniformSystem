@@ -5,6 +5,8 @@ module.exports = {
     async create(adress){
         try {
             const response = await connection ('address').insert(adress);
+            console.log('address')
+            console.log(address)
             return response;
         } catch (error) {
             console.log(error.message);

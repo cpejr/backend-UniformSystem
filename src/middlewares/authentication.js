@@ -37,6 +37,15 @@ module.exports = {
         }
     },
 
+    async isAdminOrEmployee(request, response, next) {
+        if (request.session.user_type !== 'adm' && request.session.user_type !== 'employee') {
+            response.status(403).json({ error: "Access denied!" });
+        }
+        else {
+            next();
+        }
+    },
+
     async authenticateOptionalToken(request, response, next) {
         const authHeader = request.headers.authorization;
         const [scheme, token] = authHeader

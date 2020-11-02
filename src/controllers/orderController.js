@@ -256,4 +256,39 @@ module.exports = {
             res.status(500).json("Internal server error.");
         }
     },
+
+    async deliverAtMail(req, res) {
+
+        const { order_id } = req.params;
+
+        const { tracking_code } = req.body;
+
+        const loggedUser = req.session.user_id;
+
+        // Atualiza com as novas informações
+        const updatedShippingData = {
+            delivered_by: loggedUser,
+            tracking_code,
+        }
+
+        try {
+            await OrderModel.updateShippingData(order_id, updatedShippingData);
+
+            // Se nada deu errado, atualiza o status
+            const updatedOrderToDelivered = {
+                status: 'Delivered'
+            }
+
+            // atualiza a order
+            await OrderModel.update(order_id, updatedOrderToDelivered)
+
+            res.status(200).json({
+                message: "Status da order atualizada sucesso!",
+            });
+    
+        } catch (err) {
+            console.log(err.message);
+            res.status(500).json("Internal server error.");
+        }
+    },
 }

@@ -23,10 +23,12 @@ module.exports = {
         password: request.body.password
       };
       
-      if (user.user_type === "adm") {
+      console.log(user);
+
+      if (user.user_type === "adm" || user.user_type === "employee") {
         const loggedUser = request.session;
         
-        if(loggedUser.user_type !== "adm"){
+        if(loggedUser && loggedUser.user_type !== "adm"){
           return response.status(403).json("Operação proibida.");
         }
       }
@@ -41,7 +43,8 @@ module.exports = {
       if (user.user_type === "client") {
         const { address } = request.body;
         address.user_id = user.user_id;
-
+        console.log('address')
+        console.log(address)
         await AdressModel.create(address);
       }
 
@@ -130,7 +133,7 @@ module.exports = {
     }
   },
 
-  async deleteUserAdm(request, response) {
+  async deleteAdmOrEmployee(request, response) {
     try {
       const { user_id } = request.params;
       
@@ -221,6 +224,7 @@ module.exports = {
       // const { user_id } = request.params;
 
       const loggedUserId = request.session.user_id;
+      console.log(loggedUserId)
 
       address.user_id = loggedUserId;
 

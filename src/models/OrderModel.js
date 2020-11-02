@@ -54,4 +54,19 @@ module.exports = {
         }
     },
 
+    async updateShippingData(order_id, shipping_data){
+        try {
+            const response = await connection('shipping_data AS SD')
+            .join('order AS O', 'O.shipping_data_id', '=', 'SD.shipping_data_id')
+            .where({
+                order_id
+            })
+            .update(shipping_data);
+            return response;
+        } catch (error) {
+            console.log(error.message);
+            return error;
+        }
+    },
+
 }
