@@ -2,7 +2,6 @@ const UsersModel = require("../models/UsersModel");
 const AdressModel = require("../models/AdressModel");
 const FirebaseModel = require("../models/FirebaseModel");
 
-const uuid = require("react-uuid");
 // const { delete } = require("../database/connection");
 
 //estamos recebendo alguns erros que não estão estourando na tela, apesar de que a
@@ -10,7 +9,6 @@ const uuid = require("react-uuid");
 
 module.exports = {
   async createUser(request, response) {
-    
     
     let firebaseUid;
     
@@ -37,18 +35,17 @@ module.exports = {
 
       delete user.password
 
-      user.user_id = uuid();
       user.firebase_uid = firebaseUid;
+      const resposta = await UsersModel.create(user);
 
       if (user.user_type === "client") {
         const { address } = request.body;
-        address.user_id = user.user_id;
-        console.log('address')
+        address.user_id = resposta;
+        console.log('address antes')
         console.log(address)
         await AdressModel.create(address);
       }
 
-      const resposta = await UsersModel.create(user);
       
       if (resposta.errno == 19){
         await UsersModel.deleteByUserId(user.user_id);

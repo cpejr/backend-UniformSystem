@@ -85,7 +85,7 @@ routes.get('/bucket/download', bucketController.download);
 routes.delete('/bucket/remove', bucketController.remove);
 
 // Deliver At Mail
-routes.post('/deliveratmail', isAdminOrEmployee, orderController.deliverAtMail)
+routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, orderController.deliverAtMail)
 
 
 module.exports = routes;

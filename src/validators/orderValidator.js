@@ -17,8 +17,9 @@ orderValidator.update = { ///ok
 orderValidator.create = { //ok
     [Segments.BODY]: Joi.object().keys({
         address_id: Joi.string().required(),
+        service_code: Joi.string().required(),
         products: Joi.array().items({
-            shirt_model_id: Joi.number().integer().required(),
+            product_model_id: Joi.number().integer().required(),
             amount: Joi.number().integer().required(),
             logo_link: Joi.string().required(),
             size: Joi.string()
