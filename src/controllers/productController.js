@@ -39,6 +39,17 @@ module.exports = {
       
       const existingProductId = await ProductModel.findProductId(product_id);
 
+      if(!existingProductId){
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+      console.log('antes')
+      console.log(product_model)
+      console.log('depois')
+      console.log(product_model)
+      delete product_model.file
+
       await ProductModelModel.createOne(product_model, existingProductId);
 
       res.status(200).json({
@@ -145,7 +156,7 @@ module.exports = {
 
   async updateModel(req, res) {
     const { model_id } = req.params;
-    const { updated_fields } = req.body;
+    const updated_fields = req.body;
     try {
       const existingProductModelId = await ProductModelModel.findProductModelId(
         model_id

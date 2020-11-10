@@ -39,10 +39,8 @@ routes.delete('/address/:address_id',celebrate(addressValidate.delete), authenti
 
 
 // Product
-routes.post('/product', celebrate(productValidate.createProduct), authenticateToken, isAdmin,productController.createProduct);
-routes.post('/newmodel/:product_id',celebrate(productValidate.addProductModel), productController.addProductModel);
-routes.post('/product', authenticateToken, isAdmin, productController.createProduct);
-routes.post('/newmodel/:product_id', authenticateToken, isAdmin, productController.addProductModel);
+routes.post('/product', celebrate(productValidate.createProduct), authenticateToken, isAdmin, productController.createProduct);
+routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidate.addProductModel), bucketController.upload, productController.addProductModel);
 
 routes.get('/product', productController.allProducts);
 routes.get('/productmodels/:product_id',celebrate(productValidate.getProductModel), productController.getProductModel);
@@ -51,7 +49,7 @@ routes.delete('/product/:product_id', celebrate(productValidate.deleteProduct), 
 routes.delete('/model/:model_id', celebrate(productValidate.deleteModel), authenticateToken, isAdmin, productController.deleteModel);
 
 routes.put('/product/:product_id',celebrate(productValidate.updateProduct), authenticateToken, isAdmin, productController.updateProduct);
-routes.put('/model/:model_id', celebrate(productValidate.updateModel), authenticateToken, isAdmin, productController.updateModel);
+routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(productValidate.updateModel), bucketController.update, productController.updateModel);
 
 //ProductInCart
 routes.get('/cart', authenticateToken, cartController.getCart);

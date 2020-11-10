@@ -57,7 +57,7 @@ module.exports = {
         return response;
     },
 
-    async getByIdArray(idList, fields){
+    async getByIdArray(idList, fields='*'){
 
         console.log(fields)
         const response = await connection("product_model")

@@ -25,6 +25,7 @@ productValidator.addProductModel = {//ok
         product_id: Joi.number().integer().required()
      }),
      [Segments.BODY]: Joi.object().keys({
+        file: Joi.string().optional(),
         is_main: Joi.boolean().required(),
 		img_link: Joi.string().required(),
 		price: Joi.number().required(),
@@ -62,13 +63,20 @@ productValidator.updateProduct = { //ok
 },
 productValidator.updateModel = { //ok
     [Segments.PARAMS]: Joi.object().keys({
-        model_id : Joi.number().integer()
+        model_id : Joi.number().integer().required()
      }),
     [Segments.BODY]: Joi.object().keys({
-        model_id : Joi.number().integer().required(),
-        updated_fields : Joi.object({
-            model_description: Joi.string().required(),
-        }).required()
+        // model_id : Joi.number().integer().required(),
+        // file: Joi.string().optional(),
+        // updated_fields : Joi.object({
+        //     model_description: Joi.string().required(),
+        // }).required()
+        file: Joi.string().optional(),
+        is_main: Joi.boolean().optional(),
+		img_link: Joi.string().optional(),
+		price: Joi.number().optional(),
+		gender: Joi.valid("M","F").optional(),
+		model_description: Joi.string().optional()
      }),
 },
 
