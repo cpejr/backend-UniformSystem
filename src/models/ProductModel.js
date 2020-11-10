@@ -54,6 +54,29 @@ module.exports = {
         return result;
     },
 
+    async getAllModels({page = 1, product_type, gender, minprice, maxprice}){
+        const filter = {}
+        if(product_type)
+            filter.product_type = product_type; 
+        if(gender)
+            filter.gender = gender;
+
+        let query = connection('product_model').select('*')
+        .limit(process.env.ITENS_PER_PAGE)
+        .offset((page - 1) * process.env.ITENS_PER_PAGE)
+        .join('product', 'product.product_id','product_model.product_id')
+        .where(filter);
+        
+        if(typeof minprice !== 'undefined')
+            query.andWhere(price, '>=', minprice)
+        if(typeof maxprice !== 'undefined')
+            query.andWhere(price, '<=', maxprice)
+
+        const response = await query;
+
+        return response;
+    },
+
     async getAllProductsCount(){
         const response = await connection('product').select().count("product.product_id as count")
         .join('product_model', 'product.product_id','product_model.product_id')

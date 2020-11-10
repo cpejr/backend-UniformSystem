@@ -77,6 +77,19 @@ module.exports = {
     }
   },
 
+  async allModels(req, res) {
+    try {
+      const models = await ProductModel.getAllModels(req.query);
+
+      res.status(200).json({
+        models,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json("Internal server error.");
+    }
+  },
+
   async getAllProductsCounted(req,res){
     try{
       const count = await ProductModel.getAllProductsCount();

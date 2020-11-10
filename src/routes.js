@@ -44,6 +44,7 @@ routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebra
 
 routes.get('/product', productController.allProducts);
 routes.get('/productmodels/:product_id',celebrate(productValidate.getProductModel), productController.getProductModel);
+routes.get('/productmodels',productController.allModels);
 
 routes.delete('/product/:product_id', celebrate(productValidate.deleteProduct), authenticateToken, isAdmin, productController.deleteProduct);
 routes.delete('/model/:model_id', celebrate(productValidate.deleteModel), authenticateToken, isAdmin, productController.deleteModel);
