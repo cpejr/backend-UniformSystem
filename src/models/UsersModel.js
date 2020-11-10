@@ -1,11 +1,14 @@
 /* const { create } = require('../controllers/userController'); */
 const connection = require ('../database/connection');
 
+const uuid = require("react-uuid");
+
 module.exports = {
     async create(user){
         try {
-            const response = await connection ('users').insert(user);
-            return response;
+            user.user_id = uuid();
+            const response = await connection('users').insert(user);
+            return user.user_id;
         } catch (error) {
             console.log(error.message);
             return error;

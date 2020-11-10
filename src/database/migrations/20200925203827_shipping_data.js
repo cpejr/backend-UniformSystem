@@ -11,6 +11,9 @@ exports.up = function(knex) {
         table.string('complement').notNullable();
         table.float('shipping_value');
         table.string('service_code').notNullable();
+        table.string('delivered_by').nullable();
+        table.foreign('delivered_by').references('user_id').inTable('users').onDelete('SET NULL').onUpdate('CASCADE');
+        table.string('tracking_code').nullable();
     });
 };
 

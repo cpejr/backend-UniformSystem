@@ -4,7 +4,9 @@ const connection = require ('../database/connection');
 module.exports = {
     async create(adress){
         try {
-            const response = await connection ('address').insert(adress);
+            const response = await connection('address').insert(adress);
+            console.log('address depois')
+            console.log(adress)
             return response;
         } catch (error) {
             console.log(error.message);
@@ -13,7 +15,7 @@ module.exports = {
     },
     async read(){
         try {
-            const response = await connection ('address').select('*');
+            const response = await connection('address').select('*');
             return response;
         } catch (error) {
             console.log(error.message);
@@ -22,7 +24,7 @@ module.exports = {
     },
     async getById(id){
         try {
-            const response = await connection ('address').where('address_id', id).select('*').first();
+            const response = await connection('address').where('address_id', id).select('*').first();
             return response;
         } catch (error) {
             console.log(error.message);
@@ -31,7 +33,7 @@ module.exports = {
     },
     async getAdressByUserId(user_id){
         try {
-            const response = await connection ('address').where('user_id', user_id).select('*');
+            const response = await connection('address').where('user_id', user_id).select('*');
             return response;
         } catch (error) {
             console.log(error.message);

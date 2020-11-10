@@ -2,7 +2,6 @@ const UsersModel = require("../models/UsersModel");
 const AdressModel = require("../models/AdressModel");
 const FirebaseModel = require("../models/FirebaseModel");
 
-const uuid = require("react-uuid");
 // const { delete } = require("../database/connection");
 
 //estamos recebendo alguns erros que não estão estourando na tela, apesar de que a
@@ -10,7 +9,6 @@ const uuid = require("react-uuid");
 
 module.exports = {
   async createUser(request, response) {
-    
     
     let firebaseUid;
     
@@ -23,10 +21,12 @@ module.exports = {
         password: request.body.password
       };
       
-      if (user.user_type === "adm") {
+      console.log(user);
+
+      if (user.user_type === "adm" || user.user_type === "employee") {
         const loggedUser = request.session;
         
-        if(loggedUser.user_type !== "adm"){
+        if(loggedUser && loggedUser.user_type !== "adm"){
           return response.status(403).json("Operação proibida.");
         }
       }
@@ -35,17 +35,17 @@ module.exports = {
 
       delete user.password
 
-      user.user_id = uuid();
       user.firebase_uid = firebaseUid;
+      const resposta = await UsersModel.create(user);
 
       if (user.user_type === "client") {
         const { address } = request.body;
-        address.user_id = user.user_id;
-
+        address.user_id = resposta;
+        console.log('address antes')
+        console.log(address)
         await AdressModel.create(address);
       }
 
-      const resposta = await UsersModel.create(user);
       
       if (resposta.errno == 19){
         await UsersModel.deleteByUserId(user.user_id);
@@ -130,7 +130,7 @@ module.exports = {
     }
   },
 
-  async deleteUserAdm(request, response) {
+  async deleteAdmOrEmployee(request, response) {
     try {
       const { user_id } = request.params;
       
@@ -221,6 +221,7 @@ module.exports = {
       // const { user_id } = request.params;
 
       const loggedUserId = request.session.user_id;
+      console.log(loggedUserId)
 
       address.user_id = loggedUserId;
 

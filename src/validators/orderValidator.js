@@ -17,6 +17,7 @@ orderValidator.update = { ///ok
 orderValidator.create = { //ok
     [Segments.BODY]: Joi.object().keys({
         address_id: Joi.string().required(),
+        service_code: Joi.string().required(),
         products: Joi.array().items({
             product_model_id: Joi.number().integer().required(),
             amount: Joi.number().integer().required(),
@@ -84,6 +85,15 @@ orderValidator.updateOrderAddress = {//ok
 orderValidator.deleteOrderAddress = {//ok
     [Segments.PARAMS]: Joi.object().keys({
         order_address_id: Joi.string().required(),
+     })
+},
+
+orderValidator.deliverAtMail = {//ok
+    [Segments.BODY]: Joi.object().keys({
+        tracking_code: Joi.string().required(),
+     }),
+    [Segments.PARAMS]: Joi.object().keys({
+        order_id: Joi.string().required(),
      })
 }
 module.exports = orderValidator;

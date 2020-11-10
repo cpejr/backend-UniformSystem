@@ -14,48 +14,41 @@ module.exports = {
 
             // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
             const address = await AdressModel.getById(address_id);
-            console.log(req.body)
-            console.log(address)
             //API CORREIOS
             
             const args = {
-                nCdServico: req.body.service_code,
-                sCepOrigem: process.env.CEPORIGEM ,
-                sCepDestino: address.zip_code,
-                nVlPeso: process.env.VLPESO,
-                nCdFormato: process.env.CDFORMATO,
-                nVlComprimento: process.env.VLCOMPRIMENTO,
-                nVlAltura: process.env.VLALTURA,
-                nVlLargura: process.env.VLLARGURA,
-                nVlDiametro: process.env.VLDIAMETRO,
+                nCdServico: `${req.body.service_code}`,
+                sCepOrigem: `${process.env.CEPORIGEM}`,
+                sCepDestino: `${address.zip_code}`,
+                nVlPeso: `${process.env.VLPESO}`,
+                nCdFormato: Number(process.env.CDFORMATO),
+                nVlComprimento: parseFloat(process.env.VLCOMPRIMENTO),
+                nVlAltura: parseFloat(process.env.VLALTURA),
+                nVlLargura: parseFloat(process.env.VLLARGURA),
             };
+
             console.log(args)
             const correios = new Correios();
             const result = await correios.calcPreco(args)
-            console.log(result)
 
-            delete address[0].user_id;
-            delete address[0].address_id;
+            delete address.user_id;
+            delete address.address_id;
             const newShipping ={
-                ...address[0],
-                shipping_value: 0,
+                ...address,
+                shipping_value: result[0].Valor,
                 service_code: '0',
             }
             const newOrderAddress_id = await ShippingDataModel.create(newShipping);
 
            
-            
             // Criacao do order a partir dos dados recebidos na equisicao + adress criado logo acima
             const user_id = req.session.user_id;
 
 
-            const shipping = 10.75
             const order = {
                 user_id: user_id,
-                is_paid: false,
-                shipping_data_id: newOrderAddress_id,
-                status: 'Preparing',
-                shipping: shipping,
+                shipping_data_id: `${newOrderAddress_id[0]}`,
+                status: 'waitingPayment',
             }
 
 
@@ -66,6 +59,12 @@ module.exports = {
 
             //Busca no DB os produtos comprados
             const boughtProducts = await ProductModelModel.getByIdArray(productIds, "product_model_id price".split(' '));
+            
+            if(boughtProducts.length !== productIds.length){
+                return res.status(404).json({
+                    message: "Bought Products is different from productsIds.",
+                });
+            }
             //Criando o vetor de produtos no pedido, pegando dados do vetor retornado do DB e o respectivo objeto vindo da requisição;
             let index;
             const productsInOrder = boughtProducts.map(item => {
@@ -249,6 +248,41 @@ module.exports = {
 
             res.status(200).json({
                 message: "Order Address deletada com sucesso",
+            });
+    
+        } catch (err) {
+            console.log(err.message);
+            res.status(500).json("Internal server error.");
+        }
+    },
+
+    async deliverAtMail(req, res) {
+
+        const { order_id } = req.params;
+
+        const { tracking_code } = req.body;
+
+        const loggedUser = req.session.user_id;
+
+        // Atualiza com as novas informações
+        const updatedShippingData = {
+            delivered_by: loggedUser,
+            tracking_code,
+        }
+
+        try {
+            await OrderModel.updateShippingData(order_id, updatedShippingData);
+
+            // Se nada deu errado, atualiza o status
+            const updatedOrderToDelivered = {
+                status: 'delivered'
+            }
+
+            // atualiza a order
+            await OrderModel.update(order_id, updatedOrderToDelivered)
+
+            res.status(200).json({
+                message: "Status da order atualizada sucesso!",
             });
     
         } catch (err) {

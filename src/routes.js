@@ -20,12 +20,12 @@ const upload = require('./utils/multer');
 const  bucketController = require('./controllers/bucketController');
 
 
-const { authenticateToken, isAdmin, authenticateOptionalToken } = require('./middlewares/authentication');
+const { authenticateToken, isAdmin, isAdminOrEmployee, authenticateOptionalToken } = require('./middlewares/authentication');
 
 //Routes para o user
 routes.post('/user', celebrate(userValidate.create), authenticateOptionalToken, userController.createUser);
 routes.delete('/delUserClient/:user_id', celebrate(userValidate.deleteClient), authenticateToken, userController.deleteUserClient);
-routes.delete('/delUserAdm/:user_id', celebrate(userValidate.deleteAdmin), authenticateToken, isAdmin, userController.deleteUserAdm);
+routes.delete('/delAdmOrEmployee/:user_id', celebrate(userValidate.deleteAdmin), authenticateToken, isAdmin, userController.deleteAdmOrEmployee);
 routes.put('/user/:user_id', celebrate(userValidate.update), authenticateToken, userController.updateUser);
 
 routes.get('/user', authenticateToken, isAdmin, userController.allClients);
@@ -33,7 +33,7 @@ routes.get('/adms', authenticateToken, isAdmin, userController.allAdm);
 
 
 routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
-routes.post('/address/:user_id', celebrate(addressValidate.create), authenticateToken, userController.addAddress);
+routes.post('/address', celebrate(addressValidate.create), authenticateToken, userController.addAddress);
 routes.put('/address/:address_id', celebrate(addressValidate.update), authenticateToken, userController.updateAddress);
 routes.delete('/address/:address_id',celebrate(addressValidate.delete), authenticateToken, userController.deleteAddress);
 
@@ -69,9 +69,9 @@ routes.delete('/orderaddress/:order_address_id', celebrate(orderValidate.deleteO
 
 // Order 
 routes.post('/order',celebrate(orderValidate.create), authenticateToken, orderController.createOrder);
-routes.put('/order/:order_id', celebrate(orderValidate.update), authenticateToken, isAdmin, orderController.updateOrder);
+routes.put('/order/:order_id', celebrate(orderValidate.update), authenticateToken, isAdminOrEmployee, orderController.updateOrder);
 routes.delete('/order/:order_id', celebrate(orderValidate.delete), authenticateToken, orderController.deleteOrder);
-routes.get('/order', celebrate(orderValidate.getOrders), authenticateToken, isAdmin, orderController.getOrders);
+routes.get('/order', celebrate(orderValidate.getOrders), authenticateToken, isAdminOrEmployee, orderController.getOrders);
 routes.get('/userorder/:user_id', celebrate(orderValidate.getUserOrder), authenticateToken, orderController.getUserOrder);
 routes.get('/productsfromorder/:order_id', celebrate(orderValidate.getProductsFromOrder), authenticateToken, orderController.getProductsFromOrder);
 
@@ -83,6 +83,9 @@ routes.get('/verify', SessionController.verifyToken);
 routes.post('/bucket/upload', upload, bucketController.upload);
 routes.get('/bucket/download', bucketController.download);
 routes.delete('/bucket/remove', bucketController.remove);
+
+// Deliver At Mail
+routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, orderController.deliverAtMail)
 
 
 module.exports = routes;
