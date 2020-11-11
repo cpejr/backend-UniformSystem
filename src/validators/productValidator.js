@@ -39,6 +39,14 @@ productValidator.getProductModel = {//ok
         product_id : Joi.number().integer().required()
      })    
 },
+productValidator.allModels = {
+    [Segments.QUERY]: Joi.object().keys({
+        product_type: Joi.string().optional(),
+        gender: Joi.valid("M","F").optional(),
+        minprice: Joi.number().optional(),
+        maxprice: Joi.number().optional()
+    })
+},
 productValidator.deleteProduct = {//ok
     [Segments.PARAMS]: Joi.object().keys({
         product_id : Joi.number().integer().required()
