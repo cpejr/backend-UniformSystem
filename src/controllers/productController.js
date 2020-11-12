@@ -80,7 +80,6 @@ module.exports = {
   async allModels(req, res) {
     try {
       const models = await ProductModel.getAllModels(req.query);
-
       res.status(200).json({
         models,
       });
