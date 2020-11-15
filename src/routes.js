@@ -43,7 +43,8 @@ routes.post('/product', celebrate(productValidate.createProduct), authenticateTo
 routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidate.addProductModel), bucketController.upload, productController.addProductModel);
 
 routes.get('/product', productController.allProducts);
-routes.get('/productmodels/:product_id',celebrate(productValidate.getProductModel), productController.getProductModel);
+routes.get('/productmodels/:product_id', celebrate(productValidate.getProductModel), productController.getProductModel);
+routes.get('/productmodels', celebrate(productValidate.allModels),productController.allModels);
 
 routes.delete('/product/:product_id', celebrate(productValidate.deleteProduct), authenticateToken, isAdmin, productController.deleteProduct);
 routes.delete('/model/:model_id', celebrate(productValidate.deleteModel), authenticateToken, isAdmin, productController.deleteModel);
