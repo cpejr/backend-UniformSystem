@@ -20,8 +20,6 @@ module.exports = {
         cpf: request.body.cpf,
         password: request.body.password
       };
-      
-      console.log(user);
 
       if (user.user_type === "adm" || user.user_type === "employee") {
         const loggedUser = request.session;

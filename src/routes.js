@@ -54,8 +54,8 @@ routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(pro
 //ProductInCart
 routes.get('/cart', authenticateToken, cartController.getCart);
 routes.put('/addtocart', celebrate(cartValidate.addToCart), authenticateToken, cartController.addToCart);
-routes.put('/cart', celebrate(cartValidate.updateCart), authenticateToken, cartController.updateCart);
-routes.delete('/cart', celebrate(cartValidate.removeFromCart), authenticateToken, cartController.removeFromCart);
+routes.put('/cart/:product_in_cart_id', celebrate(cartValidate.updateCart), authenticateToken, cartController.updateCart);
+routes.delete('/cart/:product_in_cart_id', celebrate(cartValidate.removeFromCart), authenticateToken, cartController.removeFromCart);
 routes.delete('/emptycart', celebrate(cartValidate.emptyCart), authenticateToken, cartController.emptyCart);
 
 
@@ -72,15 +72,19 @@ routes.delete('/order/:order_id', celebrate(orderValidate.delete), authenticateT
 routes.get('/order', celebrate(orderValidate.getOrders), authenticateToken, isAdminOrEmployee, orderController.getOrders);
 routes.get('/userorder/:user_id', celebrate(orderValidate.getUserOrder), authenticateToken, orderController.getUserOrder);
 routes.get('/productsfromorder/:order_id', celebrate(orderValidate.getProductsFromOrder), authenticateToken, orderController.getProductsFromOrder);
+routes.get('/shipping/:zip', celebrate(orderValidate.getShipping), orderController.getShipping);
+
 
 //Session
 routes.post('/login', SessionController.signin);
 routes.get('/verify', SessionController.verifyToken);
 
+
 // AWS Connection
 routes.post('/bucket/upload', upload, bucketController.upload);
 routes.get('/bucket/download', bucketController.download);
 routes.delete('/bucket/remove', bucketController.remove);
+
 
 // Deliver At Mail
 routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, orderController.deliverAtMail)
