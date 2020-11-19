@@ -7,7 +7,7 @@ module.exports = {
             return response;
         }catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na criação dos dados de frete.');
         }
     },
 
@@ -19,7 +19,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na atualização dos dados de frete.');
         }
     },
     async delete(shipping_data_id){
@@ -30,7 +30,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na exclusão dos dados de frete.');
         }
     }
 }

@@ -13,7 +13,7 @@ module.exports = {
             return response;
         } catch (err) {
             console.log(err.message);
-            return err;
+            throw new Error('Falha na criação do carrinho de produtos.');
         }
     },
 
@@ -25,7 +25,7 @@ module.exports = {
             return response;
         } catch (err) {
             console.log(err.message);
-            return err;
+            throw new Error('Falha na atualização do carrinho de produtos.');
         }
     },
     async delete(idProdCart) {
@@ -36,7 +36,7 @@ module.exports = {
             return response;
         } catch (err) {
             console.log(err.message);
-            return err;
+            throw new Error('Falha na exclkusão do carrinho de produtos.');
         }
     },
     async getByUser(userId) {
@@ -47,7 +47,7 @@ module.exports = {
             return response;
         } catch (err) {
             console.log(err.message);
-            return err;
+            throw new Error('Falha na busca do carrinho de produtos.');
         }
     },
     async getById(idProdCart, select="*") {
@@ -58,7 +58,7 @@ module.exports = {
             return response;
         } catch (err) {
             console.log(err.message);
-            return err;
+            throw new Error('Falha na busca do carrinho de produtos.');
         }
     },
     async deleteByUser(userId) {
@@ -69,7 +69,7 @@ module.exports = {
             return response;
         } catch (err) {
             console.log(err.message);
-            return err;
+            throw new Error('Falha na exclusão do carrinho de produtos.');
         }
     },
 };

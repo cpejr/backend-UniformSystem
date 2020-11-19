@@ -11,7 +11,7 @@ module.exports = {
             return user.user_id;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na criação do usuário.');
         }
     },
 
@@ -21,7 +21,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na busca do usuário.');
         }
     },
 
@@ -31,7 +31,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na busca do usuário por tipos.');
         }
     },
 
@@ -41,7 +41,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na busca do usuário por ID.');
         }
     },
 
@@ -51,7 +51,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na criação do usuário pelo Firebase ID.');
         }
     },
     async update(user_id, updated_user){ 
@@ -60,7 +60,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na atualização do usuário.');
         }
     },
     async delete(user_id){
@@ -69,7 +69,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na exclusão do usuário.');
         }
     }
 }

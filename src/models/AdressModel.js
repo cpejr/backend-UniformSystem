@@ -10,7 +10,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na criação de endereço.');
         }
     },
     async read(){
@@ -19,7 +19,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na leitura de endereço.');
         }
     },
     async getById(id){
@@ -28,7 +28,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na leitura de endereço.');
         }
     },
     async getAdressByUserId(user_id){
@@ -37,7 +37,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na leitura de endereço.');
         }
     },
     async update(address_id, updated_fields){
@@ -55,7 +55,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na exclusão de endereço.');
         }
     },
     async deleteByUserId(user_id){
@@ -63,7 +63,8 @@ module.exports = {
             const adresses = await connection('address').where('user_id',user_id).del();
         }catch(error){
             console.log(error)
-            response.status(500).json('Internal server error')
+            // response.status(500).json('Internal server error')
+            throw new Error('Falha na exclusão de endereço.');
         }
     }
 }

@@ -14,7 +14,8 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            // return error;
+            throw new Error('Falha na criação de imagem.');
         }
     },
     async readImage(imgPlace){
@@ -26,7 +27,8 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            // return error;
+            throw new Error('Falha na leitura de imagem.');
         }
     },
     async deleteImage(image_id){
@@ -37,7 +39,8 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            // return error;
+            throw new Error('Falha na exclusão de imagem.');
         }
     },
 }

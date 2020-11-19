@@ -14,7 +14,7 @@ module.exports = {
             return response;
         }catch(err){
             console.log(err.message);
-            return err;
+            throw new Error('Falha na criação do modelo do produto.');
         }
     },
 
@@ -24,7 +24,7 @@ module.exports = {
             return response;
         }catch(err){
             console.log(err.message);
-            return err;
+            throw new Error('Falha na criação de todos os modelos do produto.');
         }
     },
 
@@ -34,53 +34,86 @@ module.exports = {
             .where('product_model_id',product_model_id);
             return response[0].product_model_id;
         }catch(err){
-            throw new Error('Product Model Id not found.')
+            throw new Error('Id do modelo do produto não encontrado.')
         }
     },
 
     async getMainProduct(id){
-        const response = await connection("product_model")
-        .where({
-            product_id: id,
-            is_main: true,
-        })
-        .select('*');
 
-        return response;
+        try{
+            const response = await connection("product_model")
+            .where({
+                product_id: id,
+                is_main: true,
+            })
+            .select('*');
+    
+            return response;
+
+        }catch(err){
+            console.log(err.message);
+            throw new Error('Falha na busca do modelo principal do produto.');
+        }
     },
 
     async getModelsByProductId(id){
-        const response = await connection("product_model")
-        .where('product_id', id)
-        .select('*');
 
-        return response;
+        try{
+            const response = await connection("product_model")
+            .where('product_id', id)
+            .select('*');
+    
+            return response;
+
+        }catch(err){
+            console.log(err.message)
+            throw new Error('Falha na busca do modelo do produto por ID.');
+        }
     },
 
     async getByIdArray(idList, fields='*'){
 
-        console.log(fields)
-        const response = await connection("product_model")
-            .whereIn('product_model_id', idList)
-            .select(fields)
-            
-        return response;
+        try{
+            const response = await connection("product_model")
+                .whereIn('product_model_id', idList)
+                .select(fields)
+                
+            return response;
+
+        }catch(err){
+            console.log(err.message)
+            throw new Error('Falha na busca dos modelos do produto por array de IDs.');
+        }
     },
 
     async update(productModelId, updatedFields){
-        const response = await connection("product_model")
-        .where('product_model_id', productModelId)
-        .update(updatedFields);
 
-        return response;
+        try{
+            const response = await connection("product_model")
+            .where('product_model_id', productModelId)
+            .update(updatedFields);
+    
+            return response;
+
+        }catch(err){
+            console.log(err.message)
+            throw new Error('Falha na atualização do modelo do produto.');
+        }
     },
 
     async delete(productModelId){
-        const response = await connection("product_model")
-        .where('product_model_id', productModelId)
-        .del();
-        
-        return response;
+
+        try{
+            const response = await connection("product_model")
+            .where('product_model_id', productModelId)
+            .del();
+            
+            return response;
+
+        }catch(err){
+            console.log(err.message)
+            throw new Error('Falha na exclusão do modelo do produto.');
+        }
     }
 
 };
