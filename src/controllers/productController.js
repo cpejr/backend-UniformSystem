@@ -4,7 +4,7 @@ const ProductModel = require("../models/ProductModel");
 const ProductModelModel = require("../models/ProductModelModel");
 
 module.exports = {
-  
+
   async createProduct(req, res) {
     try {
       const product = {
@@ -12,7 +12,7 @@ module.exports = {
         description: req.body.description,
         product_type: req.body.product_type,
       };
-  
+
       const models = req.body.models;
 
       const createdProductId = await ProductModel.create(product);
@@ -36,10 +36,10 @@ module.exports = {
     try {
       const { product_id } = req.params;
       const product_model = req.body;
-      
+
       const existingProductId = await ProductModel.findProductId(product_id);
 
-      if(!existingProductId){
+      if (!existingProductId) {
         return res.status(404).json({
           message: "Product not found",
         });
@@ -65,7 +65,7 @@ module.exports = {
 
   async allProducts(req, res) {
     try {
-      const {page} = req.query;
+      const { page } = req.query;
       const products = await ProductModel.getProductsAndItsRespectiveMainModels(page);
 
       res.status(200).json({
@@ -79,6 +79,10 @@ module.exports = {
 
   async allModels(req, res) {
     try {
+      const query = req.query;
+      if (query.product_type)
+        query.product_type = query.product_type.split(',');
+      
       const models = await ProductModel.getAllModels(req.query);
       res.status(200).json({
         models,
@@ -89,16 +93,16 @@ module.exports = {
     }
   },
 
-  async getAllProductsCounted(req,res){
-    try{
+  async getAllProductsCounted(req, res) {
+    try {
       const count = await ProductModel.getAllProductsCount();
-      const totalPages = (count/process.env.ITENS_PER_PAGE);
-      
+      const totalPages = (count / process.env.ITENS_PER_PAGE);
+
       res.setHeader("X-Total-Count", totalPages);
 
       res.status(200).json("Paginação ok.");
 
-    }catch (err) {
+    } catch (err) {
       console.log(err);
       res.status(500).json("Internal server error.");
     }
@@ -183,5 +187,5 @@ module.exports = {
       res.status(500).json("Internal server error.");
     }
   },
-  
+
 };
