@@ -4,17 +4,16 @@ const { uploadFile, deleteFile, dowloadFile } = require('../utils/bucket.js');
 
 const ProductModelModel = require("../models/ProductModelModel");
 
-
 const download = async (req, res, next) => {
   try {
     const {
-      file,
+      name,
       type,
     } = req.query;
 
-    const resultDownload = await dowloadFile(file, type);
+    const resultDownload = await dowloadFile(name, type);
 
-    res.attachment(`${file}.${type}`);
+    res.attachment(`${name}.${type}`);
     res.status(200).send(resultDownload.Body);
 
   } catch (error) {
@@ -113,6 +112,8 @@ const update = async (req, res, next) => {
 
 const remove = async (req, res, next) => {
     try {
+
+        // type jpg no caso (NECESSÁRIO ARMAZENAR O TYPE OU PADRONIZÁ-LO)
         const {
             type,
             name,
@@ -122,10 +123,6 @@ const remove = async (req, res, next) => {
         await dowloadFile(name, type);
 
         await deleteFile(name, type);
-
-        res.status(200).json({
-            message: 'File removed.',
-        });
 
         return next();
     } catch (error) {

@@ -7,6 +7,7 @@ const productController = require ('./controllers/productController')
 const cartController = require ('./controllers/cartController')
 const orderController = require ('./controllers/orderController')
 const SessionController = require ('./controllers/SessionController')
+const homeController = require ('./controllers/homeController')
 
 //importando validators
 const userValidate = require('./validators/userValidator')
@@ -14,6 +15,7 @@ const addressValidate = require('./validators/addressValidator')
 const cartValidate = require('./validators/cartValidator')
 const orderValidate = require('./validators/orderValidator')
 const productValidate = require('./validators/productValidator')
+const homeValidate = require('./validators/homeValidator')
 
 
 const upload = require('./utils/multer');
@@ -86,5 +88,14 @@ routes.delete('/bucket/remove', bucketController.remove);
 // Deliver At Mail
 routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, orderController.deliverAtMail)
 
+
+// Home
+routes.put('/home', celebrate(homeValidate.update), homeController.updateInfo);
+routes.get('/home', homeController.readInfo);
+
+routes.post('/home/images', upload, celebrate(homeValidate.postHomeImage), bucketController.upload ,homeController.createImg);
+
+routes.get('/home/images', celebrate(homeValidate.getHomeImage), homeController.downloadImg);
+routes.delete('/home/images', celebrate(homeValidate.deleteHomeImage), bucketController.remove ,homeController.removeImg);
 
 module.exports = routes;
