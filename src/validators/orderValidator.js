@@ -30,6 +30,11 @@ orderValidator.create = { //ok
     })
     
 },
+orderValidator.getShipping = { //ok
+    [Segments.PARAMS]: Joi.object().keys({
+        zip: Joi.string().required(),
+    })
+},
 orderValidator.getUserOrder = {//???
     [Segments.PARAMS]: Joi.object().keys({
         user_id: Joi.string().required(),

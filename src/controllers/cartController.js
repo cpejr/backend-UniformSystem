@@ -27,14 +27,13 @@ module.exports={
 
     async removeFromCart(req, res){
         try{
-            const {product_in_cart_id} = req.body;
-            // const user_id = 1;
+            const {product_in_cart_id} = req.params;
 
             const user_id = req.session.user_id;
-
+            
             const user = await ProductInCartModel.getById(product_in_cart_id, "user_id");
 
-            if (user_id === parseInt(user.user_id)){
+            if (user_id === user.user_id){
                 await ProductInCartModel.delete(product_in_cart_id);
                 return res.status(200).json("Produto removido do carrinho com sucesso.")
             }else{
@@ -48,7 +47,7 @@ module.exports={
 
     async getCart(req, res){
         try{
-            const user_id = 1;
+            const user_id = req.session.user_id;
             const cart = await ProductInCartModel.getByUser(user_id);
             res.status(200).json(cart);
 
@@ -60,12 +59,10 @@ module.exports={
 
     async updateCart(req, res){
         try{
-            const updates = req.body.updates;
-            await updates.forEach((dados) =>{
-                ProductInCartModel.update(dados.product_in_cart_id, dados.updated_fields);
-            }); 
-            res.status(200).json("Carrinho atualizado com sucesso.")
-
+            const {product_in_cart_id} = req.params;
+            const fields = req.body;
+            ProductInCartModel.update(product_in_cart_id, fields);
+            res.status(200).json("Carrinho atualizado com sucesso.");
         }catch(err){
             console.log(err);
             res.status(500).json("Internal server error."); 

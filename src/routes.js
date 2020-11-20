@@ -7,6 +7,7 @@ const productController = require ('./controllers/productController')
 const cartController = require ('./controllers/cartController')
 const orderController = require ('./controllers/orderController')
 const SessionController = require ('./controllers/SessionController')
+const homeController = require ('./controllers/homeController')
 
 //importando validators
 const userValidate = require('./validators/userValidator')
@@ -14,6 +15,7 @@ const addressValidate = require('./validators/addressValidator')
 const cartValidate = require('./validators/cartValidator')
 const orderValidate = require('./validators/orderValidator')
 const productValidate = require('./validators/productValidator')
+const homeValidate = require('./validators/homeValidator')
 
 
 const upload = require('./utils/multer');
@@ -55,8 +57,8 @@ routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(pro
 //ProductInCart
 routes.get('/cart', authenticateToken, cartController.getCart);
 routes.put('/addtocart', celebrate(cartValidate.addToCart), authenticateToken, cartController.addToCart);
-routes.put('/cart', celebrate(cartValidate.updateCart), authenticateToken, cartController.updateCart);
-routes.delete('/cart', celebrate(cartValidate.removeFromCart), authenticateToken, cartController.removeFromCart);
+routes.put('/cart/:product_in_cart_id', celebrate(cartValidate.updateCart), authenticateToken, cartController.updateCart);
+routes.delete('/cart/:product_in_cart_id', celebrate(cartValidate.removeFromCart), authenticateToken, cartController.removeFromCart);
 routes.delete('/emptycart', celebrate(cartValidate.emptyCart), authenticateToken, cartController.emptyCart);
 
 
@@ -73,18 +75,31 @@ routes.delete('/order/:order_id', celebrate(orderValidate.delete), authenticateT
 routes.get('/order', celebrate(orderValidate.getOrders), authenticateToken, isAdminOrEmployee, orderController.getOrders);
 routes.get('/userorder/:user_id', celebrate(orderValidate.getUserOrder), authenticateToken, orderController.getUserOrder);
 routes.get('/productsfromorder/:order_id', celebrate(orderValidate.getProductsFromOrder), authenticateToken, orderController.getProductsFromOrder);
+routes.get('/shipping/:zip', celebrate(orderValidate.getShipping), orderController.getShipping);
+
 
 //Session
 routes.post('/login', SessionController.signin);
 routes.get('/verify', SessionController.verifyToken);
+
 
 // AWS Connection
 routes.post('/bucket/upload', upload, bucketController.upload);
 routes.get('/bucket/download', bucketController.download);
 routes.delete('/bucket/remove', bucketController.remove);
 
+
 // Deliver At Mail
 routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, orderController.deliverAtMail)
 
+
+// Home
+routes.put('/home', celebrate(homeValidate.update), homeController.updateInfo);
+routes.get('/home', homeController.readInfo);
+
+routes.post('/home/images', upload, celebrate(homeValidate.postHomeImage), bucketController.upload ,homeController.createImg);
+
+routes.get('/home/images', celebrate(homeValidate.getHomeImage), homeController.downloadImg);
+routes.delete('/home/images', celebrate(homeValidate.deleteHomeImage), bucketController.remove ,homeController.removeImg);
 
 module.exports = routes;

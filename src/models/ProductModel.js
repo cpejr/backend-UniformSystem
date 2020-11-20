@@ -2,36 +2,36 @@ const connection = require("../database/connection");
 
 module.exports = {
 
-    async create(newProduct){
+    async create(newProduct) {
 
-        try{
+        try {
             const response = await connection("product").insert(newProduct);
             return response;
-        }catch(err){
+        } catch (err) {
             console.log(err.message);
             return err;
         }
     },
 
-    async findProductId(product_id){
-        try{
+    async findProductId(product_id) {
+        try {
             const response = await connection('product').select('product_id')
-            .where('product_id',product_id);
+                .where('product_id', product_id);
             return response[0].product_id;
-        }catch(err){
+        } catch (err) {
             throw new Error('Product Id not found.')
         }
     },
 
-    async getProductsAndItsRespectiveMainModels(page = 1){
+    async getProductsAndItsRespectiveMainModels(page = 1) {
 
         const response = await connection('product').select('*')
-        .join('product_model', 'product.product_id','product_model.product_id')
-        .where({
-            is_main: true,
-        })
-        .limit(process.env.ITENS_PER_PAGE)
-        .offset((page - 1) * process.env.ITENS_PER_PAGE);
+            .join('product_model', 'product.product_id', 'product_model.product_id')
+            .where({
+                is_main: true,
+            })
+            .limit(process.env.ITENS_PER_PAGE)
+            .offset((page - 1) * process.env.ITENS_PER_PAGE);
 
         const result = response.map(item => {
 
@@ -49,52 +49,52 @@ module.exports = {
                     gender: item.gender,
                 }
             }
-        }); 
+        });
 
         return result;
     },
 
-    async getAllModels({page = 1, product_type, gender, minprice, maxprice}){
-        const filter = {}
-        if(product_type)
-            filter.product_type = product_type; 
-        if(gender)
+    async getAllModels({ page = 1, product_type, gender, minprice, maxprice }) {
+        const filter = {};
+        if (gender)
             filter.gender = gender;
 
         let query = connection('product_model').select('*')
-        .limit(process.env.ITENS_PER_PAGE)
-        .offset((page - 1) * process.env.ITENS_PER_PAGE)
-        .join('product', 'product.product_id','product_model.product_id')
-        .where(filter);
-        
-        if(typeof minprice !== 'undefined')
-            query.andWhere(price, '>=', minprice)
-        if(typeof maxprice !== 'undefined')
-            query.andWhere(price, '<=', maxprice)
+            .limit(process.env.ITENS_PER_PAGE)
+            .offset((page - 1) * process.env.ITENS_PER_PAGE)
+            .join('product', 'product.product_id', 'product_model.product_id')
+            .where(filter);
+
+        if (typeof minprice !== 'undefined')
+            query.andWhere('product_model.price', '>=', minprice)
+        if (typeof maxprice !== 'undefined')
+            query.andWhere('product_model.price', '<=', maxprice)
+        if (typeof product_type !== 'undefined')
+            query.whereIn('product_type', product_type)
 
         const response = await query;
 
         return response;
     },
 
-    async getAllProductsCount(){
+    async getAllProductsCount() {
         const response = await connection('product').select().count("product.product_id as count")
-        .join('product_model', 'product.product_id','product_model.product_id')
-        .where({
-            is_main: true,
-        }).first();
+            .join('product_model', 'product.product_id', 'product_model.product_id')
+            .where({
+                is_main: true,
+            }).first();
 
         return response;
     },
 
-    async getProductsAndItsAllModels(product_id){
+    async getProductsAndItsAllModels(product_id) {
 
         const response = await connection('product')
-        .select('*')
-        .join('product_model', 'product.product_id','product_model.product_id')
-        .where({
-            'product.product_id': product_id,
-        });
+            .select('*')
+            .join('product_model', 'product.product_id', 'product_model.product_id')
+            .where({
+                'product.product_id': product_id,
+            });
 
         // console.log(response);
         const result = {
@@ -117,19 +117,19 @@ module.exports = {
         return result;
     },
 
-    async update(productId, updatedFields){
+    async update(productId, updatedFields) {
         const response = await connection("product")
-        .where('product_id', productId)
-        .update(updatedFields);
+            .where('product_id', productId)
+            .update(updatedFields);
 
         return response;
     },
 
-    async delete(productId){
+    async delete(productId) {
         const response = await connection("product")
-        .where('product_id', productId)
-        .del();
-        
+            .where('product_id', productId)
+            .del();
+
         return response;
     }
 
