@@ -44,7 +44,8 @@ productValidator.allModels = {
         product_type: Joi.string().optional(),
         gender: Joi.valid("M","F").optional(),
         minprice: Joi.number().optional(),
-        maxprice: Joi.number().optional()
+        maxprice: Joi.number().optional(),
+        page: Joi.number().optional().min(1)
     })
 },
 productValidator.deleteProduct = {//ok

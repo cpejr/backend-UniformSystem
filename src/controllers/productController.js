@@ -67,7 +67,10 @@ module.exports = {
     try {
       const {page} = req.query;
       const products = await ProductModel.getProductsAndItsRespectiveMainModels(page);
-
+      const {count} = await ProductModel.getAllProductsCount();
+      const totalPages = Math.ceil(count/process.env.ITENS_PER_PAGE);
+      
+      res.setHeader("X-Total-Count", totalPages);
       res.status(200).json({
         products,
       });
@@ -89,20 +92,7 @@ module.exports = {
     }
   },
 
-  async getAllProductsCounted(req,res){
-    try{
-      const count = await ProductModel.getAllProductsCount();
-      const totalPages = (count/process.env.ITENS_PER_PAGE);
-      
-      res.setHeader("X-Total-Count", totalPages);
 
-      res.status(200).json("Paginação ok.");
-
-    }catch (err) {
-      console.log(err);
-      res.status(500).json("Internal server error.");
-    }
-  },
 
   async getProductModel(req, res) {
     const { product_id } = req.params;
