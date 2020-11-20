@@ -33,6 +33,7 @@ routes.put('/user/:user_id', celebrate(userValidate.update), authenticateToken, 
 routes.get('/user', authenticateToken, isAdmin, userController.allClients);
 routes.get('/adms', authenticateToken, isAdmin, userController.allAdm);
 
+routes.post('/sendpassword', userController.forgetPassword);
 
 routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
 routes.post('/address', celebrate(addressValidate.create), authenticateToken, userController.addAddress);
