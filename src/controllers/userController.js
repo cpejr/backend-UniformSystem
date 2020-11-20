@@ -66,6 +66,23 @@ module.exports = {
     }
   },
 
+  async forgetPassword(request, response) {
+
+    try {
+      const email = request.body.email;
+
+      const password = await FirebaseModel.sendPasswordChangeEmail(email);
+      response.status(200).json({password});
+      console.log(password);
+    }catch(error) {
+      console.log(error.message);
+      response.status(500).json({
+        message: error.message,
+      });
+    }
+
+  },
+
   async allClients(request, response) {
     try {
       const clients = await UsersModel.getAllByTypes("client");
