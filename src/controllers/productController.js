@@ -102,6 +102,10 @@ module.exports = {
       const totalPages = (count / process.env.ITENS_PER_PAGE);
 
       res.setHeader("X-Total-Count", totalPages);
+    } catch (err) {
+
+    }
+  },
 
 
   async getProductModel(req, res) {
