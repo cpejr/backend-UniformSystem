@@ -34,7 +34,6 @@ const upload = async (req, res, next) => {
         const { file } = req;
         let buffer;
         let type;
-        let newURL;
 
         if (file) {
             buffer = req.file.buffer;
@@ -119,6 +118,8 @@ const remove = async (req, res, next) => {
             name,
         } = req.query;
 
+        console.log('CHEGOU AUQI')
+        console.log(name, type)
         // Verifica se existe. Caso, não, acusará erro
         await dowloadFile(name, type);
 

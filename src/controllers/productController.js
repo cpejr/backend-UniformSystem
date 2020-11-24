@@ -36,7 +36,7 @@ module.exports = {
     try {
       const { product_id } = req.params;
       const product_model = req.body;
-      
+
       const existingProductId = await ProductModel.findProductId(product_id);
 
       if(!existingProductId){
@@ -144,9 +144,10 @@ module.exports = {
       );
 
       await ProductModelModel.delete(existingProductModelId);
-      res.status(200).json({
+      return res.status(200).json({
         message: "Modelo da camisa apagado com sucesso.",
       });
+
     } catch (err) {
       console.log(err.message);
       res.status(500).json("Internal server error.");

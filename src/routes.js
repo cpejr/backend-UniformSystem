@@ -49,7 +49,7 @@ routes.get('/productmodels/:product_id', celebrate(productValidate.getProductMod
 routes.get('/productmodels', celebrate(productValidate.allModels),productController.allModels);
 
 routes.delete('/product/:product_id', celebrate(productValidate.deleteProduct), authenticateToken, isAdmin, productController.deleteProduct);
-routes.delete('/model/:model_id', celebrate(productValidate.deleteModel), authenticateToken, isAdmin, productController.deleteModel);
+routes.delete('/model/:model_id', celebrate(productValidate.deleteModel), authenticateToken, isAdmin, bucketController.remove, productController.deleteModel);
 
 routes.put('/product/:product_id',celebrate(productValidate.updateProduct), authenticateToken, isAdmin, productController.updateProduct);
 routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(productValidate.updateModel), bucketController.update, productController.updateModel);
