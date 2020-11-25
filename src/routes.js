@@ -45,7 +45,7 @@ routes.delete('/address/:address_id',celebrate(addressValidate.delete), authenti
 routes.post('/product', celebrate(productValidate.createProduct), authenticateToken, isAdmin, productController.createProduct);
 routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidate.addProductModel), bucketController.upload, productController.addProductModel);
 
-routes.get('/product', productController.allProducts);
+routes.get('/product', celebrate(productValidate.searchProducts), productController.searchProducts);
 routes.get('/productmodels/:product_id', celebrate(productValidate.getProductModel), productController.getProductModel);
 routes.get('/productmodels', celebrate(productValidate.allModels),productController.allModels);
 

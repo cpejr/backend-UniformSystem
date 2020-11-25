@@ -62,7 +62,7 @@ module.exports = {
     }
   },
 
-  async allProducts(req, res) {
+  async searchProducts(req, res) {
     try {
       const { page, gender, name } = req.query;
       const products = await ProductModel.getProductsAndItsRespectiveMainModels(
