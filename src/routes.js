@@ -79,7 +79,7 @@ routes.get('/productsfromorder/:order_id', celebrate(orderValidate.getProductsFr
 routes.get('/shipping/:zip', celebrate(orderValidate.getShipping), orderController.getShipping);
 
 
-//Session
+// Session
 routes.post('/login', SessionController.signin);
 routes.get('/verify', SessionController.verifyToken);
 
