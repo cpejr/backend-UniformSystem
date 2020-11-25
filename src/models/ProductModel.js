@@ -23,6 +23,7 @@ module.exports = {
   },
 
   async getProductsAndItsRespectiveMainModels({
+    name,
     page = 1,
     product_type,
     gender,
@@ -33,6 +34,7 @@ module.exports = {
 
     let genderFilterGroup;
 
+    // Gender filtar
     if (gender) {
       genderFilterGroup = await connection("product_model")
         .select("product_id")
@@ -52,14 +54,25 @@ module.exports = {
         ...filter,
       });
 
+    // Gender filter
     if (gender) query = query.whereIn("product.product_id", genderFilterGroup);
 
+    // Name filter
+    if (name) {
+      let names = name.split(" ");
+      query.andWhere((q) => {
+        names.forEach((currentName) => {
+          q.orWhere("product.name", "LIKE", `%${currentName}%`);
+        });
+      });
+    }
+
+    // Pagination
     query = query
       .limit(process.env.ITENS_PER_PAGE)
       .offset((page - 1) * process.env.ITENS_PER_PAGE);
 
     const response = await query;
-    console.log(response);
 
     const result = response.map((item) => {
       return {
