@@ -17,6 +17,7 @@ module.exports = {
     }
   },
 
+
   async createAll(productModels) {
     try {
       const response = await connection("product_model").insert(productModels);
@@ -62,6 +63,7 @@ module.exports = {
     const response = await connection("product_model")
       .whereIn("product_model_id", idList)
       .select(fields);
+
 
     return response;
   },

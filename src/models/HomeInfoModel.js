@@ -10,7 +10,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na leitura de informações da Home.');
         }
     },
 
@@ -49,7 +49,7 @@ module.exports = {
             // return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na atualização das informações da Home.');
         }
     },
 }

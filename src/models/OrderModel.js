@@ -12,7 +12,7 @@ module.exports = {
             return order.order_id;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na criação de pedidos.');
         }
     },
     
@@ -28,7 +28,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na atualização de pedidos.');
         }
     },
 
@@ -40,7 +40,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na exclusão de pedidos.');
         }
     },
 
@@ -53,7 +53,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na busca de pedidos.');
         }
     },
 
@@ -76,7 +76,7 @@ module.exports = {
 
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na atualização do frete.');
         }
     },
 

@@ -151,9 +151,10 @@ module.exports = {
       );
 
       await ProductModelModel.delete(existingProductModelId);
-      res.status(200).json({
+      return res.status(200).json({
         message: "Modelo da camisa apagado com sucesso.",
       });
+
     } catch (err) {
       console.log(err.message);
       res.status(500).json("Internal server error.");

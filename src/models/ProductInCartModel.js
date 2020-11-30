@@ -4,6 +4,7 @@ const connection = require("../database/connection");
 /* const { response } = require("express");  */
 
 module.exports = {
+
   async create(newProdCart) {
     try {
       const response = await connection("product_in_cart").insert(newProdCart);
@@ -72,4 +73,5 @@ module.exports = {
       return err;
     }
   },
+
 };

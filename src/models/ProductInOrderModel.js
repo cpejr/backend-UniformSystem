@@ -7,7 +7,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na criação de produtos do pedido.');
         }
     },
 
@@ -21,7 +21,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na busca de produtos do pedido.');
         }
     },
 
@@ -33,7 +33,7 @@ module.exports = {
             return response;
         } catch (error) {
             console.log(error.message);
-            return error;
+            throw new Error('Falha na exclusão de produtos do pedido.');
         }
     }
 }
