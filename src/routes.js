@@ -35,7 +35,7 @@ routes.get('/adms', authenticateToken, isAdmin, userController.allAdm);
 
 
 routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
-routes.post('/address', celebrate(addressValidate.create), authenticateToken, userController.addAddress);
+routes.post('/address/:user_id', celebrate(addressValidate.create), authenticateToken, userController.addAddress);
 routes.put('/address/:address_id', celebrate(addressValidate.update), authenticateToken, userController.updateAddress);
 routes.delete('/address/:address_id',celebrate(addressValidate.delete), authenticateToken, userController.deleteAddress);
 
@@ -45,6 +45,7 @@ routes.post('/product', celebrate(productValidate.createProduct), authenticateTo
 routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidate.addProductModel), bucketController.upload, productController.addProductModel);
 
 routes.get('/product', productController.allProducts);
+
 routes.get('/productmodels/:product_id', celebrate(productValidate.getProductModel), productController.getProductModel);
 routes.get('/productmodels', celebrate(productValidate.allModels),productController.allModels);
 
@@ -90,8 +91,8 @@ routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, or
 
 
 // Home
-routes.put('/home', celebrate(homeValidate.update), homeController.updateInfo);
-routes.get('/home', homeController.readInfo);
+routes.put('/home/info', celebrate(homeValidate.update), homeController.updateInfo);
+routes.get('/home/info', homeController.readInfo);
 
 routes.post('/home/images', upload, celebrate(homeValidate.postHomeImage), bucketController.upload ,homeController.createImg);
 
