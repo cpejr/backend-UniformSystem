@@ -15,6 +15,7 @@ module.exports = {
             return error;
         }
     },
+    
     async update(order_id, updated_order){ 
         try {
             if( !('user_id' in updated_order) && !('created_at' in updated_order)){

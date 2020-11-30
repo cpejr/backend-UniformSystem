@@ -36,7 +36,7 @@ module.exports = {
       };
       const newOrderAddress_id = await ShippingDataModel.create(newShipping);
 
-      // Criacao do order a partir dos dados recebidos na equisicao + adress criado logo acima
+      // Criacao do order a partir dos dados recebidos na requisicao + adress criado logo acima
       const user_id = req.session.user_id;
 
       const order = {
