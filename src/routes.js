@@ -33,6 +33,7 @@ routes.put('/user/:user_id', celebrate(userValidate.update), authenticateToken, 
 routes.get('/user', authenticateToken, isAdmin, userController.allClients);
 routes.get('/adms', authenticateToken, isAdmin, userController.allAdm);
 
+routes.post('/sendpassword', userController.forgetPassword);
 
 routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
 routes.post('/address/:user_id', celebrate(addressValidate.create), authenticateToken, userController.addAddress);
@@ -44,7 +45,7 @@ routes.delete('/address/:address_id',celebrate(addressValidate.delete), authenti
 routes.post('/product', celebrate(productValidate.createProduct), authenticateToken, isAdmin, productController.createProduct);
 routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidate.addProductModel), bucketController.upload, productController.addProductModel);
 
-routes.get('/product', productController.allProducts);
+routes.get('/product', celebrate(productValidate.searchProducts), productController.searchProducts);
 
 routes.get('/productmodels/:product_id', celebrate(productValidate.getProductModel), productController.getProductModel);
 routes.get('/productmodels', celebrate(productValidate.allModels),productController.allModels);
@@ -58,8 +59,8 @@ routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(pro
 //ProductInCart
 routes.get('/cart', authenticateToken, cartController.getCart);
 routes.put('/addtocart', celebrate(cartValidate.addToCart), authenticateToken, cartController.addToCart);
-routes.put('/cart', celebrate(cartValidate.updateCart), authenticateToken, cartController.updateCart);
-routes.delete('/cart', celebrate(cartValidate.removeFromCart), authenticateToken, cartController.removeFromCart);
+routes.put('/cart/:product_in_cart_id', celebrate(cartValidate.updateCart), authenticateToken, cartController.updateCart);
+routes.delete('/cart/:product_in_cart_id', celebrate(cartValidate.removeFromCart), authenticateToken, cartController.removeFromCart);
 routes.delete('/emptycart', celebrate(cartValidate.emptyCart), authenticateToken, cartController.emptyCart);
 
 
@@ -76,15 +77,19 @@ routes.delete('/order/:order_id', celebrate(orderValidate.delete), authenticateT
 routes.get('/order', celebrate(orderValidate.getOrders), authenticateToken, isAdminOrEmployee, orderController.getOrders);
 routes.get('/userorder/:user_id', celebrate(orderValidate.getUserOrder), authenticateToken, orderController.getUserOrder);
 routes.get('/productsfromorder/:order_id', celebrate(orderValidate.getProductsFromOrder), authenticateToken, orderController.getProductsFromOrder);
+routes.get('/shipping/:zip', celebrate(orderValidate.getShipping), orderController.getShipping);
 
-//Session
+
+// Session
 routes.post('/login', SessionController.signin);
 routes.get('/verify', SessionController.verifyToken);
+
 
 // AWS Connection
 routes.post('/bucket/upload', upload, bucketController.upload);
 routes.get('/bucket/download', bucketController.download);
 routes.delete('/bucket/remove', bucketController.remove);
+
 
 // Deliver At Mail
 routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, orderController.deliverAtMail)

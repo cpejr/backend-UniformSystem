@@ -15,6 +15,7 @@ module.exports = {
             throw new Error('Falha na criação de pedidos.');
         }
     },
+    
     async update(order_id, updated_order){ 
         try {
             if( !('user_id' in updated_order) && !('created_at' in updated_order)){

@@ -6,7 +6,7 @@ exports.up = function(knex) {
         table.foreign('user_id').references('user_id').inTable('users');
         table.string('shipping_data_id').notNullable();
         table.foreign('shipping_data_id').references('shipping_data_id').inTable('shipping_data').onDelete('cascade');     
-        table.enu('status', ['waitingPayment', 'preparing', 'delivered']).notNullable();
+        table.enu('status', ['waitingPayment', 'preparing', 'delivered', 'pending']).notNullable();
         table.timestamps(true, true); //created_at
     });
 };

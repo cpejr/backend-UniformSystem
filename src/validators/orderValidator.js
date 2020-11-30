@@ -30,6 +30,11 @@ orderValidator.create = { //ok
     })
     
 },
+orderValidator.getShipping = { //ok
+    [Segments.PARAMS]: Joi.object().keys({
+        zip: Joi.string().required(),
+    })
+},
 orderValidator.getUserOrder = {//???
     [Segments.PARAMS]: Joi.object().keys({
         user_id: Joi.string().required(),
@@ -49,7 +54,7 @@ orderValidator.getOrders = {
         order_id: Joi.string().optional(),
         user_id: Joi.string().optional(),
         shipping_data_id: Joi.number().integer().optional(),
-        status: Joi.string().valid("waitingPayment", "preparing", 'delivered').required(),
+        status: Joi.string().valid("waitingPayment", "preparing", 'delivered','pending').required(),
     }),
 },
 orderValidator.getProductsFromOrder = {//ok

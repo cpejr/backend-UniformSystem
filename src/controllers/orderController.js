@@ -3,291 +3,306 @@ const ShippingDataModel = require("../models/ShippingDataModel");
 const OrderModel = require("../models/OrderModel");
 const ProductInOrderModel = require("../models/ProductInOrderModel");
 const ProductModelModel = require("../models/ProductModelModel");
-const Correios = require('node-correios');
+const Correios = require("node-correios");
 
 module.exports = {
+  async createOrder(req, res) {
+    try {
+      const { address_id, products } = req.body;
 
-    async createOrder(req, res) {
-        try {
-        
-            const { address_id, products } = req.body;
+      // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
+      const address = await AdressModel.getById(address_id);
 
-            // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
-            const address = await AdressModel.getById(address_id);
-            //API CORREIOS
-            
-            const args = {
-                nCdServico: `${req.body.service_code}`,
-                sCepOrigem: `${process.env.CEPORIGEM}`,
-                sCepDestino: `${address.zip_code}`,
-                nVlPeso: `${process.env.VLPESO}`,
-                nCdFormato: Number(process.env.CDFORMATO),
-                nVlComprimento: parseFloat(process.env.VLCOMPRIMENTO),
-                nVlAltura: parseFloat(process.env.VLALTURA),
-                nVlLargura: parseFloat(process.env.VLLARGURA),
-            };
+      //API CORREIOS
+      const args = {
+        nCdServico: `${req.body.service_code}`,
+        sCepOrigem: `${process.env.CEPORIGEM}`,
+        sCepDestino: `${address.zip_code}`,
+        nVlPeso: `${process.env.VLPESO}`,
+        nCdFormato: Number(process.env.CDFORMATO),
+        nVlComprimento: parseFloat(process.env.VLCOMPRIMENTO),
+        nVlAltura: parseFloat(process.env.VLALTURA),
+        nVlLargura: parseFloat(process.env.VLLARGURA),
+      };
+      const correios = new Correios();
+      const result = await correios.calcPreco(args);
 
-            console.log(args)
-            const correios = new Correios();
-            const result = await correios.calcPreco(args)
+      delete address.user_id;
+      delete address.address_id;
+      const newShipping = {
+        ...address,
+        shipping_value: result[0].Valor,
+        service_code: "0",
+      };
+      const newOrderAddress_id = await ShippingDataModel.create(newShipping);
 
-            delete address.user_id;
-            delete address.address_id;
-            const newShipping ={
-                ...address,
-                shipping_value: result[0].Valor,
-                service_code: '0',
-            }
-            const newOrderAddress_id = await ShippingDataModel.create(newShipping);
+      // Criacao do order a partir dos dados recebidos na requisicao + adress criado logo acima
+      const user_id = req.session.user_id;
 
-           
-            // Criacao do order a partir dos dados recebidos na equisicao + adress criado logo acima
-            const user_id = req.session.user_id;
+      const order = {
+        user_id: user_id,
+        shipping_data_id: `${newOrderAddress_id[0]}`,
+        status: "waitingPayment",
+      };
 
+      const createdOrder_id = await OrderModel.create(order);
+      // Criação dos produtos do pedido:
+      //Pega os id's dos products da requisicao para buscá-los no DB
+      const productIds = products.map((item) => {
+        return item.product_model_id;
+      });
 
-            const order = {
-                user_id: user_id,
-                shipping_data_id: `${newOrderAddress_id[0]}`,
-                status: 'waitingPayment',
-            }
+      //Busca no DB os produtos comprados
+      const boughtProducts = await ProductModelModel.getByIdArray(
+        productIds,
+        "product_model_id price".split(" ")
+      );
 
+      if (boughtProducts.length !== productIds.length) {
+        return res.status(404).json({
+          message: "Bought Products is different from productsIds.",
+        });
+      }
+      //Criando o vetor de produtos no pedido, pegando dados do vetor retornado do DB e o respectivo objeto vindo da requisição;
+      let index;
+      const productsInOrder = boughtProducts.map((item) => {
+        index = productIds.indexOf(item.product_model_id);
+        return {
+          order_id: createdOrder_id,
+          product_model_id: item.product_model_id,
+          product_price: item.price,
+          amount: products[index].amount,
+          logo_link: products[index].logo_link,
+          discount: 0,
+          size: products[index].size,
+        };
+      });
+      // Manda o vetor para o model criar os produtos no DB
+      await ProductInOrderModel.create(productsInOrder);
 
-            const createdOrder_id = await OrderModel.create(order);
-            // Criação dos produtos do pedido:
-            //Pega os id's dos products da requisicao para buscá-los no DB
-            const productIds = products.map(item => {return item.product_model_id;});
+      // Se tudo deu certo, retorna que deu tudo certo
+      res.status(200).json({
+        message: "Pedido efetuado com sucesso",
+      });
+    } catch (err) {
+      console.warn(err.message);
+      res.status(500).json("Internal server error.");
+    }
+  },
 
-            //Busca no DB os produtos comprados
-            const boughtProducts = await ProductModelModel.getByIdArray(productIds, "product_model_id price".split(' '));
-            
-            if(boughtProducts.length !== productIds.length){
-                return res.status(404).json({
-                    message: "Bought Products is different from productsIds.",
-                });
-            }
-            //Criando o vetor de produtos no pedido, pegando dados do vetor retornado do DB e o respectivo objeto vindo da requisição;
-            let index;
-            const productsInOrder = boughtProducts.map(item => {
-                index = productIds.indexOf(item.product_model_id);
-                return ({
-                    order_id: createdOrder_id,
-                    product_model_id: item.product_model_id,
-                    product_price: item.price,
-                    amount: products[index].amount,
-                    logo_link: products[index].logo_link,
-                    discount: 0,
-                    size: products[index].size,
-                });
-            });
-            // Manda o vetor para o model criar os produtos no DB
-            await ProductInOrderModel.create(productsInOrder);
+  async getShipping(req, res) {
+    try{
+      const args = {
+        nCdServico: `04014`,
+        sCepOrigem: `${process.env.CEPORIGEM}`,
+        sCepDestino: `${req.params.zip}`,
+        nVlPeso: `${process.env.VLPESO}`,
+        nCdFormato: Number(process.env.CDFORMATO),
+        nVlComprimento: parseFloat(process.env.VLCOMPRIMENTO),
+        nVlAltura: parseFloat(process.env.VLALTURA),
+        nVlLargura: parseFloat(process.env.VLLARGURA),
+      };
+      const correios = new Correios();
+      const result = await correios.calcPreco(args);
 
-            // Se tudo deu certo, retorna que deu tudo certo
-            res.status(200).json({
-                message: "Pedido efetuado com sucesso",
-            });
+      res.status(200).json({shipping: result[0]});
+    }
+    catch(err){
+      console.warn(err.message);
+      res.status(500).json("Internal server error.");
+    }
+  },
 
-        } catch (err) {
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
+  async updateOrder(req, res) {
+    const { order_id } = req.params;
+    const updated_Fields = req.body;
 
-    async updateOrder(req, res) {
+    try {
+      await OrderModel.update(order_id, updated_Fields);
 
-        const { order_id } = req.params;
-        const updated_Fields = req.body;
+      res.status(200).json({
+        message: "Order atualizada com sucesso",
+      });
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).json("Internal server error.");
+    }
+  },
 
-        try {
+  async deleteOrder(req, res) {
+    const { order_id } = req.params;
 
-            await OrderModel.update(order_id, updated_Fields)
+    try {
+      await OrderModel.delete(order_id);
 
-            res.status(200).json({
-                message: "Order atualizada com sucesso",
-            });
-    
-        } catch (err) {
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
+      res.status(200).json({
+        message: "Order deletada com sucesso",
+      });
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).json("Internal server error.");
+    }
+  },
 
-    async deleteOrder(req, res) {
+  async getUserOrder(req, res) {
+    const { user_id } = req.params;
 
-        const { order_id } = req.params;
+    const fields = {
+      user_id,
+    };
 
-        try {
+    try {
+      const result = await OrderModel.getByFields(fields);
 
-            await OrderModel.delete(order_id)
+      res.status(200).json(result);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).json("Internal server error.");
+    }
+  },
 
-            res.status(200).json({
-                message: "Order deletada com sucesso",
-            });
-    
-        } catch (err) {
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
+  async getOrders(req, res) {
+    const { user_id } = req.params;
+    const filters = req.query;
 
-    async getUserOrder(req, res) {
+    if (user_id) {
+      filters.user_id = user_id;
+    }
 
-        const { user_id } = req.params;
+    try {
+      const result = await OrderModel.getByFields(filters);
 
-        const fields = {
-            user_id,
-        }
+      res.status(200).json(result);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).json("Internal server error.");
+    }
+  },
 
-        try {
-            const result = await OrderModel.getByFields(fields)
+  async getProductsFromOrder(req, res) {
+    const { order_id } = req.params;
+    try {
+      const result = await ProductInOrderModel.getProductInOrderById(order_id);
 
-            res.status(200).json(result);
-    
-        } catch (err) {
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
+      res.status(200).json(result);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).json("Internal server error.");
+    }
+  },
 
-    async getOrders(req, res) {
-        const { user_id } = req.params;
-        const filters = req.query;
+  async createOrderAddress(req, res) {
+    const {
+      street,
+      neighborhood,
+      city,
+      state,
+      zip_code,
+      country,
+      complement,
+    } = req.body;
 
-        if(user_id){
-            filters.user_id = user_id;
-        }
+    const newOrderAddress = {
+      street,
+      neighborhood,
+      city,
+      state,
+      zip_code,
+      country,
+      complement,
+    };
 
-        try {
-            const result = await OrderModel.getByFields(filters)
+    try {
+      await ShippingDataModel.create(newOrderAddress);
 
-            res.status(200).json(result);
-    
-        }catch (err){
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
+      res.status(200).json({
+        message: "Order Address criada com sucesso",
+      });
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).json("Internal server error.");
+    }
+  },
 
-    async getProductsFromOrder(req, res) {
-        const { order_id } = req.params;
-        try {
+  async updateOrderAddress(req, res) {
+    const { shipping_data_id } = req.params;
+    const {
+      street,
+      neighborhood,
+      city,
+      state,
+      zip_code,
+      country,
+      complement,
+    } = req.body;
 
-            const result = await ProductInOrderModel.getProductInOrderById(order_id)
+    const newOrderAddress = {
+      street,
+      neighborhood,
+      city,
+      state,
+      zip_code,
+      country,
+      complement,
+    };
 
-            res.status(200).json(result);
-    
-        } catch (err) {
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
+    try {
+      await ShippingDataModel.update(shipping_data_id, newOrderAddress);
 
-    async createOrderAddress(req, res) {
+      res.status(200).json({
+        message: "Order Address atualizada com sucesso",
+      });
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).json("Internal server error.");
+    }
+  },
 
-        const { street, neighborhood, city, state, zip_code, country, complement } = req.body;
+  async deleteOrderAddress(req, res) {
+    const { shipping_data_id } = req.params;
 
-        const newOrderAddress = { 
-            street, 
-            neighborhood, 
-            city, 
-            state, 
-            zip_code, 
-            country, 
-            complement 
-        }
+    try {
+      await ShippingDataModel.delete(shipping_data_id);
 
-        try {
+      res.status(200).json({
+        message: "Order Address deletada com sucesso",
+      });
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).json("Internal server error.");
+    }
+  },
 
-            await ShippingDataModel.create(newOrderAddress)
+  async deliverAtMail(req, res) {
+    const { order_id } = req.params;
 
-            res.status(200).json({
-                message: "Order Address criada com sucesso",
-            });
-    
-        } catch (err) {
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
+    const { tracking_code } = req.body;
 
-    async updateOrderAddress(req, res) {
+    const loggedUser = req.session.user_id;
 
-        const { shipping_data_id } = req.params;
-        const { street, neighborhood, city, state, zip_code, country, complement } = req.body;
+    // Atualiza com as novas informações
+    const updatedShippingData = {
+      delivered_by: loggedUser,
+      tracking_code,
+    };
 
-        const newOrderAddress = { 
-            street, 
-            neighborhood, 
-            city, 
-            state, 
-            zip_code, 
-            country, 
-            complement 
-        }
+    try {
+      await OrderModel.updateShippingData(order_id, updatedShippingData);
 
-        try {
+      // Se nada deu errado, atualiza o status
+      const updatedOrderToDelivered = {
+        status: "delivered",
+      };
 
-            await ShippingDataModel.update(shipping_data_id, newOrderAddress)
+      // atualiza a order
+      await OrderModel.update(order_id, updatedOrderToDelivered);
 
-            res.status(200).json({
-                message: "Order Address atualizada com sucesso",
-            });
-    
-        } catch (err) {
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
-
-    async deleteOrderAddress(req, res) {
-
-        const { shipping_data_id } = req.params;
-
-        try {
-            await ShippingDataModel.delete(shipping_data_id);
-
-            res.status(200).json({
-                message: "Order Address deletada com sucesso",
-            });
-    
-        } catch (err) {
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
-
-    async deliverAtMail(req, res) {
-
-        const { order_id } = req.params;
-
-        const { tracking_code } = req.body;
-
-        const loggedUser = req.session.user_id;
-
-        // Atualiza com as novas informações
-        const updatedShippingData = {
-            delivered_by: loggedUser,
-            tracking_code,
-        }
-
-        try {
-            await OrderModel.updateShippingData(order_id, updatedShippingData);
-
-            // Se nada deu errado, atualiza o status
-            const updatedOrderToDelivered = {
-                status: 'delivered'
-            }
-
-            // atualiza a order
-            await OrderModel.update(order_id, updatedOrderToDelivered)
-
-            res.status(200).json({
-                message: "Status da order atualizada sucesso!",
-            });
-    
-        } catch (err) {
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
-}
+      res.status(200).json({
+        message: "Status da order atualizada sucesso!",
+      });
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).json("Internal server error.");
+    }
+  },
+};

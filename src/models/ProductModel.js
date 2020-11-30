@@ -1,178 +1,178 @@
 const connection = require("../database/connection");
 
 module.exports = {
+  async create(newProduct) {
+    try {
+      const response = await connection("product").insert(newProduct);
+      return response;
+    } catch (err) {
+      console.log(err.message);
+      return err;
+    }
+  },
 
-    async create(newProduct){
+  async findProductId(product_id) {
+    try {
+      const response = await connection("product")
+        .select("product_id")
+        .where("product_id", product_id);
+      return response[0].product_id;
+    } catch (err) {
+      throw new Error("Product Id not found.");
+    }
+  },
 
-        try{
-            const response = await connection("product").insert(newProduct);
-            return response;
-        }catch(err){
-            console.log(err.message);
-            throw new Error('Falha na criação do produto.');
-        }
-    },
+  async getProductsAndItsRespectiveMainModels({
+    name,
+    page = 1,
+    product_type,
+    gender,
+  }) {
+    const filter = {};
 
-    async findProductId(product_id){
-        try{
-            const response = await connection('product').select('product_id')
-            .where('product_id',product_id);
-            return response[0].product_id;
-        }catch(err){
-            console.log(err.message);
-            throw new Error('Falha na busca do produto por ID.');
-        }
-    },
+    if (product_type) filter["product.product_type"] = product_type;
 
-    async getProductsAndItsRespectiveMainModels(page = 1){
+    let genderFilterGroup;
 
-        try{
-            const response = await connection('product').select('*')
-            .join('product_model', 'product.product_id','product_model.product_id')
-            .where({
-                is_main: true,
-            })
-            .limit(process.env.ITENS_PER_PAGE)
-            .offset((page - 1) * process.env.ITENS_PER_PAGE);
-    
-            const result = response.map(item => {
-    
-                return {
-                    product_id: item.product_id,
-                    name: item.name,
-                    description: item.description,
-                    product_type: item.product_type,
-                    models: {
-                        product_model_id: item.product_model_id,
-                        is_main: item.is_main,
-                        img_link: item.img_link,
-                        price: item.price,
-                        model_description: item.model_description,
-                        gender: item.gender,
-                    }
-                }
-            }); 
-    
-            return result;
+    // Gender filtar
+    if (gender) {
+      genderFilterGroup = await connection("product_model")
+        .select("product_id")
+        .where({ gender })
+        .distinct("product_id");
 
-        }catch(err){
-            console.log(err.message);
-            throw new Error('Falha na busca dos modelos do produto.');
-        }
-    },
-
-    async getAllModels({page = 1, product_type, gender, minprice, maxprice}){
-
-        try{
-            const filter = {}
-            if(product_type)
-                filter.product_type = product_type; 
-            if(gender)
-                filter.gender = gender;
-    
-            let query = connection('product_model').select('*')
-            .limit(process.env.ITENS_PER_PAGE)
-            .offset((page - 1) * process.env.ITENS_PER_PAGE)
-            .join('product', 'product.product_id','product_model.product_id')
-            .where(filter);
-            
-            if(typeof minprice !== 'undefined')
-                query.andWhere(price, '>=', minprice)
-            if(typeof maxprice !== 'undefined')
-                query.andWhere(price, '<=', maxprice)
-    
-            const response = await query;
-    
-            return response;
-
-        }catch(err){
-            console.log(err.message);
-            throw new Error('Falha na busca por todos os modelos do produto.');
-        }
-    },
-
-    async getAllProductsCount(){
-
-        try{
-            const response = await connection('product').select().count("product.product_id as count")
-            .join('product_model', 'product.product_id','product_model.product_id')
-            .where({
-                is_main: true,
-            }).first();
-    
-            return response;
-
-        }catch(err){
-            console.log(err.message)
-            throw new Error('Falha na busca da contagem dos produto.');
-        }
-    },
-
-    async getProductsAndItsAllModels(product_id){
-
-        try{
-            const response = await connection('product')
-            .select('*')
-            .join('product_model', 'product.product_id','product_model.product_id')
-            .where({
-                'product.product_id': product_id,
-            });
-    
-            // console.log(response);
-            const result = {
-                product_id: response[0].product_id,
-                name: response[0].name,
-                description: response[0].description,
-                product_type: response[0].product_type,
-                models: response.map(item => {
-                    return {
-                        product_model_id: item.product_model_id,
-                        is_main: item.is_main,
-                        img_link: item.img_link,
-                        price: item.price,
-                        model_description: item.model_description,
-                        gender: item.gender,
-                    }
-                })
-            }
-    
-            return result;
-
-        }catch(err){
-            console.log(err.message)
-            throw new Error('Falha na busca do produto e seus modelos.');
-        }
-
-    },
-
-    async update(productId, updatedFields){
-
-        try{
-            const response = await connection("product")
-            .where('product_id', productId)
-            .update(updatedFields);
-    
-            return response;
-
-        }catch(err){
-            console.log(err.message)
-            throw new Error('Falha na atualização do produto.');
-        }
-    },
-
-    async delete(productId){
-
-        try{
-            const response = await connection("product")
-            .where('product_id', productId)
-            .del();
-            
-            return response;
-
-        }catch(err){
-            console.log(err.message)
-            throw new Error('Falha na exclusão do produto.');
-        }
+      genderFilterGroup = genderFilterGroup.map(
+        (product) => product.product_id
+      );
     }
 
+
+    let query = connection("product")
+      .select("*")
+      .join("product_model", "product.product_id", "product_model.product_id")
+      .where({
+        "product_model.is_main": true,
+        ...filter,
+      });
+
+    // Gender filter
+    if (gender) query = query.whereIn("product.product_id", genderFilterGroup);
+
+    // Name filter
+    if (name) {
+      let names = name.split(" ");
+      query.andWhere((q) => {
+        names.forEach((currentName) => {
+          q.orWhere("product.name", "LIKE", `%${currentName}%`);
+        });
+      });
+    }
+
+    // Pagination
+    query = query
+      .limit(process.env.ITENS_PER_PAGE)
+      .offset((page - 1) * process.env.ITENS_PER_PAGE);
+
+    const response = await query;
+
+    const result = response.map((item) => {
+      return {
+        product_id: item.product_id,
+        name: item.name,
+        description: item.description,
+        product_type: item.product_type,
+        models: {
+          product_model_id: item.product_model_id,
+          is_main: item.is_main,
+          img_link: item.img_link,
+          price: item.price,
+          model_description: item.model_description,
+          gender: item.gender,
+        },
+      };
+    });
+
+    return result;
+  },
+
+  async getAllModels({ page = 1, product_type, gender, minprice, maxprice }) {
+    const filter = {};
+    if (gender) filter.gender = gender;
+
+    let query = connection("product_model")
+      .select("*")
+      .limit(process.env.ITENS_PER_PAGE)
+      .offset((page - 1) * process.env.ITENS_PER_PAGE)
+      .join("product", "product.product_id", "product_model.product_id")
+      .where(filter);
+
+    if (typeof minprice !== "undefined")
+      query.andWhere("product_model.price", ">=", minprice);
+    if (typeof maxprice !== "undefined")
+      query.andWhere("product_model.price", "<=", maxprice);
+    if (typeof product_type !== "undefined")
+      query.whereIn("product_type", product_type);
+
+    const response = await query;
+
+    return response;
+  },
+
+  async getAllProductsCount() {
+    const response = await connection("product")
+      .select()
+      .count("product.product_id as count")
+      .join("product_model", "product.product_id", "product_model.product_id")
+      .where({
+        is_main: true,
+      })
+      .first();
+
+    return response;
+  },
+
+  async getProductsAndItsAllModels(product_id) {
+    const response = await connection("product")
+      .select("*")
+      .join("product_model", "product.product_id", "product_model.product_id")
+      .where({
+        "product.product_id": product_id,
+      });
+
+    // console.log(response);
+    const result = {
+      product_id: response[0].product_id,
+      name: response[0].name,
+      description: response[0].description,
+      product_type: response[0].product_type,
+      models: response.map((item) => {
+        return {
+          product_model_id: item.product_model_id,
+          is_main: item.is_main,
+          img_link: item.img_link,
+          price: item.price,
+          model_description: item.model_description,
+          gender: item.gender,
+        };
+      }),
+    };
+
+    return result;
+  },
+
+  async update(productId, updatedFields) {
+    const response = await connection("product")
+      .where("product_id", productId)
+      .update(updatedFields);
+
+    return response;
+  },
+
+  async delete(productId) {
+    const response = await connection("product")
+      .where("product_id", productId)
+      .del();
+
+    return response;
+  },
 };

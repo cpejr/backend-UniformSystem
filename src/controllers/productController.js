@@ -4,7 +4,6 @@ const ProductModel = require("../models/ProductModel");
 const ProductModelModel = require("../models/ProductModelModel");
 
 module.exports = {
-  
   async createProduct(req, res) {
     try {
       const product = {
@@ -12,7 +11,7 @@ module.exports = {
         description: req.body.description,
         product_type: req.body.product_type,
       };
-  
+
       const models = req.body.models;
 
       const createdProductId = await ProductModel.create(product);
@@ -39,16 +38,16 @@ module.exports = {
 
       const existingProductId = await ProductModel.findProductId(product_id);
 
-      if(!existingProductId){
+      if (!existingProductId) {
         return res.status(404).json({
           message: "Product not found",
         });
       }
-      console.log('antes')
-      console.log(product_model)
-      console.log('depois')
-      console.log(product_model)
-      delete product_model.file
+      console.log("antes");
+      console.log(product_model);
+      console.log("depois");
+      console.log(product_model);
+      delete product_model.file;
 
       await ProductModelModel.createOne(product_model, existingProductId);
 
@@ -63,11 +62,21 @@ module.exports = {
     }
   },
 
-  async allProducts(req, res) {
+  async searchProducts(req, res) {
     try {
-      const {page} = req.query;
-      const products = await ProductModel.getProductsAndItsRespectiveMainModels(page);
+      const { page, gender, name } = req.query;
+      const products = await ProductModel.getProductsAndItsRespectiveMainModels(
+        {
+          page,
+          gender,
+          name,
+        }
+      );
+      const { count } = await ProductModel.getAllProductsCount();
 
+      const totalPages = Math.ceil(count / process.env.ITENS_PER_PAGE);
+
+      res.setHeader("X-Total-Count", totalPages);
       res.status(200).json({
         products,
       });
@@ -79,6 +88,10 @@ module.exports = {
 
   async allModels(req, res) {
     try {
+      const query = req.query;
+      if (query.product_type)
+        query.product_type = query.product_type.split(",");
+
       const models = await ProductModel.getAllModels(req.query);
       res.status(200).json({
         models,
@@ -89,19 +102,13 @@ module.exports = {
     }
   },
 
-  async getAllProductsCounted(req,res){
-    try{
+  async getAllProductsCounted(req, res) {
+    try {
       const count = await ProductModel.getAllProductsCount();
-      const totalPages = (count/process.env.ITENS_PER_PAGE);
-      
+      const totalPages = count / process.env.ITENS_PER_PAGE;
+
       res.setHeader("X-Total-Count", totalPages);
-
-      res.status(200).json("Paginação ok.");
-
-    }catch (err) {
-      console.log(err);
-      res.status(500).json("Internal server error.");
-    }
+    } catch (err) {}
   },
 
   async getProductModel(req, res) {
@@ -184,5 +191,4 @@ module.exports = {
       res.status(500).json("Internal server error.");
     }
   },
-  
 };

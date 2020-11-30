@@ -20,8 +20,6 @@ module.exports = {
         cpf: request.body.cpf,
         password: request.body.password
       };
-      
-      console.log(user);
 
       if (user.user_type === "adm" || user.user_type === "employee") {
         const loggedUser = request.session;
@@ -66,6 +64,23 @@ module.exports = {
       console.warn(error.message);
       response.status(500).json("Internal server error");
     }
+  },
+
+  async forgetPassword(request, response) {
+
+    try {
+      const email = request.body.email;
+
+      const password = await FirebaseModel.sendPasswordChangeEmail(email);
+      response.status(200).json({password});
+      console.log(password);
+    }catch(error) {
+      console.log(error.message);
+      response.status(500).json({
+        message: error.message,
+      });
+    }
+
   },
 
   async allClients(request, response) {
