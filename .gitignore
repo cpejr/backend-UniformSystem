@@ -90,3 +90,5 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+src/database/mydb.sqlite

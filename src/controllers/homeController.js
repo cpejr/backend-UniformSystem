@@ -107,7 +107,6 @@ module.exports ={
   async downloadImg(req, res){
       try {
         const { img_place } = req.query;
-        console.log('auqi')
         const response = await HomeImageModel.readImage(img_place);
   
         res.status(200).json(response);

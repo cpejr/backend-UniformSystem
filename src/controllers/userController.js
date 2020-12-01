@@ -141,7 +141,7 @@ module.exports = {
       response.status(200).json("Apagado com sucesso");
     } catch (error) {
       console.log(error.message);
-      response.status(500).json("internal server error");
+      response.status(500).json("Internal server error");
     }
   },
 

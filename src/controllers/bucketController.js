@@ -22,10 +22,6 @@ const download = async (req, res, next) => {
       res.status(500).json({
         message: error.message
       });
-    // next({
-    //   message: error.message,
-    //   status: 500,
-    // });
   }
 };
 
@@ -42,7 +38,7 @@ const upload = async (req, res, next) => {
 
             const nameImage = uuidv4()
 
-            req.body.img_link = nameImage
+            req.body.img_link = nameImage+`.${type}`;
 
             newURL = await uploadFile(nameImage, type, buffer);
         };
@@ -95,9 +91,6 @@ const update = async (req, res, next) => {
         //     url: newURL,
         // });
 
-        console.log('URL AWS')
-        console.log(newURL)
-        
         return next();
     } catch (error) {
         
@@ -118,8 +111,6 @@ const remove = async (req, res, next) => {
             name,
         } = req.query;
 
-        console.log('CHEGOU AUQI')
-        console.log(name, type)
         // Verifica se existe. Caso, não, acusará erro
         await dowloadFile(name, type);
 
@@ -134,10 +125,6 @@ const remove = async (req, res, next) => {
           message: error.message
         });
 
-        // return next({
-        //   message: error.message,
-        //   status: 500,
-        // });
     }
 };
 
