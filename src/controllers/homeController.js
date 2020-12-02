@@ -85,9 +85,9 @@ module.exports ={
 
         // lembrando que name (do bucketController) == img_id
         // porém um é passado por query e outro é por params
-          const { name } = req.query;
+          const { name, type } = req.query;
 
-          await HomeImageModel.deleteImage(name)
+          await HomeImageModel.deleteImage(`${name}.${type}`)
   
           res.status(200).send({
             message: "Imagem apagada."
