@@ -64,12 +64,13 @@ module.exports = {
 
   async searchProducts(req, res) {
     try {
-      const { page, gender, name } = req.query;
+      const { page, gender, name, product_type } = req.query;
       const products = await ProductModel.getProductsAndItsRespectiveMainModels(
         {
           page,
           gender,
           name,
+          product_type, /*acresceitei isso aqui*/
         }
       );
       const { count } = await ProductModel.getAllProductsCount();

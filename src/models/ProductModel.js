@@ -46,7 +46,6 @@ module.exports = {
       );
     }
 
-
     let query = connection("product")
       .select("*")
       .join("product_model", "product.product_id", "product_model.product_id")

@@ -9,6 +9,7 @@ productValidator.searchProducts = {
     page: Joi.number().min(1).optional(),
     gender: Joi.string().valid("M", "F").optional(),
     name: Joi.string().optional(),
+    product_type: Joi.string().optional(),
   }),
 };
 
