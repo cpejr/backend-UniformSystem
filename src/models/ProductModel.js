@@ -94,7 +94,7 @@ module.exports = {
     return result;
   },
 
-  async getAllModels({ page = 1, product_type, gender, minprice, maxprice }) {
+  async getAllModels({ page = 1, name, product_type, gender, minprice, maxprice }) {
     const filter = {};
     if (gender) filter.gender = gender;
 
@@ -111,6 +111,8 @@ module.exports = {
       query.andWhere("product_model.price", "<=", maxprice);
     if (typeof product_type !== "undefined")
       query.whereIn("product_type", product_type);
+    if (typeof name !== "undefined")
+      query.where("product.name", 'like', `%${name}%`);
 
     const response = await query;
 

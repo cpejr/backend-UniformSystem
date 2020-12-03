@@ -50,6 +50,7 @@ productValidator.searchProducts = {
   }),
   (productValidator.allModels = {
     [Segments.QUERY]: Joi.object().keys({
+      name: Joi.string().optional(),
       product_type: Joi.string().optional(),
       gender: Joi.valid("M", "F").optional(),
       minprice: Joi.number().optional(),
