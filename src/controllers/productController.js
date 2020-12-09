@@ -24,6 +24,7 @@ module.exports = {
 
       res.status(200).json({
         message: "Camisa criada com sucesso!",
+        product_id: createdProductId[0],
       });
     } catch (err) {
       console.log(err.message);
