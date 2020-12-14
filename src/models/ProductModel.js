@@ -2,24 +2,15 @@ const connection = require("../database/connection");
 
 module.exports = {
   async create(newProduct) {
-    try {
       const response = await connection("product").insert(newProduct);
       return response;
-    } catch (err) {
-      console.log(err.message);
-      return err;
-    }
   },
 
   async findProductId(product_id) {
-    try {
       const response = await connection("product")
         .select("product_id")
         .where("product_id", product_id);
       return response[0].product_id;
-    } catch (err) {
-      throw new Error("Product Id not found.");
-    }
   },
 
   async getProductsAndItsRespectiveMainModels({

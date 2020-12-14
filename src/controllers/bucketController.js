@@ -36,17 +36,15 @@ const upload = async (req, res, next) => {
             type = req.file.originalname.split('.');
             type = type[type.length - 1];
 
-            const nameImage = uuidv4()
+            const nameImage = uuidv4();
 
             req.body.img_link = nameImage+`.${type}`;
-
+            
             newURL = await uploadFile(nameImage, type, buffer);
-        };
+        }else{
+            req.body.img_link = 'Sem imagem';
+        }
         
-        // res.status(200).json({
-        //     url: newURL,
-        // });
-
         return next();
     } catch (error) {
         

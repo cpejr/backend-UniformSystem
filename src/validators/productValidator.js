@@ -34,7 +34,7 @@ productValidator.searchProducts = {
       product_id: Joi.number().integer().required(),
     }),
     [Segments.BODY]: Joi.object().keys({
-      file: Joi.string().optional(),
+      file: Joi.string().optional().empty(''),
       is_main: Joi.boolean().required(),
       img_link: Joi.string().required(),
       price: Joi.number().required(),

@@ -44,10 +44,6 @@ module.exports = {
           message: "Product not found",
         });
       }
-      console.log("antes");
-      console.log(product_model);
-      console.log("depois");
-      console.log(product_model);
       delete product_model.file;
 
       await ProductModelModel.createOne(product_model, existingProductId);

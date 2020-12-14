@@ -12,7 +12,7 @@ module.exports = {
                 firebaseUid = await FirebaseModel.login(email, password);
             } catch (error) {
                 return response.status(403).json({ message: 'Invalid Credentials' });
-            }
+            }     
             const user = await UserModel.getUserByUid(firebaseUid);
             console.log(user)
 
