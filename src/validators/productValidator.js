@@ -13,6 +13,12 @@ productValidator.searchProducts = {
   }),
 };
 
+productValidator.searchProductById = {
+  [Segments.PARAMS]: Joi.object().keys({
+    product_id: Joi.number().integer().required(),
+  }),
+};
+
 (productValidator.createProduct = {
   //ok
   [Segments.BODY]: Joi.object().keys({
@@ -72,14 +78,15 @@ productValidator.searchProducts = {
   }),
   (productValidator.updateProduct = {
     //ok
-    /*   Comentado pra se caso for necessário mudar depois
+    // Comentado pra se caso for necessário mudar depois
      [Segments.PARAMS]: Joi.object().keys({
         product_id : Joi.number().integer().required()
-     }), */
+     }),
     [Segments.BODY]: Joi.object().keys({
-      product_id: Joi.number().integer().required(),
+      // product_id: Joi.number().integer().required(),
       updated_fields: Joi.object({
-        name: Joi.string().required(),
+        name: Joi.string().optional(),
+        description: Joi.string().optional(),
       }).required(),
     }),
   }),

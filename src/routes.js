@@ -46,6 +46,7 @@ routes.post('/product', celebrate(productValidate.createProduct), authenticateTo
 routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidate.addProductModel), bucketController.upload, productController.addProductModel);
 
 routes.get('/product', celebrate(productValidate.searchProducts), productController.searchProducts);
+routes.get('/product/:product_id', celebrate(productValidate.searchProductById), productController.searchProductById);
 
 routes.get('/productmodels/:product_id', celebrate(productValidate.getProductModel), productController.getProductModel);
 routes.get('/productmodels', celebrate(productValidate.allModels),productController.allModels);

@@ -84,6 +84,20 @@ module.exports = {
     }
   },
 
+  async searchProductById(req, res) {
+    try {
+      const { product_id } = req.params;
+      const product = await ProductModel.getProductById(product_id);
+
+      res.status(200).json({
+        product,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json("Internal server error.");
+    }
+  },
+
   async allModels(req, res) {
     try {
       const query = req.query;
