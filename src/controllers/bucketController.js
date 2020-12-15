@@ -109,10 +109,15 @@ const remove = async (req, res, next) => {
             name,
         } = req.query;
 
-        // Verifica se existe. Caso, não, acusará erro
-        await dowloadFile(name, type);
+        console.log('nome', name);
+        console.log('tipo', type);
 
-        await deleteFile(name, type);
+        if(name !== 'Sem imagem' && type){
+            // Verifica se existe. Caso, não, acusará erro
+            await dowloadFile(name, type);
+    
+            await deleteFile(name, type);
+        }
 
         return next();
     } catch (error) {

@@ -123,6 +123,16 @@ module.exports = {
     return response;
   },
 
+  async getProductById(productId) {
+    const response = await connection("product")
+    .where({
+      "product_id": productId,
+    })
+    .select('*')
+
+    return response;
+  },
+
   async getProductsAndItsAllModels(product_id) {
     const response = await connection("product")
       .select("*")
@@ -131,23 +141,36 @@ module.exports = {
         "product.product_id": product_id,
       });
 
+    let result;
+
     // console.log(response);
-    const result = {
-      product_id: response[0].product_id,
-      name: response[0].name,
-      description: response[0].description,
-      product_type: response[0].product_type,
-      models: response.map((item) => {
-        return {
-          product_model_id: item.product_model_id,
-          is_main: item.is_main,
-          img_link: item.img_link,
-          price: item.price,
-          model_description: item.model_description,
-          gender: item.gender,
+    if(response[0]){
+
+        result = {
+          product_id: response[0].product_id,
+          name: response[0].name,
+          description: response[0].description,
+          product_type: response[0].product_type,
+          models: response.map((item) => {
+            return {
+              product_model_id: item.product_model_id,
+              is_main: item.is_main,
+              img_link: item.img_link,
+              price: item.price,
+              model_description: item.model_description,
+              gender: item.gender,
+            };
+          }),
         };
-      }),
-    };
+    }else{
+      result = {
+        product_id: '',
+        name: '',
+        description: '',
+        product_type:'',
+        models: [],
+      }
+    }
 
     return result;
   },
