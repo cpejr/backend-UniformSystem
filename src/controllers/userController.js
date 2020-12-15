@@ -25,11 +25,16 @@ module.exports = {
         const loggedUser = request.session;
         
         if(loggedUser && loggedUser.user_type !== "adm"){
-          return response.status(403).json("Operação proibida.");
+          return response.status(404).json({message: "Operação proibida."});
         }
       }
 
-      firebaseUid = await FirebaseModel.createNewUser(user.email, user.password);
+      try {
+        firebaseUid = await FirebaseModel.createNewUser(user.email, user.password);
+      } catch (error) {
+        response.status(400).json({error});
+      }
+
 
       delete user.password
 
@@ -44,25 +49,27 @@ module.exports = {
         await AdressModel.create(address);
       }
 
-      
-      if (resposta.errno == 19){
-        await UsersModel.deleteByUserId(user.user_id);
-        return response.status(500).json("Cpf já existe.");
-        
-      }else if (resposta.errno != null){
-        return response.status(500).json("internal server error");
+      if (resposta.errno != null){
+        return response.status(500).json({message: "internal server error"});
       }else{
-        return response.status(200).json("Usuário criado com sucesso");
+        return response.status(200).json({message: "Usuário criado com sucesso"});
       }
     } catch (error) {
 
       if (firebaseUid){
-        FirebaseModel.deleteUser(firebaseUid)
-        throw new Error('Erro no firebase')
+        try {
+          await FirebaseModel.deleteUser(firebaseUid)
+        } catch (error) {
+          throw new Error(error)
+        }
       }
 
-      console.warn(error.message);
-      response.status(500).json("Internal server error");
+      if (error.errno == 19){
+        return response.status(500).json({message: "Cpf já existe."});
+      }
+
+      console.warn(error);
+      response.status(500).json({message: "Internal server error"});
     }
   },
 
