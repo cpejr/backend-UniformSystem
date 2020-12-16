@@ -32,7 +32,7 @@ module.exports = {
       try {
         firebaseUid = await FirebaseModel.createNewUser(user.email, user.password);
       } catch (error) {
-        response.status(400).json({error});
+        return response.status(400).json({error});
       }
 
 
@@ -92,7 +92,7 @@ module.exports = {
 
   async allClients(request, response) {
     try {
-      const clients = await UsersModel.getAllByTypes("client");
+      const clients = await UsersModel.read({user_type: "client"});
       response.status(200).json({ clients });
     } catch (error) {
       console.log(error.message);
@@ -114,10 +114,10 @@ module.exports = {
     }
   },
 
-  async allAdm(request, response) {
+  async allEmployees(request, response) {
     try {
-      const adms = await UsersModel.getAllByTypes("adm");
-      response.status(200).json({ adms });
+      const employees = await UsersModel.getEmployeesAndAdm("adm");
+      response.status(200).json({ employees });
     } catch (error) {
       console.log(error.message);
       response.status(500).json("internal server error");
@@ -145,10 +145,10 @@ module.exports = {
 
       await AdressModel.deleteByUserId(user_id);
 
-      response.status(200).json("Apagado com sucesso");
+      return response.status(200).json("Apagado com sucesso");
     } catch (error) {
       console.log(error.message);
-      response.status(500).json("Internal server error");
+      return response.status(500).json("Internal server error");
     }
   },
 
@@ -159,15 +159,23 @@ module.exports = {
       const loggedUser = request.session;
 
       if(loggedUser.user_type !== "adm"){
-        response.status(403).json("Operação proibida.");
+        return response.status(403).json("Operação proibida.");
       }
+
+      const foundUser = await UsersModel.getById(user_id)
+
+      if(!foundUser){
+        return response.status(400).json("Usuário não encontrado");
+      }
+
+      await FirebaseModel.deleteUser(foundUser[0].firebase_uid);
 
       await UsersModel.delete(user_id);
 
-      response.status(200).json("Adm apagado");
+      return response.status(200).json("Adm apagado");
     } catch (error) {
       console.log(error);
-      response.status(500).json("Internal Server Error");
+      return response.status(500).json("Internal Server Error");
     }
   },
 

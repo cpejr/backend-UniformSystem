@@ -10,14 +10,14 @@ module.exports = {
     return user.user_id;
   },
 
-  async read() {
-    const response = await connection("user").select("*");
+  async read(filters) {
+    const response = await connection("users").where(filters).select("*");
     return response;
   },
 
-  async getAllByTypes(type) {
+  async getEmployeesAndAdm() {
     const response = await connection("users")
-      .where("user_type", type)
+      .where({user_type: "employee"}).orWhere({user_type: "adm"})
       .select("*");
     return response;
   },

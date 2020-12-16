@@ -31,7 +31,7 @@ routes.delete('/delAdmOrEmployee/:user_id', celebrate(userValidate.deleteAdmin),
 routes.put('/user/:user_id', celebrate(userValidate.update), authenticateToken, userController.updateUser);
 
 routes.get('/user', authenticateToken, isAdmin, userController.allClients);
-routes.get('/adms', authenticateToken, isAdmin, userController.allAdm);
+routes.get('/employees', authenticateToken, isAdmin, userController.allEmployees);
 
 routes.post('/sendpassword', userController.forgetPassword);
 
