@@ -24,6 +24,7 @@ module.exports = {
                 nVlAltura: parseFloat(process.env.VLALTURA),
                 nVlLargura: parseFloat(process.env.VLLARGURA),
             };
+      
             const correios = new Correios();
             const result = await correios.calcPreco(args);
 
