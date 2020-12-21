@@ -166,13 +166,13 @@ module.exports = {
 
   async updateAddress(request, response) {
     try {
-      const { address_id } = request.body;
+      const { address_id } = request.params;
       const { updatedFields } = request.body;
 
       const loggedUserId = request.session.user_id;
 
       // Get the user_id from address
-      const catchedAddress = await AdressModel.getById(address_id)
+      const catchedAddress = await AdressModel.getById(address_id);
 
       if(catchedAddress.user_id !== loggedUserId){
         throw new Error('Invalid action. You are not the owner from this ID.')
