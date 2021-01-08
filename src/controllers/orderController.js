@@ -2,6 +2,7 @@ const AdressModel = require("../models/AdressModel");
 const ShippingDataModel = require("../models/ShippingDataModel");
 const OrderModel = require("../models/OrderModel");
 const ProductInOrderModel = require("../models/ProductInOrderModel");
+const ProductInCartModel = require("../models/ProductInCartModel");
 const ProductModelModel = require("../models/ProductModelModel");
 const Correios = require("node-correios");
 
@@ -82,6 +83,7 @@ module.exports = {
             });
             // Manda o vetor para o model criar os produtos no DB
             await ProductInOrderModel.create(productsInOrder);
+            await ProductInCartModel.deleteByUser(user_id);
 
             // Se tudo deu certo, retorna que deu tudo certo
             res.status(200).json({
@@ -133,8 +135,18 @@ module.exports = {
 
     async deleteOrder(req, res) {
         const { order_id } = req.params;
+        const user = req.session.user;
 
         try {
+            const order = await OrderModel.getByFields({order_id});
+            if (order.status !== "waitingPayment"){
+                return res.status(400).json({message: "It is not possible to delete orders that are already paid."});
+            }
+
+            if((user.user_id!==order.user_id) && (user.user_type!=="adm")){
+                return res.status(401).json({message: "You're neither this order's user or an admin."});
+            }
+            await ShippingDataModel.delete(order.shipping_data_id);
             await OrderModel.delete(order_id);
 
             res.status(200).json({
@@ -195,39 +207,6 @@ module.exports = {
         }
     },
 
-    async createOrderAddress(req, res) {
-        const {
-            street,
-            neighborhood,
-            city,
-            state,
-            zip_code,
-            country,
-            complement,
-        } = req.body;
-
-        const newOrderAddress = {
-            street,
-            neighborhood,
-            city,
-            state,
-            zip_code,
-            country,
-            complement,
-        };
-
-        try {
-            await ShippingDataModel.create(newOrderAddress);
-
-            res.status(200).json({
-                message: "Order Address criada com sucesso",
-            });
-        } catch (err) {
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
-
     async updateOrderAddress(req, res) {
         const { shipping_data_id } = req.params;
         const {
@@ -255,21 +234,6 @@ module.exports = {
 
             res.status(200).json({
                 message: "Order Address atualizada com sucesso",
-            });
-        } catch (err) {
-            console.log(err.message);
-            res.status(500).json("Internal server error.");
-        }
-    },
-
-    async deleteOrderAddress(req, res) {
-        const { shipping_data_id } = req.params;
-
-        try {
-            await ShippingDataModel.delete(shipping_data_id);
-
-            res.status(200).json({
-                message: "Order Address deletada com sucesso",
             });
         } catch (err) {
             console.log(err.message);
