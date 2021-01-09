@@ -1,5 +1,3 @@
-const { response } = require("express");
-const { getAllProductsCount } = require("../models/ProductModel");
 const ProductModel = require("../models/ProductModel");
 const ProductModelModel = require("../models/ProductModelModel");
 
@@ -145,6 +143,7 @@ module.exports = {
     const { product_id } = req.params;
     try {
       const existingProductId = await ProductModel.findProductId(product_id);
+      console.log('achou', existingProductId)
       await ProductModel.delete(existingProductId);
       res.status(200).json({
         message: "Camisa apagada com sucesso.",
