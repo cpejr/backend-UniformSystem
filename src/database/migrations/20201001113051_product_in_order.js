@@ -4,7 +4,7 @@ exports.up = function(knex) {
     table.integer('product_in_order_id').primary();
     table.integer('product_model_id').notNullable();
     table.foreign('product_model_id').references('product_model_id').inTable('product_model');
-    table.string('order_id').primary();
+    table.string('order_id');
     table.foreign('order_id').references('order_id').inTable('order').onDelete('cascade');
     table.float('product_price').notNullable();
     table.integer('amount').notNullable();
