@@ -39,9 +39,9 @@ orderValidator.getUserOrder = {//???
     [Segments.PARAMS]: Joi.object().keys({
         user_id: Joi.string().required(),
     }),
-    [Segments.QUERY]: Joi.object().keys({
-        filters:Joi.object().required(),
-    })
+    // [Segments.QUERY]: Joi.object().keys({
+    //     filters:Joi.object().required(),
+    // })
 },
 orderValidator.delete = { //ok
     [Segments.PARAMS]: Joi.object().keys({

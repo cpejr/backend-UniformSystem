@@ -13,7 +13,7 @@ const homeController = require ('./controllers/homeController')
 const userValidate = require('./validators/userValidator')
 const addressValidate = require('./validators/addressValidator')
 const cartValidate = require('./validators/cartValidator')
-const orderValidate = require('./validators/orderValidator')
+const orderValidate = require('./validators/orderValidator');
 const productValidate = require('./validators/productValidator')
 const homeValidate = require('./validators/homeValidator')
 
@@ -57,6 +57,7 @@ routes.delete('/model/:model_id', celebrate(productValidate.deleteModel), authen
 routes.put('/product/:product_id',celebrate(productValidate.updateProduct), authenticateToken, isAdmin, productController.updateProduct);
 routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(productValidate.updateModel), bucketController.update, productController.updateModel);
 
+
 //ProductInCart
 routes.get('/cart', authenticateToken, cartController.getCart);
 routes.put('/addtocart', celebrate(cartValidate.addToCart), authenticateToken, cartController.addToCart);
@@ -66,9 +67,9 @@ routes.delete('/emptycart', celebrate(cartValidate.emptyCart), authenticateToken
 
 
 // Order Address Model
-routes.post('/orderaddress',celebrate(orderValidate.createOrderAddress), authenticateToken, orderController.createOrderAddress);
+// routes.post('/orderaddress', celebrate(orderValidate.createOrderAddress), authenticateToken, orderController.createOrderAddress);
 routes.put('/orderaddress/:order_address_id', celebrate(orderValidate.updateOrderAddress), authenticateToken, orderController.updateOrderAddress);
-routes.delete('/orderaddress/:order_address_id', celebrate(orderValidate.deleteOrderAddress), authenticateToken, orderController.deleteOrderAddress);
+// routes.delete('/orderaddress/:order_address_id', celebrate(orderValidate.deleteOrderAddress), authenticateToken, orderController.deleteOrderAddress);
 
 
 // Order 
@@ -106,3 +107,4 @@ routes.get('/home/images', celebrate(homeValidate.getHomeImage), homeController.
 routes.delete('/home/images', celebrate(homeValidate.deleteHomeImage), bucketController.remove ,homeController.removeImg);
 
 module.exports = routes;
+
