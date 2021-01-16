@@ -5,7 +5,7 @@ exports.up = function(knex) {
         table.boolean('is_main').notNullable();
         table.string('img_link').notNullable();
         table.float('price').notNullable();
-        table.string('product_id').notNullable();
+        table.integer('product_id').notNullable();
         table.foreign('product_id').references('product_id').inTable('product').onDelete('CASCADE');
         table.string('model_description').notNullable();
         table.enum('gender', ['M', 'F']).nullable();
