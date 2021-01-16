@@ -3,7 +3,7 @@ const firebase = require("firebase/app");
 
 require("firebase/auth");
 
-var serviceAccount = require("../../serviceAccountKey.js");
+// var serviceAccount = require("../../serviceAccountKey.json");
 var firebaseConfig = {
   apiKey: process.env.FIREBASE_APIKEY,
   authDomain: process.env.FIREBASE_AUTHDOMAIN,
@@ -15,7 +15,6 @@ var firebaseConfig = {
   measurementId: process.env.FIREBASE_MEASUREMENTID,
 };
 console.log(firebaseConfig);
-console.log("LOG", serviceAccount.serviceAccount);
 
 firebase.initializeApp(firebaseConfig);
 
