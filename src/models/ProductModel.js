@@ -9,8 +9,9 @@ module.exports = {
   async findProductId(product_id) {
       const response = await connection("product")
         .select("product_id")
-        .where("product_id", product_id);
-      return response[0].product_id;
+        .where({product_id: product_id})
+        .first();
+      return response;
   },
 
   async getProductsAndItsRespectiveMainModels({
@@ -135,15 +136,14 @@ module.exports = {
 
   async getProductsAndItsAllModels(product_id) {
     const response = await connection("product")
-      .select("*")
-      .join("product_model", "product.product_id", "product_model.product_id")
-      .where({
-        "product.product_id": product_id,
-      });
-
+    .select("*")
+    .join("product_model", "product.product_id", "product_model.product_id")
+    .where({
+      "product.product_id": product_id,
+    });
+    
+    console.log("🚀 ~ file: ProductModel.js ~ line 139 ~ getProductsAndItsAllModels ~ response", response)
     let result;
-
-    // console.log(response);
     if(response[0]){
 
         result = {

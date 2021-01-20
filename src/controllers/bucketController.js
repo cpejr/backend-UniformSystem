@@ -17,7 +17,7 @@ const download = async (req, res, next) => {
     res.status(200).send(resultDownload.Body);
 
   } catch (error) {
-      console.log(error.message);
+      console.warn(error.message);
           
       res.status(500).json({
         message: error.message
@@ -103,15 +103,12 @@ const update = async (req, res, next) => {
 const remove = async (req, res, next) => {
     try {
 
+        console.log("🚀 ~ file: bucketController.js ~ line 111 ~ remove ~ req.query", req.query)
         // type jpg no caso (NECESSÁRIO ARMAZENAR O TYPE OU PADRONIZÁ-LO)
         const {
             type,
             name,
         } = req.query;
-
-        console.log('nome', name);
-        console.log('tipo', type);
-
         if(name !== 'Sem imagem' && type){
             // Verifica se existe. Caso, não, acusará erro
             await dowloadFile(name, type);
@@ -122,7 +119,7 @@ const remove = async (req, res, next) => {
         return next();
     } catch (error) {
 
-        console.log(error.message);
+        console.warn(error.message);
         
         res.status(500).json({
           message: error.message

@@ -27,9 +27,7 @@ module.exports ={
         message: 'Mudanças na Home Atualizadas'
       });
   
-    } catch (error) {
-      console.log(error.message);
-          
+    } catch (error) {          
       res.status(500).json({
       message: error.message
       });
@@ -95,8 +93,7 @@ module.exports ={
   
       } catch (error) {
   
-          console.log(error.message);
-          
+            
           res.status(500).json({
             message: "Internal server error."
           });
@@ -115,8 +112,7 @@ module.exports ={
         // res.status(200).send(resultDownload.Body);
     
       } catch (error) {
-          console.log(error.message);
-              
+                
           res.status(500).json({
             message: error.message
           });

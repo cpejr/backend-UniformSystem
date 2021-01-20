@@ -1,70 +1,44 @@
-const { response } = require('express');
-const connection = require ('../database/connection');
+const { response } = require("express");
+const connection = require("../database/connection");
 
 module.exports = {
-    async create(adress){
-        try {
-            const response = await connection('address').insert(adress);
-            console.log('address depois')
-            console.log(adress)
-            return response;
-        } catch (error) {
-            console.log(error.message);
-            throw new Error('Falha na criação de endereço.');
-        }
-    },
-    async read(){
-        try {
-            const response = await connection('address').select('*');
-            return response;
-        } catch (error) {
-            console.log(error.message);
-            throw new Error('Falha na leitura de endereço.');
-        }
-    },
-    async getById(id){
-        try {
-            const response = await connection('address').where('address_id', id).select('*').first();
-            return response;
-        } catch (error) {
-            console.log(error.message);
-            throw new Error('Falha na leitura de endereço.');
-        }
-    },
-    async getAdressByUserId(user_id){
-        try {
-            const response = await connection('address').where('user_id', user_id).select('*');
-            return response;
-        } catch (error) {
-            console.log(error.message);
-            throw new Error('Falha na leitura de endereço.');
-        }
-    },
-    async update(address_id, updated_fields){
-        try {
-            await connection ('address').where('address_id', address_id).update(updated_fields);
-            return response;
-        } catch (error) {
-            console.log(error.message);
-            return error;
-        }
-    },
-    async delete(address_id){
-        try {
-            const response = await connection ('address').where('address_id', address_id).del();
-            return response;
-        } catch (error) {
-            console.log(error.message);
-            throw new Error('Falha na exclusão de endereço.');
-        }
-    },
-    async deleteByUserId(user_id){
-        try{
-            const adresses = await connection('address').where('user_id',user_id).del();
-        }catch(error){
-            console.log(error)
-            // response.status(500).json('Internal server error')
-            throw new Error('Falha na exclusão de endereço.');
-        }
-    }
-}
+  async create(adress) {
+    const response = await connection("address").insert(adress);
+    return response;
+  },
+  async read() {
+    const response = await connection("address").select("*");
+    return response;
+  },
+  async getById(id) {
+    const response = await connection("address")
+      .where("address_id", id)
+      .select("*")
+      .first();
+    return response;
+  },
+  async getAdressByUserId(user_id) {
+    const response = await connection("address")
+      .where("user_id", user_id)
+      .select("*");
+    return response;
+  },
+  async update(address_id, updated_fields) {
+    await connection("address")
+      .where("address_id", address_id)
+      .update(updated_fields);
+    return response;
+  },
+  async delete(address_id) {
+    const response = await connection("address")
+      .where("address_id", address_id)
+      .del();
+    return response;
+  },
+  async deleteByUserId(user_id) {
+    const response = await connection("address")
+      .where("user_id", user_id)
+      .del();
+    return response;
+  },
+};

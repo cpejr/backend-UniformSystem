@@ -44,8 +44,6 @@ module.exports = {
       if (user.user_type === "client") {
         const { address } = request.body;
         address.user_id = resposta;
-        console.log('address antes')
-        console.log(address)
         await AdressModel.create(address);
       }
 
@@ -68,7 +66,6 @@ module.exports = {
         return response.status(500).json({message: "Cpf já existe."});
       }
 
-      console.warn(error);
       response.status(500).json({message: "Internal server error"});
     }
   },
@@ -80,9 +77,7 @@ module.exports = {
 
       const password = await FirebaseModel.sendPasswordChangeEmail(email);
       response.status(200).json({password});
-      console.log(password);
     }catch(error) {
-      console.log(error.message);
       response.status(500).json({
         message: error.message,
       });
@@ -95,7 +90,6 @@ module.exports = {
       const clients = await UsersModel.read({user_type: "client"});
       response.status(200).json({ clients });
     } catch (error) {
-      console.log(error.message);
       response.status(500).json("internal server error");
     }
   },
@@ -109,7 +103,6 @@ module.exports = {
         const adresses = await AdressModel.getAdressByUserId(user_id);
         response.status(200).json({ adresses });
     } catch (error) {
-      console.log(error.message);
       response.status(500).json("internal server error");
     }
   },
@@ -119,7 +112,6 @@ module.exports = {
       const employees = await UsersModel.getEmployeesAndAdm("adm");
       response.status(200).json({ employees });
     } catch (error) {
-      console.log(error.message);
       response.status(500).json("internal server error");
     }
   },
@@ -147,7 +139,6 @@ module.exports = {
 
       return response.status(200).json("Apagado com sucesso");
     } catch (error) {
-      console.log(error.message);
       return response.status(500).json("Internal server error");
     }
   },
@@ -174,7 +165,6 @@ module.exports = {
 
       return response.status(200).json("Adm apagado");
     } catch (error) {
-      console.log(error);
       return response.status(500).json("Internal Server Error");
     }
   },
@@ -196,7 +186,6 @@ module.exports = {
       await AdressModel.update(address_id, updatedFields);
       response.status(200).json("alterado com sucesso");
     } catch (error) {
-      console.log(error.message);
       response.status(500).json("internal server error");
     }
   },
@@ -216,7 +205,6 @@ module.exports = {
       await UsersModel.update(user_id, updatedFields);
       response.status(200).json("Alterado com sucesso");
     } catch (error) {
-      console.log(error.message);
       response.status(500).json("Internal server error");
     }
   },
@@ -238,7 +226,6 @@ module.exports = {
 
       response.status(200).json("Apagado com sucesso");
     } catch (error) {
-      console.log(error.message);
       response.status(500).json("internal server error");
     }
   },
@@ -251,7 +238,6 @@ module.exports = {
       // const { user_id } = request.params;
 
       const loggedUserId = request.session.user_id;
-      console.log(loggedUserId)
 
       address.user_id = loggedUserId;
 
@@ -259,7 +245,6 @@ module.exports = {
 
       response.status(200).json("Endereço adicionado com sucesso!");
     } catch (error) {
-      console.log(error);
       response.status(500).json("Internal server error");
     }
   },
