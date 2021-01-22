@@ -79,7 +79,6 @@ module.exports = {
             const productsInOrder = productIds.map((id, indexRequest) => {
                 // Achar o produto correspondente no vetor de models vindos do DB
                 indexDB = boughtProducts.map((product) => { return product.product_model_id; }).indexOf(id);
-                console.log("🚀 ~ file: orderController.js ~ line 82 ~ productsInOrder ~ indexDB", indexDB)
                 // Criando o objeto
                 
                 return {

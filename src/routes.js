@@ -21,8 +21,6 @@ const sessionValidator = require('./validators/sessionValidator')
 
 
 const upload = require('./utils/multer');
-const  bucketController = require('./controllers/bucketController');
-
 
 const { authenticateToken, isAdmin, isAdminOrEmployee, authenticateOptionalToken } = require('./middlewares/authentication');
 
@@ -44,7 +42,7 @@ routes.delete('/address/:address_id',celebrate(addressValidator.delete), authent
 
 // Product
 routes.post('/product', celebrate(productValidator.createProduct), authenticateToken, isAdmin, productController.createProduct);
-routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidator.addProductModel), bucketController.upload, productModelController.addProductModel);
+routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidator.addProductModel), productModelController.addProductModel);
 
 routes.get('/product', celebrate(productValidator.searchProducts), productController.searchProducts);
 routes.get('/product/:product_id', celebrate(productValidator.searchProductById), productController.searchProductById);
@@ -53,10 +51,10 @@ routes.get('/productmodels/:product_id', celebrate(productValidator.getProductMo
 routes.get('/productmodels', celebrate(productValidator.allModels),productController.allModels);
 
 routes.delete('/product/:product_id', celebrate(productValidator.deleteProduct), authenticateToken, isAdmin, productController.deleteProduct);
-routes.delete('/model/:model_id', celebrate(productValidator.deleteModel), authenticateToken, isAdmin, bucketController.remove, productModelController.deleteModel);
+routes.delete('/model/:model_id', celebrate(productValidator.deleteModel), authenticateToken, isAdmin, productModelController.deleteModel);
 
 routes.put('/product/:product_id',celebrate(productValidator.updateProduct), authenticateToken, isAdmin, productController.updateProduct);
-routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(productValidator.updateModel), bucketController.update, productModelController.updateModel);
+routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(productValidator.updateModel), productModelController.updateModel);
 
 
 //ProductInCart
@@ -88,13 +86,6 @@ routes.post('/login', celebrate(sessionValidator.signIn) , SessionController.sig
 routes.get('/verify', SessionController.verifyToken);
 routes.post('/sendpassword',  celebrate(sessionValidator.forgetPassword),userController.forgetPassword);
 
-
-// AWS Connection
-routes.post('/bucket/upload', upload, bucketController.upload);
-routes.get('/bucket/download', bucketController.download);
-routes.delete('/bucket/remove', bucketController.remove);
-
-
 // Deliver At Mail
 routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, orderController.deliverAtMail)
 
@@ -103,10 +94,10 @@ routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, or
 routes.put('/home/info', celebrate(homeValidator.update), homeController.updateInfo);
 routes.get('/home/info', homeController.readInfo);
 
-routes.post('/home/images', upload, celebrate(homeValidator.postHomeImage), bucketController.upload ,homeController.createImg);
+routes.post('/home/images', upload, celebrate(homeValidator.postHomeImage), homeController.createImg);
 
 routes.get('/home/images', celebrate(homeValidator.getHomeImage), homeController.downloadImg);
-routes.delete('/home/images', celebrate(homeValidator.deleteHomeImage), bucketController.remove ,homeController.removeImg);
+routes.delete('/home/images', celebrate(homeValidator.deleteHomeImage), homeController.removeImg);
 
 module.exports = routes;
 
