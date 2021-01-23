@@ -13,6 +13,13 @@ module.exports = {
       .select("*");
     return response;
   },
+  async getById(image_id) {
+    const response = await connection("homeImages")
+      .where({ image_id })
+      .select("*")
+      .first();
+    return response;
+  },
   async deleteImage(image_id) {
     const response = await connection("homeImages")
       .where("image_id", image_id)

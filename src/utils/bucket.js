@@ -8,8 +8,8 @@ const s3 = new AWS.S3({
 });
 
 const uploadFile = async (file, updateName) => {
-  buffer = file.buffer;
-  type = file.originalname.split(".");
+  let buffer = file.buffer;
+  let type = file.originalname.split(".");
   type = type[type.length - 1];
 
   const nameImage = updateName ? updateName : uuidv4();
@@ -28,7 +28,7 @@ const uploadFile = async (file, updateName) => {
     s3.upload(params, (error, _data) => {
       if (error) return reject(error);
       return resolve(
-        `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${name}.${type}`
+        `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${nameImage}.${type}`
       );
     });
   });

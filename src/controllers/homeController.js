@@ -51,7 +51,7 @@ module.exports = {
       };
 
       if (req.file) {
-        newImage.img_link = await AWS.uploadFile(req.file);
+        newImage.image_id = await AWS.uploadFile(req.file);
       } else {
         return res
           .status(404)
@@ -72,10 +72,16 @@ module.exports = {
 
   async removeImg(req, res) {
     try {
-      const { name, type } = req.query;
+      const image_id = req.params.image_id;
+      const image = HomeImageModel.getById(image_id);
+      if(!image){
+        return res.status(404).json({message: "Image not found"});
+      }
+      const name = image_id.slice(0, -4);
+      const type = image_id.slice(-3);
       await AWS.deleteFile(name, type);
 
-      await HomeImageModel.deleteImage(`${name}.${type}`);
+      await HomeImageModel.deleteImage(image_id);
 
       res.status(200).send({
         message: "Imagem apagada.",

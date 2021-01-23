@@ -18,8 +18,7 @@ module.exports = {
 
       if (product_model.file) {
         product_model.img_link = await AWS.uploadFile(product_model.file);
-      }
-      else {
+      } else {
         product_model.img_link = "Sem Imagem";
       }
       delete product_model.file;
@@ -41,18 +40,16 @@ module.exports = {
 
   async deleteModel(req, res) {
     const { model_id } = req.params;
-    const { type, name } = req.query;
     try {
-      const existingProductModelId = await ProductModelModel.findProductModelId(
-        model_id
-      );
-      if (
-        existingProductModelId === null ||
-        existingProductModelId === undefined
-      ) {
+      const existingProductModel = await ProductModelModel.getByIdArray([
+        model_id,
+      ]);
+      if (existingProductModel.length === 0) {
         res.status(404).json("Product model does not exist");
       }
-      if (name !== "Sem imagem" && type) {
+      if (existingProductModel.img_link !== "Sem imagem") {
+        const name = existingProductModel.img_link.slice(0, -4);
+        const type = existingProductModel.img_link.slice(-3);
         await AWS.deleteFile(name, type);
       }
       await ProductModelModel.delete(existingProductModelId);
@@ -68,16 +65,22 @@ module.exports = {
     const { model_id } = req.params;
     const updated_fields = req.body;
     try {
-      const existingProductModel = await ProductModelModel.getByIdArray(
-        [model_id]
+      const existingProductModel = await ProductModelModel.getByIdArray([
+        model_id,
+      ]);
+      if (!existingProductModel.length === 0) {
+        return res.status(404).json({ message: "Model not found" });
+      }
+      if (req.file) {
+        updated_fields.img_link = await AWS.upload(
+          req.file,
+          existingProductModel[0].img_link
+        );
+      }
+      await ProductModelModel.update(
+        existingProductModel[0].product_model_id,
+        updated_fields
       );
-      if (!existingProductModel.length===0) {
-        return res.status(404).json({message: "Model not found"});
-      }
-      if(req.file){
-        updated_fields.img_link = await AWS.upload(req.file, existingProductModel[0].img_link);
-      }
-      await ProductModelModel.update(existingProductModel[0].product_model_id, updated_fields);
       return res
         .status(200)
         .json("Informações do modelo da camisa atualizadas com sucesso");

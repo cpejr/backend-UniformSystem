@@ -33,9 +33,8 @@ homeValidator.getHomeImage = {
 };
 
 homeValidator.deleteHomeImage = {
-    [Segments.QUERY]: Joi.object().keys({
-        name: Joi.string().required(),
-        type: Joi.string().required(),
+    [Segments.PARAMS]: Joi.object().keys({
+        image_id: Joi.string().required()
     }),
 };
 

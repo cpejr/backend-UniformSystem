@@ -97,7 +97,7 @@ routes.get('/home/info', homeController.readInfo);
 routes.post('/home/images', upload, celebrate(homeValidator.postHomeImage), homeController.createImg);
 
 routes.get('/home/images', celebrate(homeValidator.getHomeImage), homeController.downloadImg);
-routes.delete('/home/images', celebrate(homeValidator.deleteHomeImage), homeController.removeImg);
+routes.delete('/home/images/:image_id', celebrate(homeValidator.deleteHomeImage), homeController.removeImg);
 
 module.exports = routes;
 
