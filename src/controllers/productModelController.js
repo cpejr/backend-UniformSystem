@@ -92,22 +92,29 @@ module.exports = {
   },
 
   async getProductModel(req, res) {
-    const { product_id } = req.params;
+    const search_product_id = req.params.product_id;
+    const query = req.query;
     try {
-      const existingProductId = await ProductModel.findProductId(product_id);
-      if (existingProductId === undefined || existingProductId === null) {
-        res.status(404).json({
+      const {product_id} = await ProductModel.findProductId(search_product_id);
+      
+      if (product_id === undefined || product_id === null) {
+        return res.status(404).json({
           message: "This product does not exist",
         });
       }
+      let filters= {};
+      Object.keys(query).forEach((key) => {
+        filters[`product_model.${key}`] = query[key];
+      });
       const productFound = await ProductModel.getProductsAndItsAllModels(
-        existingProductId
+        product_id,
+        filters
       );
 
       return res.status(200).json(productFound);
     } catch (err) {
       return res.status(400).json({
-        message: err.message,
+        message: "Internal Server error"
       });
     }
   },

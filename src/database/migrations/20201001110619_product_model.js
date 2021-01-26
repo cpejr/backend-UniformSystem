@@ -8,6 +8,7 @@ exports.up = function(knex) {
         table.foreign('product_id').references('product_id').inTable('product').onDelete('CASCADE');
         table.string('model_description').notNullable();
         table.enum('gender', ['M', 'F']).nullable();
+        table.boolean('available').notNullable();
     });
         
 };

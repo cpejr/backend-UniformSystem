@@ -5,6 +5,7 @@ module.exports = {
       const newModel = {
         ...newProductModel,
         product_id,
+        available: true
       };
       const response = await connection("product_model").insert(newModel);
       return response;
@@ -12,6 +13,7 @@ module.exports = {
 
 
   async createAll(productModels) {
+      productModels.forEach(productModel=>{productModel.available = true})
       const response = await connection("product_model").insert(productModels);
       return response;
     },
@@ -31,12 +33,19 @@ module.exports = {
     return response;
   },
 
-  async getByIdArray(idList, fields = "*") {
-    const response = await connection("product_model")
-      .whereIn("product_model_id", idList)
-      .select(fields);
-
-
+  async getByIdArray(idList, fields = "*", filters) {
+    let response;
+    if(filters){
+      response = await connection("product_model")
+        .whereIn("product_model_id", idList)
+        .where(filters)
+        .select(fields);
+    }
+    else{
+      response = await connection("product_model")
+        .whereIn("product_model_id", idList)
+        .select(fields);
+    }
     return response;
   },
 
@@ -55,4 +64,5 @@ module.exports = {
 
     return response;
   },
+
 };

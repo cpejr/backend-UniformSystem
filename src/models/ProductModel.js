@@ -19,10 +19,12 @@ module.exports = {
     page = 1,
     product_type,
     gender,
+    available,
   }) {
     const filter = {};
 
     if (product_type) filter["product.product_type"] = product_type;
+    if (available) filter["product_model.available"] = available;
 
     let genderFilterGroup;
 
@@ -131,12 +133,13 @@ module.exports = {
     return response;
   },
 
-  async getProductsAndItsAllModels(product_id) {
+  async getProductsAndItsAllModels(product_id, filters) {
     const response = await connection("product")
     .select("*")
     .join("product_model", "product.product_id", "product_model.product_id")
     .where({
       "product.product_id": product_id,
+      ...filters
     });
     
     let result;
@@ -154,6 +157,7 @@ module.exports = {
               price: item.price,
               model_description: item.model_description,
               gender: item.gender,
+              available: item.available,
             };
           }),
         };

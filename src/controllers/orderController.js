@@ -11,8 +11,12 @@ module.exports = {
         try {
             const { address_id, products } = req.body;
 
+
             // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
             const address = await AdressModel.getById(address_id);
+            if(!adress){
+                return res.status(404).json({message: "Adress not found"})
+            }
 
             //API CORREIOS
             const args = {
@@ -65,12 +69,13 @@ module.exports = {
             //Busca no DB os produtos comprados, para ver se todos existem
             const boughtProducts = await ProductModelModel.getByIdArray(
                 uniqueIds,
-                "product_model_id price".split(" ")
+                "product_model_id price".split(" "),
+                {available: true}
             );
 
             //Compara para ver se todos os models pedidos existem no DB 
             if(uniqueIds.length !== boughtProducts.length) {
-                return res.status(404).json({message: "Some of the products you're ordering don't exist"});
+                return res.status(404).json({message: "Some of the products you're ordering don't exist or are not available"});
             }
 
             //Para cada produto no pedido, alguns dados vem da requisição e outros do DB de models

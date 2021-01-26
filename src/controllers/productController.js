@@ -25,6 +25,7 @@ module.exports = {
         product_id: createdProductId[0],
       });
     } catch (err) {
+      console.warn(err);
       res.status(500).json("Internal server error.");
     }
   },
