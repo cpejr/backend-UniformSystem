@@ -47,16 +47,17 @@ module.exports = {
       if (existingProductModel.length === 0) {
         res.status(404).json("Product model does not exist");
       }
-      if (existingProductModel.img_link !== "Sem imagem") {
-        const name = existingProductModel.img_link.slice(0, -4);
-        const type = existingProductModel.img_link.slice(-3);
+      if (existingProductModel[0].img_link !== "Sem imagem") {
+        const name = existingProductModel[0].img_link.slice(0, -4);
+        const type = existingProductModel[0].img_link.slice(-3);
         await AWS.deleteFile(name, type);
       }
-      await ProductModelModel.delete(existingProductModelId);
+      await ProductModelModel.delete(model_id);
       return res.status(200).json({
         message: "Modelo da camisa apagado com sucesso.",
       });
     } catch (err) {
+      console.warn(err);
       res.status(500).json("Internal server error.");
     }
   },
@@ -72,7 +73,7 @@ module.exports = {
         return res.status(404).json({ message: "Model not found" });
       }
       if (req.file) {
-        updated_fields.img_link = await AWS.upload(
+        updated_fields.img_link = await AWS.uploadFile(
           req.file,
           existingProductModel[0].img_link
         );
@@ -85,6 +86,7 @@ module.exports = {
         .status(200)
         .json("Informações do modelo da camisa atualizadas com sucesso");
     } catch (err) {
+      console.warn(err);
       res.status(500).json("Internal server error.");
     }
   },

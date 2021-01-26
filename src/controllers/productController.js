@@ -109,9 +109,10 @@ module.exports = {
     try {
       const existingProductId = await ProductModel.findProductId(product_id);
       await ProductModel.update(existingProductId, updated_fields);
-      res.status(200).json("Informações da camisa atualizadas com sucesso");
+      return res.status(200).json("Informações da camisa atualizadas com sucesso");
     } catch (err) {
-      res.status(500).json("Internal server error.");
+      console.warn(err);
+      return res.status(500).json("Internal server error.");
     }
   },
 
