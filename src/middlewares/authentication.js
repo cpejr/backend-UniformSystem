@@ -6,18 +6,20 @@ module.exports = {
     const [scheme, token] = authHeader
       ? authHeader.split(" ")
       : [undefined, undefined];
+    
+    const tokenVerified = token.includes(',') ?  token.split(',')[0] : token;
 
-    if (!token || token === null)
+    if (!tokenVerified || tokenVerified === null)
       return response.status(401).json({ error: "No token provided" });
 
     if (!/^Bearer$/i.test(scheme))
       return response.status(401).json({ error: "Token badformatted" });
 
     const validToken = await new Promise((res) => {
-      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+      jwt.verify(tokenVerified, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) return res(false);
         request.session = user.user[0];
-
+        
         return res(true);
       });
     });
