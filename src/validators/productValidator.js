@@ -26,7 +26,6 @@ productValidator.searchProductById = {
     description: Joi.string().required(),
     product_type: Joi.string().required(),
     models: Joi.array().items({
-      is_main: Joi.boolean().required(),
       img_link: Joi.string(),
       price: Joi.number().required(),
       gender: Joi.valid("M", "F").required(),
@@ -41,7 +40,6 @@ productValidator.searchProductById = {
     }),
     [Segments.BODY]: Joi.object().keys({
       file: Joi.string().optional().empty(''),
-      is_main: Joi.boolean().required(),
       img_link: Joi.string().required(),
       price: Joi.number().required(),
       gender: Joi.valid("M", "F").required(),
@@ -102,7 +100,6 @@ productValidator.searchProductById = {
       //     model_description: Joi.string().required(),
       // }).required()
       file: Joi.string().optional(),
-      is_main: Joi.boolean().optional(),
       img_link: Joi.string().optional(),
       price: Joi.number().optional(),
       gender: Joi.valid("M", "F").optional(),

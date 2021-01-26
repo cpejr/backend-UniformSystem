@@ -14,7 +14,7 @@ module.exports = {
       return response;
   },
 
-  async getProductsAndItsRespectiveMainModels({
+  async getProductsAndOneOfItsModels({
     name,
     page = 1,
     product_type,
@@ -31,7 +31,7 @@ module.exports = {
       genderFilterGroup = await connection("product_model")
         .select("product_id")
         .where({ gender })
-        .distinct("product_id");
+        .groupBy("product.product_id");
 
       genderFilterGroup = genderFilterGroup.map(
         (product) => product.product_id
@@ -42,9 +42,9 @@ module.exports = {
       .select("*")
       .join("product_model", "product.product_id", "product_model.product_id")
       .where({
-        "product_model.is_main": true,
         ...filter,
-      });
+      })
+      .groupBy("product.product_id");
 
     // Gender filter
     if (gender) query = query.whereIn("product.product_id", genderFilterGroup);
@@ -74,7 +74,6 @@ module.exports = {
         product_type: item.product_type,
         models: {
           product_model_id: item.product_model_id,
-          is_main: item.is_main,
           img_link: item.img_link,
           price: item.price,
           model_description: item.model_description,
@@ -116,9 +115,7 @@ module.exports = {
       .select()
       .count("product.product_id as count")
       .join("product_model", "product.product_id", "product_model.product_id")
-      .where({
-        is_main: true,
-      })
+      .distinct("product.product_id")
       .first();
 
     return response;
@@ -142,7 +139,6 @@ module.exports = {
       "product.product_id": product_id,
     });
     
-    console.log("🚀 ~ file: ProductModel.js ~ line 139 ~ getProductsAndItsAllModels ~ response", response)
     let result;
     if(response[0]){
 
@@ -154,7 +150,6 @@ module.exports = {
           models: response.map((item) => {
             return {
               product_model_id: item.product_model_id,
-              is_main: item.is_main,
               img_link: item.img_link,
               price: item.price,
               model_description: item.model_description,

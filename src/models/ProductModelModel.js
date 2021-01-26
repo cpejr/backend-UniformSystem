@@ -23,17 +23,6 @@ module.exports = {
       return response[0];
     },
 
-  async getMainProduct(id) {
-    const response = await connection("product_model")
-      .where({
-        product_id: id,
-        is_main: true,
-      })
-      .select("*");
-
-    return response;
-  },
-
   async getModelsByProductId(id) {
     const response = await connection("product_model")
       .where({product_id: id})
