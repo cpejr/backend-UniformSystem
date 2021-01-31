@@ -10,11 +10,11 @@ addressValidator.addToCart = {
   //ok
   [Segments.BODY]: Joi.object().keys({
     product_model_id: Joi.number().integer().required(),
-    /* size: Joi.string().required(), comentado pois talvez seja melhor*/
     //não se esses tamanhos já servem:
     size: Joi.string().valid("PP", "P", "M", "G", "GG", "XG").required(),
     amount: Joi.number().integer().required(),
-    logo_link: Joi.string(), //a logo é opcional?
+    logo_link: Joi.optional(), //a logo é opcional?
+    isLogoUpload: Joi.boolean(),
   }),
 };
 

@@ -35,7 +35,7 @@ routes.get('/employees', authenticateToken, isAdmin, userController.allEmployees
 
 routes.post('/sendpassword', userController.forgetPassword);
 
-routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
+routes.get('/address', authenticateToken, userController.getAdresses);
 routes.post('/address/:user_id', celebrate(addressValidate.create), authenticateToken, userController.addAddress);
 routes.put('/address/:address_id', celebrate(addressValidate.update), authenticateToken, userController.updateAddress);
 routes.delete('/address/:address_id',celebrate(addressValidate.delete), authenticateToken, userController.deleteAddress);
@@ -60,7 +60,7 @@ routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(pro
 
 //ProductInCart
 routes.get('/cart', authenticateToken, cartController.getCart);
-routes.put('/addtocart', celebrate(cartValidate.addToCart), authenticateToken, cartController.addToCart);
+routes.put('/addtocart', upload, celebrate(cartValidate.addToCart), authenticateToken, bucketController.upload, cartController.addToCart);
 routes.put('/cart/:product_in_cart_id', celebrate(cartValidate.updateCart), authenticateToken, cartController.updateCart);
 routes.delete('/cart/:product_in_cart_id', celebrate(cartValidate.removeFromCart), authenticateToken, cartController.removeFromCart);
 routes.delete('/emptycart', celebrate(cartValidate.emptyCart), authenticateToken, cartController.emptyCart);

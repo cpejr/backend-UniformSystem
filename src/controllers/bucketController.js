@@ -27,24 +27,37 @@ const download = async (req, res, next) => {
 
 const upload = async (req, res, next) => {
     try {
+        console.log('teste aqui')
         const { file } = req;
+        const { isLogoUpload } = req.body;
         let buffer;
         let type;
-
+        
         if (file) {
             buffer = req.file.buffer;
             type = req.file.originalname.split('.');
             type = type[type.length - 1];
-
+            
             const nameImage = uuidv4();
-
-            req.body.img_link = nameImage+`.${type}`;
+            console.log('logo aaa', isLogoUpload)
+            // Para upload de logo
+            if(!isLogoUpload){
+                req.body.img_link = nameImage+`.${type}`;
+            }else{
+                // Para upload de imagem
+                req.body.logo_link = nameImage+`.${type}`;
+                console.log('isLogo aqui')
+            }
             
             newURL = await uploadFile(nameImage, type, buffer);
         }else{
-            req.body.img_link = 'Sem imagem';
+            if(!isLogoUpload){
+                req.body.img_link = 'Sem imagem';
+            }else{
+                req.body.logo_link = 'Sem imagem';
+            }
         }
-        
+        console.log('next')
         return next();
     } catch (error) {
         
