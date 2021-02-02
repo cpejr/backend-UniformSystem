@@ -11,6 +11,7 @@ module.exports={
                 size: req.body.size,
                 amount: req.body.amount,
                 logo_link: req.body.logo_link,
+                gender: req.body.gender,
             };
             productInCart.user_id = user_id;
 

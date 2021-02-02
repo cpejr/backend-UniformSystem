@@ -14,6 +14,7 @@ addressValidator.addToCart = {
     size: Joi.string().valid("PP", "P", "M", "G", "GG", "XG").required(),
     amount: Joi.number().integer().required(),
     logo_link: Joi.optional(), //a logo é opcional?
+    gender: Joi.string().valid("M", "F").required(),
     isLogoUpload: Joi.boolean(),
   }),
 };

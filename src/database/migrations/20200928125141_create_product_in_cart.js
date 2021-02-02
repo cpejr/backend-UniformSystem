@@ -7,7 +7,7 @@ exports.up = function(knex) {
         table.string('product_model_id').notNullable();
         table.integer('amount').notNullable();
         table.string('logo_link');
-        table.string('text');
+        table.enu('gender', ['M', 'F']).notNullable();
         table.string('size').notNullable();
     });
 };
