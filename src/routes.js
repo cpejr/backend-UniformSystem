@@ -32,7 +32,7 @@ routes.put('/user/:user_id', celebrate(userValidate.update), authenticateToken, 
 
 routes.get('/user', authenticateToken, isAdmin, userController.allClients);
 routes.get('/employees', authenticateToken, isAdmin, userController.allEmployees);
-
+routes.get('/employees/:user_id', authenticateToken, isAdmin, userController.searchUserById);
 routes.post('/sendpassword', userController.forgetPassword);
 
 routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
@@ -80,6 +80,7 @@ routes.get('/order', celebrate(orderValidate.getOrders), authenticateToken, isAd
 routes.get('/userorder/:user_id', celebrate(orderValidate.getUserOrder), authenticateToken, orderController.getUserOrder);
 routes.get('/productsfromorder/:order_id', celebrate(orderValidate.getProductsFromOrder), authenticateToken, orderController.getProductsFromOrder);
 routes.get('/shipping/:zip', celebrate(orderValidate.getShipping), orderController.getShipping);
+routes.get('/shipping/deliveredby/:user_id', authenticateToken, orderController.getOrderData);
 
 
 // Session

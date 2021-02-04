@@ -22,6 +22,21 @@ module.exports = {
             throw new Error('Falha na atualização dos dados de frete.');
         }
     },
+
+    async getByUser(userId) {
+        const response = await connection("shipping_data")
+          .join(
+            "order",
+            "shipping_data.shipping_data_id",
+            "order.shipping_data_id"
+          )
+          .where("delivered_by", userId)
+          .select(
+            "order.*"
+          );
+        return response;
+    },
+
     async delete(shipping_data_id){
         try {
             const response = await connection('shipping_data')
