@@ -11,8 +11,12 @@ module.exports = {
         try {
             const { address_id, products } = req.body;
 
+
             // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
             const address = await AdressModel.getById(address_id);
+            if(!adress){
+                return res.status(404).json({message: "Adress not found"})
+            }
 
             //API CORREIOS
             const args = {
@@ -50,35 +54,46 @@ module.exports = {
             };
 
             const createdOrder_id = await OrderModel.create(order);
+
             // Criação dos produtos do pedido:
-            //Pega os id's dos products da requisicao para buscá-los no DB
+            //Pega os id's dos products
             const productIds = products.map((item) => {
                 return item.product_model_id;
             });
+            
+            //Retira os ids repetidos, para o caso de pedir o mesmo model de tamanhos diferentes
+            const uniqueIds = productIds.filter(function(item, pos, self) {
+                return self.indexOf(item) == pos;
+            })
 
-            //Busca no DB os produtos comprados
+            //Busca no DB os produtos comprados, para ver se todos existem
             const boughtProducts = await ProductModelModel.getByIdArray(
-                productIds,
-                "product_model_id price".split(" ")
+                uniqueIds,
+                "product_model_id price".split(" "),
+                {available: true}
             );
 
-            if (boughtProducts.length !== productIds.length) {
-                return res.status(404).json({
-                    message: "Some of your products doesn't exist :(",
-                });
+            //Compara para ver se todos os models pedidos existem no DB 
+            if(uniqueIds.length !== boughtProducts.length) {
+                return res.status(404).json({message: "Some of the products you're ordering don't exist or are not available"});
             }
-            //Criando o vetor de produtos no pedido, pegando dados do vetor retornado do DB e o respectivo objeto vindo da requisição;
-            let index;
-            const productsInOrder = boughtProducts.map((item) => {
-                index = productIds.indexOf(item.product_model_id);
+
+            //Para cada produto no pedido, alguns dados vem da requisição e outros do DB de models
+            let indexDB;
+            // Percorrer o vetor de produtos na requisição;
+            const productsInOrder = productIds.map((id, indexRequest) => {
+                // Achar o produto correspondente no vetor de models vindos do DB
+                indexDB = boughtProducts.map((product) => { return product.product_model_id; }).indexOf(id);
+                // Criando o objeto
+                
                 return {
                     order_id: createdOrder_id,
-                    product_model_id: item.product_model_id,
-                    product_price: item.price,
-                    amount: products[index].amount,
-                    logo_link: products[index].logo_link,
+                    product_model_id: id,
+                    product_price: boughtProducts[indexDB].price,
+                    amount: products[indexRequest].amount,
+                    logo_link: products[indexRequest].logo_link,
                     discount: 0,
-                    size: products[index].size,
+                    size: products[indexRequest].size,
                 };
             });
             // Manda o vetor para o model criar os produtos no DB
@@ -86,12 +101,12 @@ module.exports = {
             await ProductInCartModel.deleteByUser(user_id);
 
             // Se tudo deu certo, retorna que deu tudo certo
-            res.status(200).json({
+            return res.status(200).json({
                 message: "Pedido efetuado com sucesso",
             });
         } catch (err) {
             console.warn(err.message);
-            res.status(500).json("Internal server error.");
+            return res.status(500).json("Internal server error.");
         }
     },
 
@@ -128,7 +143,6 @@ module.exports = {
                 message: "Order atualizada com sucesso",
             });
         } catch (err) {
-            console.log(err.message);
             res.status(500).json("Internal server error.");
         }
     },
@@ -153,7 +167,6 @@ module.exports = {
                 message: "Order deletada com sucesso",
             });
         } catch (err) {
-            console.log(err.message);
             res.status(500).json("Internal server error.");
         }
     },
@@ -170,7 +183,6 @@ module.exports = {
 
             res.status(200).json(result);
         } catch (err) {
-            console.log(err.message);
             res.status(500).json("Internal server error.");
         }
     },
@@ -188,7 +200,6 @@ module.exports = {
 
             res.status(200).json(result);
         } catch (err) {
-            console.log(err.message);
             res.status(500).json("Internal server error.");
         }
     },
@@ -202,7 +213,6 @@ module.exports = {
 
             res.status(200).json(result);
         } catch (err) {
-            console.log(err.message);
             res.status(500).json("Internal server error.");
         }
     },
@@ -236,7 +246,6 @@ module.exports = {
                 message: "Order Address atualizada com sucesso",
             });
         } catch (err) {
-            console.log(err.message);
             res.status(500).json("Internal server error.");
         }
     },
@@ -269,7 +278,6 @@ module.exports = {
                 message: "Status da order atualizada sucesso!",
             });
         } catch (err) {
-            console.log(err.message);
             res.status(500).json("Internal server error.");
         }
     },

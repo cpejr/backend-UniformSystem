@@ -8,103 +8,96 @@ const cartController = require ('./controllers/cartController')
 const orderController = require ('./controllers/orderController')
 const SessionController = require ('./controllers/SessionController')
 const homeController = require ('./controllers/homeController')
+const productModelController = require('./controllers/productModelController');
 
 //importando validators
-const userValidate = require('./validators/userValidator')
-const addressValidate = require('./validators/addressValidator')
-const cartValidate = require('./validators/cartValidator')
-const orderValidate = require('./validators/orderValidator');
-const productValidate = require('./validators/productValidator')
-const homeValidate = require('./validators/homeValidator')
+const userValidator = require('./validators/userValidator')
+const addressValidator = require('./validators/addressValidator')
+const cartValidator = require('./validators/cartValidator')
+const orderValidator = require('./validators/orderValidator');
+const productValidator = require('./validators/productValidator')
+const homeValidator = require('./validators/homeValidator')
+const sessionValidator = require('./validators/sessionValidator')
 
 
 const upload = require('./utils/multer');
-const  bucketController = require('./controllers/bucketController');
-
 
 const { authenticateToken, isAdmin, isAdminOrEmployee, authenticateOptionalToken } = require('./middlewares/authentication');
 
 //Routes para o user
-routes.post('/user', celebrate(userValidate.create), authenticateOptionalToken, userController.createUser);
-routes.delete('/delUserClient/:user_id', celebrate(userValidate.deleteClient), authenticateToken, userController.deleteUserClient);
-routes.delete('/delAdmOrEmployee/:user_id', celebrate(userValidate.deleteAdmin), authenticateToken, isAdmin, userController.deleteAdmOrEmployee);
-routes.put('/user/:user_id', celebrate(userValidate.update), authenticateToken, userController.updateUser);
+routes.post('/user', celebrate(userValidator.create), authenticateOptionalToken, userController.createUser);
+routes.delete('/delUserClient/:user_id', celebrate(userValidator.deleteClient), authenticateToken, userController.deleteUserClient);
+routes.delete('/delAdmOrEmployee/:user_id', celebrate(userValidator.deleteAdmin), authenticateToken, isAdmin, userController.deleteAdmOrEmployee);
+routes.put('/user/:user_id', celebrate(userValidator.update), authenticateToken, userController.updateUser);
 
 routes.get('/user', authenticateToken, isAdmin, userController.allClients);
 routes.get('/employees', authenticateToken, isAdmin, userController.allEmployees);
 
-routes.post('/sendpassword', userController.forgetPassword);
 
-routes.get('/address', authenticateToken, userController.getAdresses);
-routes.post('/address/:user_id', celebrate(addressValidate.create), authenticateToken, userController.addAddress);
-routes.put('/address/:address_id', celebrate(addressValidate.update), authenticateToken, userController.updateAddress);
-routes.delete('/address/:address_id',celebrate(addressValidate.delete), authenticateToken, userController.deleteAddress);
+routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
+routes.post('/address/:user_id', celebrate(addressValidator.create), authenticateToken, userController.addAddress);
+routes.put('/address/:address_id', celebrate(addressValidator.update), authenticateToken, userController.updateAddress);
+routes.delete('/address/:address_id',celebrate(addressValidator.delete), authenticateToken, userController.deleteAddress);
 
 
 // Product
-routes.post('/product', celebrate(productValidate.createProduct), authenticateToken, isAdmin, productController.createProduct);
-routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidate.addProductModel), bucketController.upload, productController.addProductModel);
+routes.post('/product', celebrate(productValidator.createProduct), authenticateToken, isAdmin, productController.createProduct);
+routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidator.addProductModel), productModelController.addProductModel);
 
-routes.get('/product', celebrate(productValidate.searchProducts), productController.searchProducts);
-routes.get('/product/:product_id', celebrate(productValidate.searchProductById), productController.searchProductById);
+routes.get('/product', celebrate(productValidator.searchProducts), productController.searchProducts);
+routes.get('/product/:product_id', celebrate(productValidator.searchProductById), productController.searchProductById);
 
-routes.get('/productmodels/:product_id', celebrate(productValidate.getProductModel), productController.getProductModel);
-routes.get('/productmodels', celebrate(productValidate.allModels),productController.allModels);
+routes.get('/productmodels/:product_id', celebrate(productValidator.getProductModel), productModelController.getProductModel);
+routes.get('/productmodels', celebrate(productValidator.allModels),productController.allModels);
 
-routes.delete('/product/:product_id', celebrate(productValidate.deleteProduct), authenticateToken, isAdmin, productController.deleteProduct);
-routes.delete('/model/:model_id', celebrate(productValidate.deleteModel), authenticateToken, isAdmin, bucketController.remove, productController.deleteModel);
+routes.delete('/product/:product_id', celebrate(productValidator.deleteProduct), authenticateToken, isAdmin, productController.deleteProduct);
+routes.delete('/model/:model_id', celebrate(productValidator.deleteModel), authenticateToken, isAdmin, productModelController.deleteModel);
 
-routes.put('/product/:product_id',celebrate(productValidate.updateProduct), authenticateToken, isAdmin, productController.updateProduct);
-routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(productValidate.updateModel), bucketController.update, productController.updateModel);
+routes.put('/product/:product_id',celebrate(productValidator.updateProduct), authenticateToken, isAdmin, productController.updateProduct);
+routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(productValidator.updateModel), productModelController.updateModel);
 
 
 //ProductInCart
 routes.get('/cart', authenticateToken, cartController.getCart);
-routes.put('/addtocart', upload, celebrate(cartValidate.addToCart), authenticateToken, bucketController.upload, cartController.addToCart);
-routes.put('/cart/:product_in_cart_id', celebrate(cartValidate.updateCart), authenticateToken, cartController.updateCart);
-routes.delete('/cart/:product_in_cart_id', celebrate(cartValidate.removeFromCart), authenticateToken, cartController.removeFromCart);
-routes.delete('/emptycart', celebrate(cartValidate.emptyCart), authenticateToken, cartController.emptyCart);
+routes.put('/addtocart', celebrate(cartValidator.addToCart), authenticateToken, cartController.addToCart);
+routes.put('/cart/:product_in_cart_id', celebrate(cartValidator.updateCart), authenticateToken, cartController.updateCart);
+routes.delete('/cart/:product_in_cart_id', celebrate(cartValidator.removeFromCart), authenticateToken, cartController.removeFromCart);
+routes.delete('/emptycart', celebrate(cartValidator.emptyCart), authenticateToken, cartController.emptyCart);
 
 
 // Order Address Model
-// routes.post('/orderaddress', celebrate(orderValidate.createOrderAddress), authenticateToken, orderController.createOrderAddress);
-routes.put('/orderaddress/:order_address_id', celebrate(orderValidate.updateOrderAddress), authenticateToken, orderController.updateOrderAddress);
-// routes.delete('/orderaddress/:order_address_id', celebrate(orderValidate.deleteOrderAddress), authenticateToken, orderController.deleteOrderAddress);
+// routes.post('/orderaddress', celebrate(orderValidator.createOrderAddress), authenticateToken, orderController.createOrderAddress);
+routes.put('/orderaddress/:order_address_id', celebrate(orderValidator.updateOrderAddress), authenticateToken, orderController.updateOrderAddress);
+// routes.delete('/orderaddress/:order_address_id', celebrate(orderValidator.deleteOrderAddress), authenticateToken, orderController.deleteOrderAddress);
 
 
 // Order 
-routes.post('/order',celebrate(orderValidate.create), authenticateToken, orderController.createOrder);
-routes.put('/order/:order_id', celebrate(orderValidate.update), authenticateToken, isAdminOrEmployee, orderController.updateOrder);
-routes.delete('/order/:order_id', celebrate(orderValidate.delete), authenticateToken, orderController.deleteOrder);
-routes.get('/order', celebrate(orderValidate.getOrders), authenticateToken, isAdminOrEmployee, orderController.getOrders);
-routes.get('/userorder/:user_id', celebrate(orderValidate.getUserOrder), authenticateToken, orderController.getUserOrder);
-routes.get('/productsfromorder/:order_id', celebrate(orderValidate.getProductsFromOrder), authenticateToken, orderController.getProductsFromOrder);
-routes.get('/shipping/:zip', celebrate(orderValidate.getShipping), orderController.getShipping);
+routes.post('/order',celebrate(orderValidator.create), authenticateToken, orderController.createOrder);
+routes.put('/order/:order_id', celebrate(orderValidator.update), authenticateToken, isAdminOrEmployee, orderController.updateOrder);
+routes.delete('/order/:order_id', celebrate(orderValidator.delete), authenticateToken, orderController.deleteOrder);
+routes.get('/order', celebrate(orderValidator.getOrders), authenticateToken, isAdminOrEmployee, orderController.getOrders);
+routes.get('/userorder/:user_id', celebrate(orderValidator.getUserOrder), authenticateToken, orderController.getUserOrder);
+routes.get('/productsfromorder/:order_id', celebrate(orderValidator.getProductsFromOrder), authenticateToken, orderController.getProductsFromOrder);
+routes.get('/shipping/:zip', celebrate(orderValidator.getShipping), orderController.getShipping);
 
 
 // Session
-routes.post('/login', SessionController.signin);
+routes.post('/login', celebrate(sessionValidator.signIn) , SessionController.signin);
 routes.get('/verify', SessionController.verifyToken);
-
-
-// AWS Connection
-routes.post('/bucket/upload', upload, bucketController.upload);
-routes.get('/bucket/download', bucketController.download);
-routes.delete('/bucket/remove', bucketController.remove);
-
+routes.post('/sendpassword',  celebrate(sessionValidator.forgetPassword),userController.forgetPassword);
 
 // Deliver At Mail
 routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, orderController.deliverAtMail)
 
 
 // Home
-routes.put('/home/info', celebrate(homeValidate.update), homeController.updateInfo);
+routes.put('/home/info', celebrate(homeValidator.update), homeController.updateInfo);
 routes.get('/home/info', homeController.readInfo);
 
-routes.post('/home/images', upload, celebrate(homeValidate.postHomeImage), bucketController.upload ,homeController.createImg);
+routes.post('/home/images', upload, celebrate(homeValidator.postHomeImage), homeController.createImg);
 
-routes.get('/home/images', celebrate(homeValidate.getHomeImage), homeController.downloadImg);
-routes.delete('/home/images', celebrate(homeValidate.deleteHomeImage), bucketController.remove ,homeController.removeImg);
+routes.get('/home/images', celebrate(homeValidator.getHomeImage), homeController.downloadImg);
+routes.delete('/home/images/:image_id', celebrate(homeValidator.deleteHomeImage), homeController.removeImg);
 
 module.exports = routes;
 

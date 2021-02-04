@@ -14,7 +14,6 @@ var firebaseConfig = {
   appId: process.env.FIREBASE_APPID,
   measurementId: process.env.FIREBASE_MEASUREMENTID,
 };
-console.log(firebaseConfig);
 
 firebase.initializeApp(firebaseConfig);
 
@@ -52,7 +51,7 @@ module.exports = {
           resolve(result);
         })
         .catch((error) => {
-          console.log(error);
+
           const errorMessage = error.message;
           reject(errorMessage);
         });
@@ -70,7 +69,7 @@ module.exports = {
           resolve(result);
         })
         .catch((error) => {
-          console.log(error);
+
           const errorMessage = error.message;
           reject(errorMessage);
         });
@@ -86,7 +85,7 @@ module.exports = {
           resolve(result);
         })
         .catch((error) => {
-          console.log(error);
+
           const errorMessage = error;
           reject(error);
         });
@@ -104,7 +103,7 @@ module.exports = {
           resolve(result);
         })
         .catch((error) => {
-          console.log(error);
+
           const errorMessage = error.message;
           reject(errorMessage);
         });
@@ -124,7 +123,7 @@ module.exports = {
           resolve(emails);
         })
         .catch((error) => {
-          console.log(error);
+
           const errorMessage = error.message;
           reject(errorMessage);
         });
@@ -140,7 +139,7 @@ module.exports = {
           resolve(result.user.uid);
         })
         .catch((error) => {
-          console.log(error);
+
           const errorMessage = error.message;
           reject(errorMessage);
         });

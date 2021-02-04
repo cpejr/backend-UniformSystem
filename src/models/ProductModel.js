@@ -9,19 +9,24 @@ module.exports = {
   async findProductId(product_id) {
       const response = await connection("product")
         .select("product_id")
-        .where("product_id", product_id);
-      return response[0].product_id;
+        .where({product_id: product_id})
+        .first();
+      return response;
   },
 
-  async getProductsAndItsRespectiveMainModels({
+  async getProductsAndOneOfItsModels({
     name,
     page = 1,
     product_type,
     gender,
+    available,
+    minprice, 
+    maxprice,
   }) {
     const filter = {};
 
     if (product_type) filter["product.product_type"] = product_type;
+    if (available) filter["product_model.available"] = available;
 
     let genderFilterGroup;
 
@@ -30,7 +35,7 @@ module.exports = {
       genderFilterGroup = await connection("product_model")
         .select("product_id")
         .where({ gender })
-        .distinct("product_id");
+        .groupBy("product.product_id");
 
       genderFilterGroup = genderFilterGroup.map(
         (product) => product.product_id
@@ -41,12 +46,17 @@ module.exports = {
       .select("*")
       .join("product_model", "product.product_id", "product_model.product_id")
       .where({
-        "product_model.is_main": true,
         ...filter,
-      });
+      })
 
+    if (typeof minprice !== "undefined")
+      query.andWhere("product_model.price", ">=", minprice);
+    if (typeof maxprice !== "undefined")
+      query.andWhere("product_model.price", "<=", maxprice);
     // Gender filter
     if (gender) query = query.whereIn("product.product_id", genderFilterGroup);
+
+    query.groupBy("product.product_id");
 
     // Name filter
     if (name) {
@@ -71,9 +81,8 @@ module.exports = {
         name: item.name,
         description: item.description,
         product_type: item.product_type,
-        models: {
+        model: {
           product_model_id: item.product_model_id,
-          is_main: item.is_main,
           img_link: item.img_link,
           price: item.price,
           model_description: item.model_description,
@@ -115,9 +124,7 @@ module.exports = {
       .select()
       .count("product.product_id as count")
       .join("product_model", "product.product_id", "product_model.product_id")
-      .where({
-        is_main: true,
-      })
+      .distinct("product.product_id")
       .first();
 
     return response;
@@ -133,17 +140,16 @@ module.exports = {
     return response;
   },
 
-  async getProductsAndItsAllModels(product_id) {
+  async getProductsAndItsAllModels(product_id, filters) {
     const response = await connection("product")
-      .select("*")
-      .join("product_model", "product.product_id", "product_model.product_id")
-      .where({
-        "product.product_id": product_id,
-      });
-
+    .select("*")
+    .join("product_model", "product.product_id", "product_model.product_id")
+    .where({
+      "product.product_id": product_id,
+      ...filters
+    });
+    
     let result;
-
-    // console.log(response);
     if(response[0]){
 
         result = {
@@ -154,11 +160,11 @@ module.exports = {
           models: response.map((item) => {
             return {
               product_model_id: item.product_model_id,
-              is_main: item.is_main,
               img_link: item.img_link,
               price: item.price,
               model_description: item.model_description,
               gender: item.gender,
+              available: item.available,
             };
           }),
         };

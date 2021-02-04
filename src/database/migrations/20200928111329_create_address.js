@@ -10,7 +10,7 @@ exports.up = function(knex) {
     table.string('country').notNullable();
     table.string('complement').nullable();
     table.string('user_id').notNullable();
-    table.foreign('user_id').references('user_id').inTable('users');
+    table.foreign('user_id').references('user_id').inTable('users').onDelete("CASCADE");
   });
 };
 

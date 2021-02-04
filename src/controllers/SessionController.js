@@ -12,14 +12,16 @@ module.exports = {
                 firebaseUid = await FirebaseModel.login(email, password);
             } catch (error) {
                 return response.status(403).json({ message: 'Invalid Credentials' });
-            }     
+            }
             const user = await UserModel.getUserByUid(firebaseUid);
-            console.log(user)
-
-            const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "30d" });
+            if(user===null || user===undefined) {
+                return response.status(403).json({ message: 'Invalid Credentials' });
+            }
+            const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "2d" });
             return response.status(200).json({ accessToken, user });
 
         } catch (error) {
+            console.warn(error);
             return response.status(500).json({ message: 'Error while trying to validate credentials' })
         }
     },

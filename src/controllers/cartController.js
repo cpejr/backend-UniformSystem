@@ -21,7 +21,6 @@ module.exports={
                 message: "Produto no carrinho criado com sucesso!"
             });
         }catch(err){
-            console.log(err);
             res.status(500).json("Internal server error.");
         }
     },
@@ -41,7 +40,6 @@ module.exports={
                 return res.status(401).json("Acess Denied");
             }
         }catch(err){
-            console.log(err);
             res.status(500).json("Internal server error.");
         }
     },
@@ -53,7 +51,6 @@ module.exports={
             res.status(200).json(cart);
 
         }catch(err){
-            console.log(err);
             res.status(500).json("Internal server error.");
         }
     },
@@ -65,7 +62,6 @@ module.exports={
             ProductInCartModel.update(product_in_cart_id, fields);
             res.status(200).json("Carrinho atualizado com sucesso.");
         }catch(err){
-            console.log(err);
             res.status(500).json("Internal server error."); 
         }
     },
@@ -77,7 +73,6 @@ module.exports={
             res.status(200).json("Carrinho deletado com sucesso.")
 
         }catch(err){
-            console.log(err);
             res.status(500).json("Internal server error."); 
         }
     }

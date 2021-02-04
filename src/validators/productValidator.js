@@ -10,6 +10,9 @@ productValidator.searchProducts = {
     gender: Joi.string().valid("M", "F").optional(),
     name: Joi.string().optional(),
     product_type: Joi.string().optional(),
+    available: Joi.boolean().optional(),
+    maxprice: Joi.number().optional(),
+    minprice: Joi.number().optional(),
   }),
 };
 
@@ -20,13 +23,11 @@ productValidator.searchProductById = {
 };
 
 (productValidator.createProduct = {
-  //ok
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().required(),
     description: Joi.string().required(),
     product_type: Joi.string().required(),
     models: Joi.array().items({
-      is_main: Joi.boolean().required(),
       img_link: Joi.string(),
       price: Joi.number().required(),
       gender: Joi.valid("M", "F").required(),
@@ -35,13 +36,11 @@ productValidator.searchProductById = {
   }),
 }),
   (productValidator.addProductModel = {
-    //ok
     [Segments.PARAMS]: Joi.object().keys({
       product_id: Joi.number().integer().required(),
     }),
     [Segments.BODY]: Joi.object().keys({
-      file: Joi.string().optional().empty(''),
-      is_main: Joi.boolean().required(),
+      file: Joi.string().optional().empty(""),
       img_link: Joi.string().required(),
       price: Joi.number().required(),
       gender: Joi.valid("M", "F").required(),
@@ -49,9 +48,13 @@ productValidator.searchProductById = {
     }),
   }),
   (productValidator.getProductModel = {
-    //ok
     [Segments.PARAMS]: Joi.object().keys({
       product_id: Joi.number().integer().required(),
+    }),
+    [Segments.QUERY]: Joi.object().keys({
+      price: Joi.number().optional(),
+      gender: Joi.valid("M", "F").optional(),
+      available: Joi.boolean().optional(),
     }),
   }),
   (productValidator.allModels = {
@@ -65,25 +68,20 @@ productValidator.searchProductById = {
     }),
   }),
   (productValidator.deleteProduct = {
-    //ok
     [Segments.PARAMS]: Joi.object().keys({
       product_id: Joi.number().integer().required(),
     }),
   }),
   (productValidator.deleteModel = {
-    //ok ? deu internal server error
     [Segments.PARAMS]: Joi.object().keys({
       model_id: Joi.string().required(),
     }),
   }),
   (productValidator.updateProduct = {
-    //ok
-    // Comentado pra se caso for necessário mudar depois
-     [Segments.PARAMS]: Joi.object().keys({
-        product_id : Joi.number().integer().required()
-     }),
+    [Segments.PARAMS]: Joi.object().keys({
+      product_id: Joi.number().integer().required(),
+    }),
     [Segments.BODY]: Joi.object().keys({
-      // product_id: Joi.number().integer().required(),
       updated_fields: Joi.object({
         name: Joi.string().optional(),
         description: Joi.string().optional(),
@@ -91,22 +89,16 @@ productValidator.searchProductById = {
     }),
   }),
   (productValidator.updateModel = {
-    //ok
     [Segments.PARAMS]: Joi.object().keys({
       model_id: Joi.number().integer().required(),
     }),
     [Segments.BODY]: Joi.object().keys({
-      // model_id : Joi.number().integer().required(),
-      // file: Joi.string().optional(),
-      // updated_fields : Joi.object({
-      //     model_description: Joi.string().required(),
-      // }).required()
       file: Joi.string().optional(),
-      is_main: Joi.boolean().optional(),
       img_link: Joi.string().optional(),
       price: Joi.number().optional(),
       gender: Joi.valid("M", "F").optional(),
       model_description: Joi.string().optional(),
+      available: Joi.boolean().optional(),
     }),
   }),
   (module.exports = productValidator);
