@@ -32,15 +32,24 @@ module.exports = {
 
   async searchProducts(req, res) {
     try {
-      const { page, gender, name, product_type } = req.query;
-      const products = await ProductModel.getProductsAndOneOfItsModels(
-        {
-          page,
-          gender,
-          name,
-          product_type, 
-        }
-      );
+      const {
+        page,
+        gender,
+        name,
+        product_type,
+        available,
+        maxprice,
+        minprice,
+      } = req.query;
+      const products = await ProductModel.getProductsAndOneOfItsModels({
+        page,
+        gender,
+        name,
+        product_type,
+        available,
+        maxprice,
+        minprice,
+      });
       const { count } = await ProductModel.getAllProductsCount();
 
       const totalPages = Math.ceil(count / process.env.ITENS_PER_PAGE);
@@ -110,7 +119,9 @@ module.exports = {
     try {
       const existingProductId = await ProductModel.findProductId(product_id);
       await ProductModel.update(existingProductId, updated_fields);
-      return res.status(200).json("Informações da camisa atualizadas com sucesso");
+      return res
+        .status(200)
+        .json("Informações da camisa atualizadas com sucesso");
     } catch (err) {
       console.warn(err);
       return res.status(500).json("Internal server error.");

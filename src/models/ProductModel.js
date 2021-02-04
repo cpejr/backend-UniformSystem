@@ -20,6 +20,8 @@ module.exports = {
     product_type,
     gender,
     available,
+    minprice, 
+    maxprice,
   }) {
     const filter = {};
 
@@ -46,10 +48,15 @@ module.exports = {
       .where({
         ...filter,
       })
-      .groupBy("product.product_id");
 
+    if (typeof minprice !== "undefined")
+      query.andWhere("product_model.price", ">=", minprice);
+    if (typeof maxprice !== "undefined")
+      query.andWhere("product_model.price", "<=", maxprice);
     // Gender filter
     if (gender) query = query.whereIn("product.product_id", genderFilterGroup);
+
+    query.groupBy("product.product_id");
 
     // Name filter
     if (name) {
@@ -74,7 +81,7 @@ module.exports = {
         name: item.name,
         description: item.description,
         product_type: item.product_type,
-        models: {
+        model: {
           product_model_id: item.product_model_id,
           img_link: item.img_link,
           price: item.price,

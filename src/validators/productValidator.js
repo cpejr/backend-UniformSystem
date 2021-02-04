@@ -11,6 +11,8 @@ productValidator.searchProducts = {
     name: Joi.string().optional(),
     product_type: Joi.string().optional(),
     available: Joi.boolean().optional(),
+    maxprice: Joi.number().optional(),
+    minprice: Joi.number().optional(),
   }),
 };
 

@@ -69,7 +69,8 @@ module.exports = {
       const existingProductModel = await ProductModelModel.getByIdArray([
         model_id,
       ]);
-      if (!existingProductModel.length === 0) {
+      console.log("🚀 ~ file: productModelController.js ~ line 72 ~ updateModel ~ existingProductModel", existingProductModel)
+      if (existingProductModel.length === 0) {
         return res.status(404).json({ message: "Model not found" });
       }
       if (req.file) {
