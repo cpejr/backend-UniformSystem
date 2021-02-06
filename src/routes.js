@@ -32,7 +32,7 @@ routes.put('/user/:user_id', celebrate(userValidator.update), authenticateToken,
 
 routes.get('/user', authenticateToken, isAdmin, userController.allClients);
 routes.get('/employees', authenticateToken, isAdmin, userController.allEmployees);
-
+routes.get('/employees/:user_id', authenticateToken, isAdmin, userController.searchUserById);
 
 routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
 routes.post('/address/:user_id', celebrate(addressValidator.create), authenticateToken, userController.addAddress);
@@ -72,13 +72,14 @@ routes.put('/orderaddress/:order_address_id', celebrate(orderValidator.updateOrd
 
 
 // Order 
-routes.post('/order',celebrate(orderValidator.create), authenticateToken, orderController.createOrder);
-routes.put('/order/:order_id', celebrate(orderValidator.update), authenticateToken, isAdminOrEmployee, orderController.updateOrder);
-routes.delete('/order/:order_id', celebrate(orderValidator.delete), authenticateToken, orderController.deleteOrder);
-routes.get('/order', celebrate(orderValidator.getOrders), authenticateToken, isAdminOrEmployee, orderController.getOrders);
-routes.get('/userorder/:user_id', celebrate(orderValidator.getUserOrder), authenticateToken, orderController.getUserOrder);
-routes.get('/productsfromorder/:order_id', celebrate(orderValidator.getProductsFromOrder), authenticateToken, orderController.getProductsFromOrder);
-routes.get('/shipping/:zip', celebrate(orderValidator.getShipping), orderController.getShipping);
+routes.post('/order',celebrate(orderValidate.create), authenticateToken, orderController.createOrder);
+routes.put('/order/:order_id', celebrate(orderValidate.update), authenticateToken, isAdminOrEmployee, orderController.updateOrder);
+routes.delete('/order/:order_id', celebrate(orderValidate.delete), authenticateToken, orderController.deleteOrder);
+routes.get('/order', celebrate(orderValidate.getOrders), authenticateToken, isAdminOrEmployee, orderController.getOrders);
+routes.get('/userorder/:user_id', celebrate(orderValidate.getUserOrder), authenticateToken, orderController.getUserOrder);
+routes.get('/productsfromorder/:order_id', celebrate(orderValidate.getProductsFromOrder), authenticateToken, orderController.getProductsFromOrder);
+routes.get('/shipping/:zip', celebrate(orderValidate.getShipping), orderController.getShipping);
+routes.get('/shipping/deliveredby/:user_id', authenticateToken, orderController.getOrderData);
 
 
 // Session

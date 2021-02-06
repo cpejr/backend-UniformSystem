@@ -107,6 +107,20 @@ module.exports = {
     }
   },
 
+  async searchUserById(req, res) {
+    try {
+      const { user_id } = req.params;
+      const user = await UsersModel.getById(user_id);
+
+      res.status(200).json({
+        user,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json("Internal server error.");
+    }
+  },
+
   async allEmployees(request, response) {
     try {
       const employees = await UsersModel.getEmployeesAndAdm("adm");

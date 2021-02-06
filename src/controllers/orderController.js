@@ -132,6 +132,17 @@ module.exports = {
         }
     },
 
+    async getOrderData(req, res){
+        try{
+            const { user_id } = req.params;
+            const order_data = await ShippingDataModel.getByUser(user_id);
+            res.status(200).json(order_data);
+        }catch(err){
+            console.log(err);
+            res.status(500).json("Internal server error.");
+        }
+    },
+
     async updateOrder(req, res) {
         const { order_id } = req.params;
         const updated_Fields = req.body;
