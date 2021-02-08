@@ -10,9 +10,11 @@ homeValidator.update = {
         contactInfo: Joi.object({
             cellphone: Joi.string().required(),
             address: Joi.string().required(),
+            facebookUsername: Joi.string().required(),
+            instagramUsername: Joi.string().required(),
             facebookLink: Joi.string().required(),
             instagramLink: Joi.string().required(),
-            whatsAppNumber: Joi.string().required(),
+            whatsAppLink: Joi.string().required(),
         }).optional(),
     }),
 };
