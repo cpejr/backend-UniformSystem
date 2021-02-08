@@ -6,6 +6,7 @@ module.exports = {
   async addProductModel(req, res) {
     try {
       const { product_id } = req.params;
+      const { file } = req;
       const product_model = req.body;
 
       const existingProductId = await ProductModel.findProductId(product_id);
@@ -16,12 +17,12 @@ module.exports = {
         });
       }
 
-      if (product_model.file) {
-        product_model.img_link = await AWS.uploadFile(product_model.file);
+      if (file) {
+        product_model.img_link = await AWS.uploadFile(file);
       } else {
         product_model.img_link = "Sem Imagem";
       }
-      delete product_model.file;
+      delete file;
 
       await ProductModelModel.createOne(
         product_model,

@@ -14,10 +14,9 @@ module.exports = {
 
             // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
             const address = await AdressModel.getById(address_id);
-            if(!adress){
+            if(!address){
                 return res.status(404).json({message: "Adress not found"})
             }
-
             //API CORREIOS
             const args = {
                 nCdServico: `${req.body.service_code}`,
