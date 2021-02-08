@@ -78,7 +78,7 @@ routes.delete('/order/:order_id', celebrate(orderValidator.delete), authenticate
 routes.get('/order', celebrate(orderValidator.getOrders), authenticateToken, isAdminOrEmployee, orderController.getOrders);
 routes.get('/userorder/:user_id', celebrate(orderValidator.getUserOrder), authenticateToken, orderController.getUserOrder);
 routes.get('/productsfromorder/:order_id', celebrate(orderValidator.getProductsFromOrder), authenticateToken, orderController.getProductsFromOrder);
-routes.get('/shipping/:zip', celebrate(orderValidator.getShipping), orderController.getShipping);
+routes.post('/shipping', celebrate(orderValidator.shippingQuote), orderController.shippingQuote);
 routes.get('/shipping/deliveredby/:user_id', authenticateToken, orderController.getOrderData);
 
 
