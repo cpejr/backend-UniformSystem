@@ -1,38 +1,38 @@
 const express = require('express');
 const routes = express.Router();
-const { celebrate, Segments, Joi } = require('celebrate');
+const { celebrate } = require('celebrate');
 
-const userController = require ('./controllers/userController')
-const productController = require ('./controllers/productController')
-const cartController = require ('./controllers/cartController')
-const orderController = require ('./controllers/orderController')
-const SessionController = require ('./controllers/SessionController')
-const homeController = require ('./controllers/homeController')
-const productModelController = require('./controllers/productModelController');
+// const userController = require ('../controllers/userController')
+const productController = require ('../controllers/productController')
+const cartController = require ('../controllers/cartController')
+const orderController = require ('../controllers/orderController')
+const SessionController = require ('../controllers/SessionController')
+const homeController = require ('../controllers/homeController')
+const productModelController = require('../controllers/productModelController');
 
 //importando validators
-const userValidator = require('./validators/userValidator')
-const addressValidator = require('./validators/addressValidator')
-const cartValidator = require('./validators/cartValidator')
-const orderValidator = require('./validators/orderValidator');
-const productValidator = require('./validators/productValidator')
-const homeValidator = require('./validators/homeValidator')
-const sessionValidator = require('./validators/sessionValidator')
+// const userValidator = require('../validators/userValidator')
+const addressValidator = require('../validators/addressValidator')
+const cartValidator = require('../validators/cartValidator')
+const orderValidator = require('../validators/orderValidator');
+const productValidator = require('../validators/productValidator')
+const homeValidator = require('../validators/homeValidator')
+const sessionValidator = require('../validators/sessionValidator')
 
 
-const upload = require('./utils/multer');
+const upload = require('../utils/multer');
 
-const { authenticateToken, isAdmin, isAdminOrEmployee, authenticateOptionalToken } = require('./middlewares/authentication');
+const { authenticateToken, isAdmin, isAdminOrEmployee, authenticateOptionalToken } = require('../middlewares/authentication');
 
 //Routes para o user
-routes.post('/user', celebrate(userValidator.create), authenticateOptionalToken, userController.createUser);
-routes.delete('/delUserClient/:user_id', celebrate(userValidator.deleteClient), authenticateToken, userController.deleteUserClient);
-routes.delete('/delAdmOrEmployee/:user_id', celebrate(userValidator.deleteAdmin), authenticateToken, isAdmin, userController.deleteAdmOrEmployee);
-routes.put('/user/:user_id', celebrate(userValidator.update), authenticateToken, userController.updateUser);
+// routes.post('/user', celebrate(userValidator.create), authenticateOptionalToken, userController.createUser);
+// routes.delete('/delUserClient/:user_id', celebrate(userValidator.deleteClient), authenticateToken, userController.deleteUserClient);
+// routes.delete('/delAdmOrEmployee/:user_id', celebrate(userValidator.deleteAdmin), authenticateToken, isAdmin, userController.deleteAdmOrEmployee);
+// routes.put('/user/:user_id', celebrate(userValidator.update), authenticateToken, userController.updateUser);
 
-routes.get('/user', authenticateToken, isAdmin, userController.allClients);
-routes.get('/employees', authenticateToken, isAdmin, userController.allEmployees);
-routes.get('/employees/:user_id', authenticateToken, isAdmin, userController.searchUserById);
+// routes.get('/user', authenticateToken, isAdmin, userController.allClients);
+// routes.get('/employees', authenticateToken, isAdmin, userController.allEmployees);
+// routes.get('/employees/:user_id', authenticateToken, isAdmin, userController.searchUserById);
 
 routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
 routes.post('/address/:user_id', celebrate(addressValidator.create), authenticateToken, userController.addAddress);
@@ -83,7 +83,7 @@ routes.get('/shipping/deliveredby/:user_id', authenticateToken, orderController.
 
 
 // Session
-routes.post('/login', celebrate(sessionValidator.signIn) , SessionController.signin);
+// routes.post('/login', celebrate(sessionValidator.signIn) , SessionController.signin);
 routes.get('/verify', SessionController.verifyToken);
 routes.post('/sendpassword',  celebrate(sessionValidator.forgetPassword),userController.forgetPassword);
 
