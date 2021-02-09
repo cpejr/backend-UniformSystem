@@ -59,6 +59,7 @@ module.exports = {
         products,
       });
     } catch (err) {
+      console.warn(err);
       res.status(500).json("Internal server error.");
     }
   },
@@ -72,6 +73,7 @@ module.exports = {
         product,
       });
     } catch (err) {
+      console.warn(err);
       res.status(500).json("Internal server error.");
     }
   },
@@ -87,6 +89,7 @@ module.exports = {
         models,
       });
     } catch (err) {
+      console.warn(err);
       res.status(500).json("Internal server error.");
     }
   },
@@ -97,7 +100,10 @@ module.exports = {
       const totalPages = count / process.env.ITENS_PER_PAGE;
 
       res.setHeader("X-Total-Count", totalPages);
-    } catch (err) {}
+    } catch (err) {
+      console.warn(err);
+      res.status(500).json("Internal server error.");
+    }
   },
 
   async deleteProduct(req, res) {
@@ -109,6 +115,7 @@ module.exports = {
         message: "Camisa apagada com sucesso.",
       });
     } catch (err) {
+      console.warn(err);
       res.status(400).json({ message: err.message });
     }
   },
@@ -141,6 +148,7 @@ module.exports = {
         .status(200)
         .json("Informações do modelo da camisa atualizadas com sucesso");
     } catch (err) {
+      console.warn(err);
       res.status(500).json("Internal server error.");
     }
   },

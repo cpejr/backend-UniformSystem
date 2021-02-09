@@ -35,7 +35,6 @@ module.exports = {
       genderFilterGroup = await connection("product_model")
         .select("product_id")
         .where({ gender })
-        .groupBy("product.product_id");
 
       genderFilterGroup = genderFilterGroup.map(
         (product) => product.product_id
