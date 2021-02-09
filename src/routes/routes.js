@@ -34,30 +34,35 @@ const { authenticateToken, isAdmin, isAdminOrEmployee, authenticateOptionalToken
 // routes.get('/employees', authenticateToken, isAdmin, userController.allEmployees);
 // routes.get('/employees/:user_id', authenticateToken, isAdmin, userController.searchUserById);
 
+//Address - Bryan
 routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
 routes.post('/address/:user_id', celebrate(addressValidator.create), authenticateToken, userController.addAddress);
 routes.put('/address/:address_id', celebrate(addressValidator.update), authenticateToken, userController.updateAddress);
 routes.delete('/address/:address_id',celebrate(addressValidator.delete), authenticateToken, userController.deleteAddress);
 
 
-// Product
+// Product - Hélio
 routes.post('/product', celebrate(productValidator.createProduct), authenticateToken, isAdmin, productController.createProduct);
-routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidator.addProductModel), productModelController.addProductModel);
 
 routes.get('/product', celebrate(productValidator.searchProducts), productController.searchProducts);
 routes.get('/product/:product_id', celebrate(productValidator.searchProductById), productController.searchProductById);
 
+routes.delete('/product/:product_id', celebrate(productValidator.deleteProduct), authenticateToken, isAdmin, productController.deleteProduct);
+
+routes.put('/product/:product_id',celebrate(productValidator.updateProduct), authenticateToken, isAdmin, productController.updateProduct);
+
+//Product Model - Bryan
+routes.post('/newmodel/:product_id', authenticateToken, isAdmin, upload, celebrate(productValidator.addProductModel), productModelController.addProductModel);
+
 routes.get('/productmodels/:product_id', celebrate(productValidator.getProductModel), productModelController.getProductModel);
 routes.get('/productmodels', celebrate(productValidator.allModels),productController.allModels);
 
-routes.delete('/product/:product_id', celebrate(productValidator.deleteProduct), authenticateToken, isAdmin, productController.deleteProduct);
 routes.delete('/model/:model_id', celebrate(productValidator.deleteModel), authenticateToken, isAdmin, productModelController.deleteModel);
 
-routes.put('/product/:product_id',celebrate(productValidator.updateProduct), authenticateToken, isAdmin, productController.updateProduct);
 routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(productValidator.updateModel), productModelController.updateModel);
 
 
-//ProductInCart
+//ProductInCart - João
 routes.get('/cart', authenticateToken, cartController.getCart);
 routes.put('/addtocart', celebrate(cartValidator.addToCart), authenticateToken, cartController.addToCart);
 routes.put('/cart/:product_in_cart_id', celebrate(cartValidator.updateCart), authenticateToken, cartController.updateCart);
@@ -65,13 +70,13 @@ routes.delete('/cart/:product_in_cart_id', celebrate(cartValidator.removeFromCar
 routes.delete('/emptycart', celebrate(cartValidator.emptyCart), authenticateToken, cartController.emptyCart);
 
 
-// Order Address Model
+// Order Address Model - Diogo
 // routes.post('/orderaddress', celebrate(orderValidator.createOrderAddress), authenticateToken, orderController.createOrderAddress);
 routes.put('/orderaddress/:order_address_id', celebrate(orderValidator.updateOrderAddress), authenticateToken, orderController.updateOrderAddress);
 // routes.delete('/orderaddress/:order_address_id', celebrate(orderValidator.deleteOrderAddress), authenticateToken, orderController.deleteOrderAddress);
 
 
-// Order 
+// Order - Felipe
 routes.post('/order',celebrate(orderValidator.create), authenticateToken, orderController.createOrder);
 routes.put('/order/:order_id', celebrate(orderValidator.update), authenticateToken, isAdminOrEmployee, orderController.updateOrder);
 routes.delete('/order/:order_id', celebrate(orderValidator.delete), authenticateToken, orderController.deleteOrder);
@@ -80,18 +85,17 @@ routes.get('/userorder/:user_id', celebrate(orderValidator.getUserOrder), authen
 routes.get('/productsfromorder/:order_id', celebrate(orderValidator.getProductsFromOrder), authenticateToken, orderController.getProductsFromOrder);
 routes.get('/shipping/:zip', celebrate(orderValidator.getShipping), orderController.getShipping);
 routes.get('/shipping/deliveredby/:user_id', authenticateToken, orderController.getOrderData);
+routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, orderController.deliverAtMail)
 
 
-// Session
+
+// Session - Izabela
 // routes.post('/login', celebrate(sessionValidator.signIn) , SessionController.signin);
 routes.get('/verify', SessionController.verifyToken);
 routes.post('/sendpassword',  celebrate(sessionValidator.forgetPassword),userController.forgetPassword);
 
-// Deliver At Mail
-routes.post('/deliveratmail/:order_id', authenticateToken, isAdminOrEmployee, orderController.deliverAtMail)
 
-
-// Home
+// Home - Raphael ou Izabela
 routes.put('/home/info', celebrate(homeValidator.update), homeController.updateInfo);
 routes.get('/home/info', homeController.readInfo);
 
