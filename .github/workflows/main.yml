@@ -13,7 +13,7 @@ jobs:
 
     # Instala o Node
     - name: Setup Node.js environment
-      uses: actions/setup-node@v1.4.2
+      uses: actions/setup-node@v2
       with:
        node-version: 12.x
     # Passo 1: Instalar as dependências NPM/Yarn
