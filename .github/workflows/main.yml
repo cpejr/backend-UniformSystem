@@ -25,9 +25,9 @@ jobs:
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
-        port: ${{secrets.SSH_PORT}}
-        username: ${{secrets.SSH_USERNAME}}
+        username: ${{secrets.SSH_USER}}
         password: ${{secrets.SSH_KEY}}
+        port: ${{secrets.SSH_PORT}}
         source: "., !node_modules"
         target: "~/uniformSystem/backend"
   
@@ -36,9 +36,9 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
-        port: ${{secrets.SSH_PORT}}
-        username: ${{secrets.SSH_USERNAME}}
+        username: ${{secrets.SSH_USER}}
         password: ${{secrets.SSH_KEY}}
+        port: ${{secrets.SSH_PORT}}
         script: | 
          cd ~/uniformSystem/backend
          npm install
