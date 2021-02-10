@@ -27,7 +27,7 @@ jobs:
         host: ${{ secrets.SSH_HOST }}
         port: ${{secrets.SSH_PORT}}
         username: ${{secrets.SSH_USERNAME}}
-        key: ${{secrets.SSH_KEY}}
+        password: ${{secrets.SSH_KEY}}
         source: "., !node_modules"
         target: "~/uniformSystem/backend"
   
@@ -38,7 +38,7 @@ jobs:
         host: ${{ secrets.SSH_HOST }}
         port: ${{secrets.SSH_PORT}}
         username: ${{secrets.SSH_USERNAME}}
-        key: ${{secrets.SSH_KEY}}
+        password: ${{secrets.SSH_KEY}}
         script: | 
          cd ~/uniformSystem/backend
          npm install
