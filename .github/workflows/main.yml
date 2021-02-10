@@ -41,12 +41,12 @@ jobs:
     - name: Run production scripts
       uses: apple/ssh-action@master
       with:
-				host: ${{ secret.SSH_HOST }}
-				username: ${{ secrets.SSH_USERNAME }}
-				port: ${{ secrets.SSH_PORT }}
-				key: ${{ secrets.SSH_KEY }}
-				script: | 
-				 cd ~/uniformSystem/backend
-				 npm install
-				 npm knex migrate:latest
-				 pm2 restart uniformsystem-backend
+	host: ${{ secret.SSH_HOST }}
+	username: ${{ secrets.SSH_USERNAME }}
+	port: ${{ secrets.SSH_PORT }}
+	key: ${{ secrets.SSH_KEY }}
+	script: | 
+          cd ~/uniformSystem/backend
+          npm install
+          npm knex migrate:latest
+          pm2 restart uniformsystem-backend
