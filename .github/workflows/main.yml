@@ -26,9 +26,9 @@ jobs:
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
-        password: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        source: "., !node_modules"
+        key: ${{ secrets.SSH_KEY }}
+        source: ".,!node_modules"
         target: "~/uniformSystem/backend"
   
     # RUN SCRIPT FOR PRODUCTION
@@ -37,8 +37,8 @@ jobs:
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
-        password: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
+        key: ${{ secrets.SSH_KEY }}
         script: | 
          cd ~/uniformSystem/backend
          npm install
