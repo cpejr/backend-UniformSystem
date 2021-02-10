@@ -47,6 +47,3 @@ jobs:
          npm install
          npm knex migrate:latest
          pm2 restart uniformsystem-backend
-    	
-
-   
