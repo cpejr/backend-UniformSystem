@@ -36,7 +36,7 @@ jobs:
   
     # RUN SCRIPT FOR PRODUCTION
     - name: Run production script
-      uses: apple/ssh-action@master
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
         port: ${{secrets.SSH_PORT}}
