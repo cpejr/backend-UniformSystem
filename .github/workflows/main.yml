@@ -16,7 +16,16 @@ jobs:
       uses: actions/setup-node@v2
       with:
        node-version: 12.x
-    # Passo 1: Instalar as dependências NPM/Yarn
+   
+   # Passo 1: Cache para NPM Install
+    - uses: actions/cache@v2
+      with:
+       path: ~/.npm
+       key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+       restore-keys: |
+        ${{ runner.os }}-node-:
+        
+    # Passo 2: Instalar as dependências NPM/Yarn
     - name: Install dependencies
       run: npm install
 
@@ -31,7 +40,7 @@ jobs:
         source: ".,!node_modules"
         target: "~/uniformSystem/backend"
   
-    # RUN SCRIPT FOR PRODUCTION
+    # Passo 4: Entra na pasta, instala, roda migrations e restarta o pm2 (para manter rodando)
     - name: Run production script
       uses: appleboy/ssh-action@master
       with:
