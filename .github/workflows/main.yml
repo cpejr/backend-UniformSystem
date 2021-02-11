@@ -21,13 +21,13 @@ jobs:
     - name: Do cache from dependencies
       uses: actions/cache@v2
       with:
-        path: ./
+        path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
          ${{ runner.os }}-node-:
 
     # Passo 2: Install Instalar as dependências NPM/Yarn     
-    - name: Do cache from dependencies
+    - name: Install dependencies
       run: npm install
 
     # Passo 3: Copiar código para a Digital Ocean
