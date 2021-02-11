@@ -17,16 +17,18 @@ jobs:
       with:
        node-version: 12.x
         
-    # Passo 2: Instalar as dependências NPM/Yarn
-    - name: Install dependencies
-    # Passo 1: Cache para NPM Install
+    # Passo 1: Cache para Dependências do projeto
+    - name: Do cache from dependencies
       uses: actions/cache@v2
       with:
         path: ./
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
          ${{ runner.os }}-node-:
-        run: npm install
+
+    # Passo 2: Install Instalar as dependências NPM/Yarn     
+    - name: Do cache from dependencies
+      run: npm install
 
     # Passo 3: Copiar código para a Digital Ocean
     - name: Copy files to Digital Ocean
