@@ -9,34 +9,36 @@ const FirebaseModel = require("../models/FirebaseModel");
 
 module.exports = {
   async createUser(request, response) {
-    
     let firebaseUid;
-    
+
     try {
       const user = {
         name: request.body.name,
         user_type: request.body.user_type,
         email: request.body.email,
+        telefone: request.body.telefone,
         cpf: request.body.cpf,
-        password: request.body.password
+        password: request.body.password,
       };
 
       if (user.user_type === "adm" || user.user_type === "employee") {
         const loggedUser = request.session;
-        
-        if(loggedUser && loggedUser.user_type !== "adm"){
-          return response.status(404).json({message: "Operação proibida."});
+
+        if (loggedUser && loggedUser.user_type !== "adm") {
+          return response.status(404).json({ message: "Operação proibida." });
         }
       }
 
       try {
-        firebaseUid = await FirebaseModel.createNewUser(user.email, user.password);
+        firebaseUid = await FirebaseModel.createNewUser(
+          user.email,
+          user.password
+        );
       } catch (error) {
-        return response.status(400).json({error});
+        return response.status(400).json({ error });
       }
 
-
-      delete user.password
+      delete user.password;
 
       user.firebase_uid = firebaseUid;
       const resposta = await UsersModel.create(user);
@@ -47,47 +49,46 @@ module.exports = {
         await AdressModel.create(address);
       }
 
-      if (resposta.errno != null){
-        return response.status(500).json({message: "internal server error"});
-      }else{
-        return response.status(200).json({message: "Usuário criado com sucesso"});
+      if (resposta.errno != null) {
+        return response.status(500).json({ message: "internal server error" });
+      } else {
+        return response
+          .status(200)
+          .json({ message: "Usuário criado com sucesso" });
       }
     } catch (error) {
-
-      if (firebaseUid){
+      if (firebaseUid) {
         try {
-          await FirebaseModel.deleteUser(firebaseUid)
+          await FirebaseModel.deleteUser(firebaseUid);
         } catch (error) {
-          throw new Error(error)
+          throw new Error(error);
         }
       }
 
-      if (error.errno == 19){
-        return response.status(500).json({message: "Cpf já existe."});
+      if (error.errno == 19) {
+        return response.status(500).json({ message: "Cpf já existe." });
       }
 
-      response.status(500).json({message: "Internal server error"});
+      response.status(500).json({ message: "Internal server error" });
     }
   },
 
   async forgetPassword(request, response) {
-
     try {
       const email = request.body.email;
 
       const password = await FirebaseModel.sendPasswordChangeEmail(email);
-      response.status(200).json({password});
-    }catch(error) {
+      response.status(200).json({ password });
+    } catch (error) {
       response.status(500).json({
         message: error.message,
       });
     }
-
   },
 
   async allClients(request, response) {
     try {
-      const clients = await UsersModel.read({user_type: "client"});
+      const clients = await UsersModel.read({ user_type: "client" });
       response.status(200).json({ clients });
     } catch (error) {
       response.status(500).json("internal server error");
@@ -95,13 +96,13 @@ module.exports = {
   },
 
   async getAdresses(request, response) {
-      try {
-        // const { user_id } = request.params;
+    try {
+      // const { user_id } = request.params;
 
-        const user_id = request.session.user_id;
+      const user_id = request.session.user_id;
 
-        const adresses = await AdressModel.getAdressByUserId(user_id);
-        response.status(200).json({ adresses });
+      const adresses = await AdressModel.getAdressByUserId(user_id);
+      response.status(200).json({ adresses });
     } catch (error) {
       response.status(500).json("internal server error");
     }
@@ -136,16 +137,16 @@ module.exports = {
 
       const { user_id } = request.params;
 
-      if(loggedUserId !== user_id){
-        throw new Error('Invalid action. You are not the owner from this ID.')
+      if (loggedUserId !== user_id) {
+        throw new Error("Invalid action. You are not the owner from this ID.");
       }
 
-      const foundUser = await UsersModel.getById(user_id)
+      const foundUser = await UsersModel.getById(user_id);
 
-      if(!foundUser){
-        throw new Error("User not found.")
+      if (!foundUser) {
+        throw new Error("User not found.");
       }
-      await FirebaseModel.deleteUser(foundUser[0].firebase_uid)
+      await FirebaseModel.deleteUser(foundUser[0].firebase_uid);
 
       await UsersModel.delete(user_id);
 
@@ -160,16 +161,16 @@ module.exports = {
   async deleteAdmOrEmployee(request, response) {
     try {
       const { user_id } = request.params;
-      
+
       const loggedUser = request.session;
 
-      if(loggedUser.user_type !== "adm"){
+      if (loggedUser.user_type !== "adm") {
         return response.status(403).json("Operação proibida.");
       }
 
-      const foundUser = await UsersModel.getById(user_id)
+      const foundUser = await UsersModel.getById(user_id);
 
-      if(!foundUser){
+      if (!foundUser) {
         return response.status(400).json("Usuário não encontrado");
       }
 
@@ -193,8 +194,8 @@ module.exports = {
       // Get the user_id from address
       const catchedAddress = await AdressModel.getById(address_id);
 
-      if(catchedAddress.user_id !== loggedUserId){
-        throw new Error('Invalid action. You are not the owner from this ID.')
+      if (catchedAddress.user_id !== loggedUserId) {
+        throw new Error("Invalid action. You are not the owner from this ID.");
       }
 
       await AdressModel.update(address_id, updatedFields);
@@ -209,8 +210,8 @@ module.exports = {
       const { user_id } = request.params;
       const loggedUserId = request.session.user_id;
 
-      if(user_id !== loggedUserId){
-        throw new Error('Invalid action. You are not the owner from this ID.')
+      if (user_id !== loggedUserId) {
+        throw new Error("Invalid action. You are not the owner from this ID.");
       }
 
       const { updatedFields } = request.body;
@@ -222,7 +223,7 @@ module.exports = {
       response.status(500).json("Internal server error");
     }
   },
-  
+
   async deleteAddress(request, response) {
     try {
       const { address_id } = request.params;
@@ -230,10 +231,10 @@ module.exports = {
       const loggedUserId = request.session.user_id;
 
       // Get the user_id from address
-      const catchedAddress = await AdressModel.getById(address_id)
+      const catchedAddress = await AdressModel.getById(address_id);
 
-      if(catchedAddress.user_id !== loggedUserId){
-        throw new Error('Invalid action. You are not the owner from this ID.')
+      if (catchedAddress.user_id !== loggedUserId) {
+        throw new Error("Invalid action. You are not the owner from this ID.");
       }
 
       await AdressModel.delete(address_id);
@@ -244,9 +245,7 @@ module.exports = {
     }
   },
 
-  
   async addAddress(request, response) {
-    
     try {
       const address = request.body.address;
       // const { user_id } = request.params;
@@ -262,5 +261,4 @@ module.exports = {
       response.status(500).json("Internal server error");
     }
   },
-
 };
