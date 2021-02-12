@@ -45,40 +45,40 @@ const {
 // routes.delete('/address/:address_id',celebrate(addressValidator.delete), authenticateToken, userController.deleteAddress);
 
 // Product - Hélio
-routes.post(
-  "/product",
-  celebrate(productValidator.createProduct),
-  authenticateToken,
-  isAdmin,
-  productController.createProduct
-);
+//routes.post(
+//  "/product",
+//  celebrate(productValidator.createProduct),
+//  authenticateToken,
+//  isAdmin,
+//  productController.createProduct
+//);
 
-routes.get(
-  "/product",
-  celebrate(productValidator.searchProducts),
-  productController.searchProducts
-);
-routes.get(
-  "/product/:product_id",
-  celebrate(productValidator.searchProductById),
-  productController.searchProductById
-);
+//routes.get(
+//  "/product",
+//  celebrate(productValidator.searchProducts),
+//  productController.searchProducts
+//);
+//routes.get(
+//  "/product/:product_id",
+//  celebrate(productValidator.searchProductById),
+//  productController.searchProductById
+//);
 
-routes.delete(
-  "/product/:product_id",
-  celebrate(productValidator.deleteProduct),
-  authenticateToken,
-  isAdmin,
-  productController.deleteProduct
-);
+//routes.delete(
+//  "/product/:product_id",
+//  celebrate(productValidator.deleteProduct),
+//  authenticateToken,
+//  isAdmin,
+//  productController.deleteProduct
+//);
 
-routes.put(
-  "/product/:product_id",
-  celebrate(productValidator.updateProduct),
-  authenticateToken,
-  isAdmin,
-  productController.updateProduct
-);
+//routes.put(
+//  "/product/:product_id",
+//  celebrate(productValidator.updateProduct),
+//  authenticateToken,
+//  isAdmin,
+//  productController.updateProduct
+//);
 
 //Product Model - Bryan
 // routes.post(
