@@ -32,9 +32,9 @@ module.exports = {
       try {
         firebaseUid = await FirebaseModel.createNewUser(user.email, user.password);
       } catch (error) {
+        console.log(error)
         return response.status(400).json({error});
       }
-
 
       delete user.password
 
@@ -151,6 +151,7 @@ module.exports = {
 
       return response.status(200).json("Apagado com sucesso");
     } catch (error) {
+      console.log(error);
       return response.status(500).json("Internal server error");
     }
   },
