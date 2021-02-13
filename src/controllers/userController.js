@@ -136,6 +136,12 @@ module.exports = {
 
       const { user_id } = request.params;
 
+      const loggedUser = request.session;
+
+      if(loggedUser.user_type !== "client"){
+        return response.status(403).json("Operação proibida.");
+      }
+
       if(loggedUserId !== user_id){
         throw new Error('Invalid action. You are not the owner from this ID.')
       }
