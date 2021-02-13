@@ -11,6 +11,7 @@ exports.up = function(knex) {
     table.string('logo_link').notNullable();
     table.float('discount').notNullable();
     table.string('size').notNullable();
+    table.string('gender').notNullable();
     });
 }; 
 
