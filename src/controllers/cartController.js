@@ -1,21 +1,29 @@
 const ProductInCartModel = require('../models/ProductInCartModel');
+const AWS = require("../utils/bucket");
 
 module.exports={
     async addToCart(req, res){
         try{
-            
+            console.log('chegou')
             const user_id = req.session.user_id;
 
             const productInCart = {
                 product_model_id: req.body.product_model_id,
                 size: req.body.size,
                 amount: req.body.amount,
-                logo_link: req.body.logo_link,
                 gender: req.body.gender,
             };
             productInCart.user_id = user_id;
 
-            const createdProductInCart = await ProductInCartModel.create(productInCart);
+            const file = req.file;
+
+            if (req.body.isLogoUpload) {
+                productInCart.logo_link = await AWS.uploadFile(file);
+            } else {
+                productInCart.logo_link = "Sem Imagem";
+            }
+
+            await ProductInCartModel.create(productInCart);
 
             res.status(200).json({
                 message: "Produto no carrinho criado com sucesso!"

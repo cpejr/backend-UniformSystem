@@ -59,7 +59,7 @@ routes.put('/model/:model_id', authenticateToken, isAdmin, upload, celebrate(pro
 
 //ProductInCart
 routes.get('/cart', authenticateToken, cartController.getCart);
-routes.put('/addtocart', celebrate(cartValidator.addToCart), authenticateToken, cartController.addToCart);
+routes.put('/addtocart', upload, celebrate(cartValidator.addToCart), authenticateToken, cartController.addToCart);
 routes.put('/cart/:product_in_cart_id', celebrate(cartValidator.updateCart), authenticateToken, cartController.updateCart);
 routes.delete('/cart/:product_in_cart_id', celebrate(cartValidator.removeFromCart), authenticateToken, cartController.removeFromCart);
 routes.delete('/emptycart', celebrate(cartValidator.emptyCart), authenticateToken, cartController.emptyCart);
