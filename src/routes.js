@@ -34,7 +34,7 @@ routes.get('/user', authenticateToken, isAdmin, userController.allClients);
 routes.get('/employees', authenticateToken, isAdmin, userController.allEmployees);
 routes.get('/employees/:user_id', authenticateToken, isAdmin, userController.searchUserById);
 
-routes.get('/address/:user_id', authenticateToken, userController.getAdresses);
+routes.get('/address', authenticateToken, userController.getAdresses);
 routes.post('/address/:user_id', celebrate(addressValidator.create), authenticateToken, userController.addAddress);
 routes.put('/address/:address_id', celebrate(addressValidator.update), authenticateToken, userController.updateAddress);
 routes.delete('/address/:address_id',celebrate(addressValidator.delete), authenticateToken, userController.deleteAddress);

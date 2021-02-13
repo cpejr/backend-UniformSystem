@@ -97,9 +97,7 @@ module.exports = {
   async getAdresses(request, response) {
       try {
         // const { user_id } = request.params;
-
         const user_id = request.session.user_id;
-
         const adresses = await AdressModel.getAdressByUserId(user_id);
         response.status(200).json({ adresses });
     } catch (error) {
