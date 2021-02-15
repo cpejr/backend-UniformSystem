@@ -183,29 +183,29 @@ routes.get(
   orderController.getOrders
 );
 routes.get(
-  "/userorder/:user_id",
+  "/order/userorder/:user_id",
   celebrate(orderValidator.getUserOrder),
   authenticateToken,
   orderController.getUserOrder
 );
 routes.get(
-  "/productsfromorder/:order_id",
+  "/order/productsfromorder/:order_id",
   celebrate(orderValidator.getProductsFromOrder),
   authenticateToken,
   orderController.getProductsFromOrder
 );
 routes.get(
-  "/shipping/:zip",
+  "/order/shipping/:zip",
   celebrate(orderValidator.getShipping),
   orderController.getShipping
 );
 routes.get(
-  "/shipping/deliveredby/:user_id",
+  "/order/shipping/deliveredby/:user_id",
   authenticateToken,
   orderController.getOrderData
 );
 routes.post(
-  "/deliveratmail/:order_id",
+  "/order/deliveratmail/:order_id",
   authenticateToken,
   isAdminOrEmployee,
   orderController.deliverAtMail
