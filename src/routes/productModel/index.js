@@ -27,6 +27,7 @@ productModelRouter.get(
   celebrate(productValidator.getProductModel),
   productModelController.getProductModel
 );
+
 productModelRouter.get(
   "/",
   celebrate(productValidator.allModels),

@@ -8,6 +8,7 @@ const cartValidator = require("../../validators/cartValidator");       // Valida
 const {authenticateToken} = require("../../middlewares/authentication")
 
 routes.get("/cart", authenticateToken, cartController.getCart);
+
 routes.put(
   "/addtocart",
   celebrate(cartValidator.addToCart),

@@ -213,37 +213,37 @@ routes.post(
 
 // Session - Izabela
 // routes.post('/login', celebrate(sessionValidator.signIn) , SessionController.signin);
-routes.get("/verify", SessionController.verifyToken);
-routes.post(
-  "/sendpassword",
-  celebrate(sessionValidator.forgetPassword),
-  userController.forgetPassword
-);
+// routes.get("/verify", SessionController.verifyToken);
+// routes.post(
+//   "/sendpassword",
+//   celebrate(sessionValidator.forgetPassword),
+//   userController.forgetPassword
+// );
 
 // Home - Raphael ou Izabela
-routes.put(
-  "/home/info",
-  celebrate(homeValidator.update),
-  homeController.updateInfo
-);
-routes.get("/home/info", homeController.readInfo);
+// routes.put(
+//   "/home/info",
+//   celebrate(homeValidator.update),
+//   homeController.updateInfo
+// );
+// routes.get("/home/info", homeController.readInfo);
 
-routes.post(
-  "/home/images",
-  upload,
-  celebrate(homeValidator.postHomeImage),
-  homeController.createImg
-);
+// routes.post(
+//   "/home/images",
+//   upload,
+//   celebrate(homeValidator.postHomeImage),
+//   homeController.createImg
+// );
 
-routes.get(
-  "/home/images",
-  celebrate(homeValidator.getHomeImage),
-  homeController.downloadImg
-);
-routes.delete(
-  "/home/images/:image_id",
-  celebrate(homeValidator.deleteHomeImage),
-  homeController.removeImg
-);
+// routes.get(
+//   "/home/images",
+//   celebrate(homeValidator.getHomeImage),
+//   homeController.downloadImg
+// );
+// routes.delete(
+//   "/home/images/:image_id",
+//   celebrate(homeValidator.deleteHomeImage),
+//   homeController.removeImg
+// );
 
 module.exports = routes;

@@ -1,21 +1,27 @@
 const express = require("express");
 
-const usersRouter = require("./users");
-const sessionRouter = require("./session");
 const addressRouter = require("./address");
-const productModelRouter = require("./productModel");
+const homeRouter = require("./home");
 const productRouter = require("./product");
 const productInCartRouter = require("./productInCart");
+const productModelRouter = require("./productModel");
+const sessionRouter = require("./session");
+const usersRouter = require("./users");
 
 const routes = express.Router();
 
-routes.use("/users", usersRouter);
+routes.use("/address", addressRouter);
+
+routes.use("/home", homeRouter);
+
+routes.use("/product", productRouter);
+
+routes.use("/productInCart", productInCartRouter);
+
+routes.use("/productmodels", productModelRouter);
 
 routes.use("/session", sessionRouter);
 
-routes.use("/address", addressRouter);
-routes.use("/productmodels", productModelRouter);
-routes.use("/product", productRouter);
-routes.use("/productInCart", productInCartRouter);
+routes.use("/users", usersRouter);
 
 module.exports = routes;
