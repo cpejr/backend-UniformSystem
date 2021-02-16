@@ -10,10 +10,11 @@ orderValidator.update = { ///ok
      }),
      [Segments.BODY]: Joi.object().keys({
          is_paid: Joi.number().integer().required(),
-         status: Joi.string(),
-         shipping: Joi.number().required(),
+         status: Joi.string().required(),
+        //  shipping: Joi.number().required(),
      })
 },
+
 orderValidator.create = { //ok
     [Segments.BODY]: Joi.object().keys({
         address_id: Joi.number().required(),

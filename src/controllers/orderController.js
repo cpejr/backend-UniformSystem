@@ -9,7 +9,7 @@ const Correios = require("node-correios");
 module.exports = {
     async createOrder(req, res) {
         try {
-            const { address_id, products } = req.body;
+            const { address_id, service_code, products } = req.body;
 
             // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
             const address = await AdressModel.getById(address_id);
@@ -36,7 +36,7 @@ module.exports = {
             const newShipping = {
                 ...address,
                 shipping_value: result[0].Valor,
-                service_code: "0",
+                service_code: service_code,
             };
             const newOrderAddress_id = await ShippingDataModel.create(
                 newShipping
@@ -145,7 +145,9 @@ module.exports = {
     async updateOrder(req, res) {
         const { order_id } = req.params;
         const updated_Fields = req.body;
-
+        
+        // Caso exista
+        delete updated_Fields.is_paid;
         try {
             await OrderModel.update(order_id, updated_Fields);
 
