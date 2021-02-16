@@ -3,7 +3,7 @@ const express = require("express");
 const addressRouter = require("./address");
 const homeRouter = require("./home");
 const productRouter = require("./product");
-const productInCartRouter = require("./productInCart");
+const cartRouter = require("./cart");
 const productModelRouter = require("./productModel");
 const sessionRouter = require("./session");
 const usersRouter = require("./users");
@@ -17,7 +17,7 @@ routes.use("/home", homeRouter);
 
 routes.use("/product", productRouter);
 
-routes.use("/productInCart", productInCartRouter);
+routes.use("/cart", cartRouter);
 routes.use("/order", orderRouter);
 
 routes.use("/productmodels", productModelRouter);

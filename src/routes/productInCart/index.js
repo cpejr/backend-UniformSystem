@@ -1,5 +1,5 @@
 const express = require("express")
-const productInCartRouter = express.Router()
+const cartRouter = express.Router()
 const { celebrate } = require("celebrate");
 
 const cartController = require("../../controllers/cartController");    // Controller
@@ -7,7 +7,7 @@ const cartValidator = require("../../validators/cartValidator");       // Valida
 
 const {authenticateToken} = require("../../middlewares/authentication")
 
-routes.get("/cart", authenticateToken, cartController.getCart);
+routes.get("/", authenticateToken, cartController.getCart);
 
 routes.put(
   "/addtocart",
@@ -16,13 +16,13 @@ routes.put(
   cartController.addToCart
 );
 routes.put(
-  "/cart/:product_in_cart_id",
+  "/:product_in_cart_id",
   celebrate(cartValidator.updateCart),
   authenticateToken,
   cartController.updateCart
 );
 routes.delete(
-  "/cart/:product_in_cart_id",
+  "/:product_in_cart_id",
   celebrate(cartValidator.removeFromCart),
   authenticateToken,
   cartController.removeFromCart
@@ -34,4 +34,4 @@ routes.delete(
   cartController.emptyCart
 );
 
-module.exports = productInCartRouter;
+module.exports = cartRouter;
