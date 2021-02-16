@@ -7,6 +7,7 @@ const productInCartRouter = require("./productInCart");
 const productModelRouter = require("./productModel");
 const sessionRouter = require("./session");
 const usersRouter = require("./users");
+const orderRouter = require("./order");
 
 const routes = express.Router();
 
@@ -17,6 +18,7 @@ routes.use("/home", homeRouter);
 routes.use("/product", productRouter);
 
 routes.use("/productInCart", productInCartRouter);
+routes.use("/order", orderRouter);
 
 routes.use("/productmodels", productModelRouter);
 
