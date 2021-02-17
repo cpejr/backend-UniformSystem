@@ -7,27 +7,27 @@ const cartValidator = require("../../validators/cartValidator");       // Valida
 
 const {authenticateToken} = require("../../middlewares/authentication")
 
-routes.get("/", authenticateToken, cartController.getCart);
+cartRouter.get("/", authenticateToken, cartController.getCart);
 
-routes.put(
+cartRouter.put(
   "/addtocart",
   celebrate(cartValidator.addToCart),
   authenticateToken,
   cartController.addToCart
 );
-routes.put(
+cartRouter.put(
   "/:product_in_cart_id",
   celebrate(cartValidator.updateCart),
   authenticateToken,
   cartController.updateCart
 );
-routes.delete(
+cartRouter.delete(
   "/:product_in_cart_id",
   celebrate(cartValidator.removeFromCart),
   authenticateToken,
   cartController.removeFromCart
 );
-routes.delete(
+cartRouter.delete(
   "/emptycart",
   celebrate(cartValidator.emptyCart),
   authenticateToken,
