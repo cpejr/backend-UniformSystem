@@ -35,8 +35,6 @@ module.exports = {
       res.status(500).json({
         message: "Internal server Error",
       });
-
-      return next(error);
     }
   },
 

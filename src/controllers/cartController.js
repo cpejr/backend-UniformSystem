@@ -4,7 +4,6 @@ const AWS = require("../utils/bucket");
 module.exports={
     async addToCart(req, res){
         try{
-            console.log('chegou')
             const user_id = req.session.user_id;
 
             const productInCart = {
