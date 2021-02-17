@@ -12,7 +12,7 @@ userValidator.create = { //ok
         cpf: Joi.string().length(11).regex(/^\d+$/).required(),/* //length fala o tamanho que deve ter*/
         password: Joi.string().required(),
         //não coloquei endereço pois o user pode ser um admin */
-        address: Joi.object(),
+        address: Joi.object().optional(),
     })
 }
 
