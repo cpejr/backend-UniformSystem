@@ -1,5 +1,3 @@
-const { v4: uuidv4 } = require("uuid");
-const { uploadFile, deleteFile, dowloadFile } = require("../utils/bucket.js");
 const AWS = require("../utils/bucket");
 
 const HomeInfoModel = require("../models/HomeInfoModel");
@@ -78,8 +76,9 @@ module.exports = {
       if(!image){
         return res.status(404).json({message: "Image not found"});
       }
-      const name = image_id.slice(0, -4);
-      const type = image_id.slice(-3);
+
+      const name = image_id.split(".")[0];
+      const type = image_id.split(".")[1];
       await AWS.deleteFile(name, type);
 
       await HomeImageModel.deleteImage(image_id);
