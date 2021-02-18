@@ -1,11 +1,11 @@
 require("dotenv").config();
-const { errors } = require('celebrate');
+const { errors } = require("celebrate");
 
-const express = require('express');
-const routes = require('./routes');
-const cors = require('cors');
+const express = require("express");
+const routes = require("./routes");
+const cors = require("cors");
 const corsOptions = {
-  exposedHeaders: 'X-Total-Count',
+  exposedHeaders: "X-Total-Count",
 };
 
 const port = process.env.PORT || 3333;

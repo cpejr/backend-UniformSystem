@@ -5,7 +5,10 @@ const { celebrate } = require("celebrate");
 const orderController = require("../../controllers/orderController");
 const orderValidator = require("../../validators/orderValidator");
 
-const { authenticateToken } = require("../../middlewares/authentication");
+const {
+  authenticateToken,
+  isAdminOrEmployee,
+} = require("../../middlewares/authentication");
 
 orderRouter.post(
   "/",
@@ -47,13 +50,13 @@ orderRouter.get(
 );
 orderRouter.get(
   "/shipping/:zip",
-  celebrate(orderValidator.getShipping),
-  orderController.getShipping
+  celebrate(orderValidator.getShippingQuote),
+  orderController.shippingQuote
 );
 orderRouter.get(
   "/shipping/deliveredby/:user_id",
   authenticateToken,
-  orderController.getOrderData
+  orderController.getOrders
 );
 orderRouter.post(
   "/deliveratmail/:order_id",

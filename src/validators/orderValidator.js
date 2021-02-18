@@ -4,7 +4,7 @@ const { Segments, Joi } = require("celebrate");
 
 const orderValidator = {};
 
-(orderValidator.update = {
+orderValidator.update = {
   ///ok
   [Segments.PARAMS]: Joi.object().keys({
     order_id: Joi.string().required(),
@@ -14,40 +14,56 @@ const orderValidator = {};
     status: Joi.string().required(),
     //  shipping: Joi.number().required(),
   }),
-}),
-  (orderValidator.create = {
-    //ok
-    [Segments.BODY]: Joi.object().keys({
-      address_id: Joi.number().required(),
-      service_code: Joi.string().required(),
-      products: Joi.array()
-        .items(
-          Joi.object({
-            amount: Joi.number().integer().required(),
-            gender: Joi.string().valid("M", "F").required(),
-            logo_link: Joi.string().required(),
-            price: Joi.number().required(),
-            product_model_id: Joi.string().required(),
-            size: Joi.string()
-              .valid("PP", "P", "M", "G", "GG", "XG")
-              .required(),
-          })
-        )
-        .required(),
-    }),
+};
+
+orderValidator.create = {
+  //ok
+  [Segments.BODY]: Joi.object().keys({
+    address_id: Joi.number().required(),
+    service_code: Joi.string().required(),
+    products: Joi.array()
+      .items(
+        Joi.object({
+          amount: Joi.number().integer().required(),
+          gender: Joi.string().valid("M", "F").required(),
+          logo_link: Joi.string().required(),
+          price: Joi.number().required(),
+          product_model_id: Joi.string().required(),
+          size: Joi.string().valid("PP", "P", "M", "G", "GG", "XG").required(),
+        })
+      )
+      .required(),
   }),
-  (orderValidator.getShipping = {
-    //ok
-    [Segments.PARAMS]: Joi.object().keys({
-      user_id: Joi.string().required(),
-    }),
-  });
+};
+
+orderValidator.getShippingQuote = {
+  ///ok
+  [Segments.PARAMS]: Joi.object().keys({
+    order_id: Joi.string().required(),
+  }),
+  [Segments.BODY]: Joi.object().keys({
+    RecipientCEP: Joi.string().required(),
+    ShippingItemArray: Joi.array()
+      .items(
+        Joi.object().keys({
+          Height: Joi.number().integer().min(0).required(),
+          Length: Joi.number().integer().min(0).required(),
+          Quantity: Joi.number().integer().min(1).required(),
+          Weight: Joi.number().integer().min(0).required(),
+          Width: Joi.number().integer().min(0).required(),
+        })
+      )
+      .required(),
+  }),
+};
+
 orderValidator.delete = {
   //ok
   [Segments.PARAMS]: Joi.object().keys({
     order_id: Joi.string().required(),
   }),
 };
+
 orderValidator.getOrders = {
   [Segments.QUERY]: Joi.object().keys({
     user_id: Joi.string().optional(),
@@ -65,6 +81,17 @@ orderValidator.getProductsFromOrder = {
     order_id: Joi.string().required(),
   }),
 };
+
+orderValidator.getUserOrder = {
+  //???
+  [Segments.PARAMS]: Joi.object().keys({
+    user_id: Joi.string().required(),
+  }),
+  // [Segments.QUERY]: Joi.object().keys({
+  //     filters:Joi.object().required(),
+  // })
+};
+
 orderValidator.createOrderAddress = {
   //ok
   [Segments.BODY]: Joi.object().keys({
