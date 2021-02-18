@@ -15,7 +15,7 @@ const swaggerOptions = {
     openapi: "3.0.0",
     info: {
       title: "UniformSystem - Swagger",
-      description: "Documentação do projeto desenvolvido pela Tribo Sirius em 2021/1.",
+      description: "Documentação do projeto desenvolvido pela equipe Família Pêra em 2020/2 e Tribo Sirius em 2021/1.",
       version: "1.0.0"
     },
     servers: [
@@ -24,7 +24,7 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: [ "./src/routes/users/documentacao/*.js"],
+  apis: [ "./src/routes/**/documentacao/*.js"],
   
 }
 
