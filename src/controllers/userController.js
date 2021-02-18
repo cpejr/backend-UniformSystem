@@ -208,6 +208,7 @@ module.exports = {
   async updateUser(request, response) {
     try {
       const { user_id } = request.params;
+
       const loggedUserId = request.session.user_id;
 
       if (user_id !== loggedUserId) {
@@ -215,9 +216,8 @@ module.exports = {
       }
 
       const { updatedFields } = request.body;
-      updatedFields.user_id = user_id;
 
-      await UsersModel.update(user_id, updatedFields);
+      await UsersModel.update(loggedUserId, updatedFields);
       response.status(200).json("Alterado com sucesso");
     } catch (error) {
       response.status(500).json("Internal server error");
