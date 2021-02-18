@@ -20,14 +20,13 @@ orderValidator.create = {
   //ok
   [Segments.BODY]: Joi.object().keys({
     address_id: Joi.number().required(),
-    service_code: Joi.string().required(),
+    shipping_service_code: Joi.string().required(),
     products: Joi.array()
       .items(
         Joi.object({
           amount: Joi.number().integer().required(),
           gender: Joi.string().valid("M", "F").required(),
           logo_link: Joi.string().required(),
-          price: Joi.number().required(),
           product_model_id: Joi.string().required(),
           size: Joi.string().valid("PP", "P", "M", "G", "GG", "XG").required(),
         })
@@ -40,10 +39,11 @@ orderValidator.getShippingQuote = {
   ///ok
   [Segments.BODY]: Joi.object().keys({
     recipient_CEP: Joi.string().required(),
+    shipping_service_code: Joi.string().optional(),
     product_models: Joi.array()
       .items(
         Joi.object().keys({
-          id: Joi.string().required(),
+          product_model_id: Joi.string().required(),
           quantity: Joi.number().positive().required(),
         })
       )

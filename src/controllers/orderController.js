@@ -1,5 +1,6 @@
 const Correios = require("node-correios");
 const axios = require("axios");
+const _ = require("lodash");
 
 const AdressModel = require("../models/AdressModel");
 const ShippingDataModel = require("../models/ShippingDataModel");
@@ -9,38 +10,119 @@ const ProductInCartModel = require("../models/ProductInCartModel");
 const ProductModelModel = require("../models/ProductModelModel");
 const ProductModel = require("../models/ProductModel");
 
+async function getShippingQuote(
+  ShippingItemArray,
+  RecipientCEP,
+  shipping_service_code
+) {
+  const body = {
+    ShippingItemArray,
+    RecipientCEP,
+    SellerCEP: process.env.CEPORIGEM,
+    RecipientCountry: "BR",
+  };
+
+  if (shipping_service_code) body.ShippingServiceCode = shipping_service_code;
+
+  const response = await axios.post(
+    "http://api.frenet.com.br/shipping/quote",
+    body,
+    {
+      headers: {
+        token: process.env.FRENET_TOKEN,
+      },
+    }
+  );
+
+  return response.data;
+}
+
 module.exports = {
   async createOrder(req, res) {
+    let createdOrder_id;
     try {
-      const { address_id, products } = req.body;
+      const { address_id, products, shipping_service_code } = req.body;
 
       // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
       const address = await AdressModel.getById(address_id);
+
       if (!address) {
         return res.status(404).json({ message: "Adress not found" });
       }
-      //API CORREIOS
-      const args = {
-        nCdServico: `${req.body.service_code}`,
-        sCepOrigem: `${process.env.CEPORIGEM}`,
-        sCepDestino: `${address.zip_code}`,
-        nVlPeso: `${process.env.VLPESO}`,
-        nCdFormato: Number(process.env.CDFORMATO),
-        nVlComprimento: parseFloat(process.env.VLCOMPRIMENTO),
-        nVlAltura: parseFloat(process.env.VLALTURA),
-        nVlLargura: parseFloat(process.env.VLLARGURA),
-      };
 
-      const correios = new Correios();
-      const result = await correios.calcPreco(args);
+      // Pega os id's dos products
+      const productModelIds = products.map((item) => {
+        return item.product_model_id;
+      });
+
+      // Retira os ids repetidos, para o caso de pedir o mesmo model de tamanhos diferentes
+      const uniqueIds = _.uniq(productModelIds);
+
+      // Caso o numero de produtos encontrado seja diferente da quantidade de uniqueIds,
+      // significa que o usuário está tentando comprar um produto indisponível.
+      if (uniqueIds.length !== uniqueIds.length)
+        return response
+          .status(400)
+          .json({ message: "Tried to buy an unavailable product" });
+
+      // Cálculo do frete
+      const productsData = await ProductModel.getProductsByProductModelId(
+        uniqueIds,
+        [
+          "product.product_id",
+          "product_model_id",
+          "height",
+          "length",
+          "weight",
+          "width",
+        ]
+      );
+
+      // Constuir corpo da requisição para calculo do frete
+      const ShippingItemArray = products.map((p) => {
+        const data = productsData.find(
+          (pr) => pr.product_model_id == p.product_model_id // Aqui tenq ser dois iguais!
+        );
+
+        return {
+          Height: data.height,
+          Length: data.length,
+          Quantity: p.amount,
+          Weight: data.weight,
+          Width: data.width,
+        };
+      });
+
+      console.log(
+        "🚀 ~ file: orderController.js ~ line 96 ~ ShippingItemArray ~ ShippingItemArray",
+        ShippingItemArray
+      );
+
+      const result = await getShippingQuote(
+        ShippingItemArray,
+        address.zip_code,
+        shipping_service_code
+      );
 
       delete address.user_id;
       delete address.address_id;
+
+      // Caso nao tenha encontrado algum valor para o frete, não podemos realizar o pedido
+      if (
+        !result.ShippingSevicesArray[0] ||
+        result.ShippingSevicesArray[0]?.Error
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Invalid service_code or invalid shipping data", Msg: result.ShippingSevicesArray[0]?.Msg });
+      }
+      console.log(result.ShippingSevicesArray[0]);
       const newShipping = {
         ...address,
-        shipping_value: result[0].Valor,
-        service_code: "0",
+        shipping_value: result.ShippingSevicesArray[0].ShippingPrice,
+        service_code: shipping_service_code,
       };
+
       const newOrderAddress_id = await ShippingDataModel.create(newShipping);
 
       // Criacao do order a partir dos dados recebidos na requisicao + adress criado logo acima
@@ -52,19 +134,9 @@ module.exports = {
         status: "waitingPayment",
       };
 
-      const createdOrder_id = await OrderModel.create(order);
+      createdOrder_id = await OrderModel.create(order);
 
       // Criação dos produtos do pedido:
-      //Pega os id's dos products
-      const productIds = products.map((item) => {
-        return item.product_model_id;
-      });
-
-      //Retira os ids repetidos, para o caso de pedir o mesmo model de tamanhos diferentes
-      const uniqueIds = productIds.filter(function (item, pos, self) {
-        return self.indexOf(item) == pos;
-      });
-
       //Busca no DB os produtos comprados, para ver se todos existem
       const boughtProducts = await ProductModelModel.getByIdArray(
         uniqueIds,
@@ -72,22 +144,24 @@ module.exports = {
         { available: true }
       );
 
-      //Para cada produto no pedido, alguns dados vem da requisição e outros do DB de models
-      let indexDB;
+      // Para cada produto no pedido, alguns dados vem da requisição e outros do DB de models
       // Percorrer o vetor de produtos na requisição;
-      const productsInOrder = productIds.map((id, indexRequest) => {
+      const productsInOrder = productModelIds.map((id, indexRequest) => {
         // Achar o produto correspondente no vetor de models vindos do DB
-        indexDB = boughtProducts
-          .map((product) => {
-            return product.product_model_id;
-          })
-          .indexOf(id);
-        // Criando o objeto
+        const dbProductObject = boughtProducts.find(
+          (product) => product.product_model_id == id // Aqui tenq ser dois iguais!
+        );
+        console.log(
+          "🚀 ~ file: orderController.js ~ line 142 ~ createOrder ~ boughtProducts",
+          boughtProducts,
+          id
+        );
 
+        // Criando o objeto
         return {
           order_id: createdOrder_id,
           product_model_id: id,
-          product_price: boughtProducts[indexDB].price,
+          product_price: dbProductObject.price,
           amount: products[indexRequest].amount,
           logo_link: products[indexRequest].logo_link,
           discount: 0,
@@ -103,6 +177,7 @@ module.exports = {
         message: "Pedido efetuado com sucesso",
       });
     } catch (err) {
+      if (createdOrder_id) await OrderModel.delete(createdOrder_id);
       console.warn(err.message);
       return res.status(500).json("Internal server error.");
     }
@@ -110,9 +185,13 @@ module.exports = {
 
   async shippingQuote(req, res) {
     try {
-      const { recipient_CEP, product_models } = { ...req.body };
+      const { recipient_CEP, product_models, shipping_service_code } = {
+        ...req.body,
+      };
 
-      const product_models_ids = product_models.map((item) => item.id);
+      const product_models_ids = product_models.map(
+        (item) => item.product_model_id
+      );
 
       const products = await ProductModel.getProductsByProductModelId(
         product_models_ids,
@@ -133,7 +212,9 @@ module.exports = {
         return res.status(400).json({ message: "invalid product model ids" });
 
       const ShippingItemArray = product_models.map((item) => {
-        const product = products.find((p) => p.product_model_id == item.id);
+        const product = products.find(
+          (p) => p.product_model_id == item.product_model_id
+        );
 
         return {
           Height: product.height,
@@ -144,25 +225,13 @@ module.exports = {
         };
       });
 
-      const body = {
+      const quote = await getShippingQuote(
         ShippingItemArray,
-        RecipientCEP: recipient_CEP,
-        SellerCEP: process.env.CEPORIGEM,
-        RecipientCountry: "BR",
-      };
-
-      console.log(body);
-      const quote = await axios.post(
-        "http://api.frenet.com.br/shipping/quote",
-        body,
-        {
-          headers: {
-            token: process.env.FRENET_TOKEN,
-          },
-        }
+        recipient_CEP,
+        shipping_service_code
       );
 
-      return res.status(200).json(quote.data);
+      return res.status(200).json(quote);
     } catch (err) {
       console.warn(err);
       console.warn(err.response?.data);
