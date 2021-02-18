@@ -2,7 +2,7 @@
 * @swagger
 *  /users/{user_id}:
 *    put:
-*      summary: Deleta usuários do tipo Adm ou Employee
+*      summary: Atualiza usuário pelo ID
 *      parameters: 
 *       - in: header
 *         name: Authorization Bearer Token
