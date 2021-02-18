@@ -32,9 +32,9 @@ module.exports = {
       try {
         firebaseUid = await FirebaseModel.createNewUser(user.email, user.password);
       } catch (error) {
+        console.log(error)
         return response.status(400).json({error});
       }
-
 
       delete user.password
 
@@ -97,9 +97,7 @@ module.exports = {
   async getAdresses(request, response) {
       try {
         // const { user_id } = request.params;
-
         const user_id = request.session.user_id;
-
         const adresses = await AdressModel.getAdressByUserId(user_id);
         response.status(200).json({ adresses });
     } catch (error) {
@@ -136,6 +134,12 @@ module.exports = {
 
       const { user_id } = request.params;
 
+      const loggedUser = request.session;
+
+      if(loggedUser.user_type !== "client"){
+        return response.status(403).json("Operação proibida.");
+      }
+
       if(loggedUserId !== user_id){
         throw new Error('Invalid action. You are not the owner from this ID.')
       }
@@ -153,6 +157,7 @@ module.exports = {
 
       return response.status(200).json("Apagado com sucesso");
     } catch (error) {
+      console.log(error);
       return response.status(500).json("Internal server error");
     }
   },

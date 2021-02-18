@@ -40,17 +40,15 @@ module.exports = {
   },
 
   async deleteModel(req, res) {
-    const { model_id } = req.params;
     try {
-      const existingProductModel = await ProductModelModel.getByIdArray([
-        model_id,
-      ]);
-      if (existingProductModel.length === 0) {
-        res.status(404).json("Product model does not exist");
+      const { model_id } = req.params;
+      const existingProductModel = await ProductModelModel.getById(model_id);
+      if (!existingProductModel) {
+        return res.status(404).json("Product model does not exist");
       }
-      if (existingProductModel[0].img_link !== "Sem imagem") {
-        const name = existingProductModel[0].img_link.slice(0, -4);
-        const type = existingProductModel[0].img_link.slice(-3);
+      if (existingProductModel.img_link !== "Sem imagem" && existingProductModel.img_link !== "...") {
+        const name = existingProductModel.img_link.slice(0, -4);
+        const type = existingProductModel.img_link.slice(-3);
         await AWS.deleteFile(name, type);
       }
       await ProductModelModel.delete(model_id);
@@ -59,7 +57,7 @@ module.exports = {
       });
     } catch (err) {
       console.warn(err);
-      res.status(500).json("Internal server error.");
+      return res.status(500).json("Internal server error.");
     }
   },
 
@@ -70,7 +68,10 @@ module.exports = {
       const existingProductModel = await ProductModelModel.getByIdArray([
         model_id,
       ]);
-      console.log("🚀 ~ file: productModelController.js ~ line 72 ~ updateModel ~ existingProductModel", existingProductModel)
+      console.log(
+        "🚀 ~ file: productModelController.js ~ line 72 ~ updateModel ~ existingProductModel",
+        existingProductModel
+      );
       if (existingProductModel.length === 0) {
         return res.status(404).json({ message: "Model not found" });
       }
@@ -97,14 +98,16 @@ module.exports = {
     const search_product_id = req.params.product_id;
     const query = req.query;
     try {
-      const {product_id} = await ProductModel.findProductId(search_product_id);
-      
+      const { product_id } = await ProductModel.findProductId(
+        search_product_id
+      );
+
       if (product_id === undefined || product_id === null) {
         return res.status(404).json({
           message: "This product does not exist",
         });
       }
-      let filters= {};
+      let filters = {};
       Object.keys(query).forEach((key) => {
         filters[`product_model.${key}`] = query[key];
       });
@@ -116,7 +119,7 @@ module.exports = {
       return res.status(200).json(productFound);
     } catch (err) {
       return res.status(400).json({
-        message: "Internal Server error"
+        message: "Internal Server error",
       });
     }
   },

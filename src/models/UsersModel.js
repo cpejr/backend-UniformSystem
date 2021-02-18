@@ -6,7 +6,7 @@ const uuid = require("react-uuid");
 module.exports = {
   async create(user) {
     user.user_id = uuid();
-    const response = await connection("users").insert(user);
+    await connection("users").insert(user);
     return user.user_id;
   },
 

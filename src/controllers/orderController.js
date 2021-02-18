@@ -71,13 +71,28 @@ module.exports = {
         { available: true }
       );
 
-      //Compara para ver se todos os models pedidos existem no DB
-      if (uniqueIds.length !== boughtProducts.length) {
-        return res.status(404).json({
-          message:
-            "Some of the products you're ordering don't exist or are not available",
-        });
-      }
+            //Para cada produto no pedido, alguns dados vem da requisição e outros do DB de models
+            let indexDB;
+            // Percorrer o vetor de produtos na requisição;
+            const productsInOrder = productIds.map((id, indexRequest) => {
+                // Achar o produto correspondente no vetor de models vindos do DB
+                indexDB = boughtProducts.map((product) => { return String(product.product_model_id) }).indexOf(id);
+                // Criando o objeto
+                
+                return {
+                    order_id: createdOrder_id,
+                    product_model_id: id,
+                    product_price: boughtProducts[indexDB].price,
+                    amount: products[indexRequest].amount,
+                    logo_link: products[indexRequest].logo_link,
+                    discount: 0,
+                    size: products[indexRequest].size,
+                    gender: products[indexRequest].gender,
+                };
+            });
+            // Manda o vetor para o model criar os produtos no DB
+            await ProductInOrderModel.create(productsInOrder);
+            await ProductInCartModel.deleteByUser(user_id);
 
       //Para cada produto no pedido, alguns dados vem da requisição e outros do DB de models
       let indexDB;
@@ -131,23 +146,14 @@ module.exports = {
         }
       );
 
-      res.status(200).json(shippingQuote.data);
-    } catch (err) {
-      console.warn(err.message);
-      res.status(500).json("Internal server error.");
-    }
-  },
-
-  async getOrderData(req, res) {
-    try {
-      const { user_id } = req.params;
-      const order_data = await ShippingDataModel.getByUser(user_id);
-      res.status(200).json(order_data);
-    } catch (err) {
-      console.log(err);
-      res.status(500).json("Internal server error.");
-    }
-  },
+    async updateOrder(req, res) {
+        const { order_id } = req.params;
+        const updated_Fields = req.body;
+        
+        // Caso exista
+        delete updated_Fields.is_paid;
+        try {
+            await OrderModel.update(order_id, updated_Fields);
 
   async updateOrder(req, res) {
     const { order_id } = req.params;

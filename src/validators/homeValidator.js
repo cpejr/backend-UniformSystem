@@ -5,15 +5,17 @@ const homeValidator = new Object();
 
 homeValidator.update = {
     [Segments.BODY]: Joi.object().keys({
-        textWhoWeAre: Joi.string().optional(),
-        textProducts: Joi.string().optional(),
-        contactInfo: Joi.object({
+        textWhoWeAre: Joi.string().required(),
+        textProducts: Joi.string().required(),
+        contactInfo: Joi.object().keys({
             cellphone: Joi.string().required(),
             address: Joi.string().required(),
+            facebookUsername: Joi.string().required(),
+            instagramUsername: Joi.string().required(),
             facebookLink: Joi.string().required(),
             instagramLink: Joi.string().required(),
-            whatsAppNumber: Joi.string().required(),
-        }).optional(),
+            whatsAppLink: Joi.string().required(),
+        }).required(),
     }),
 };
 

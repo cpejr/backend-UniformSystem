@@ -4,49 +4,40 @@ const { Segments, Joi } = require("celebrate");
 
 const orderValidator = {};
 
-(orderValidator.update = {
-  ///ok
-  [Segments.PARAMS]: Joi.object().keys({
-    order_id: Joi.string().required(),
-  }),
-  [Segments.BODY]: Joi.object().keys({
-    is_paid: Joi.number().integer().required(),
-    status: Joi.string(),
-    shipping: Joi.number().required(),
-  }),
-}),
-  (orderValidator.create = {
-    //ok
+orderValidator.update = { ///ok
+    [Segments.PARAMS]: Joi.object().keys({
+        order_id: Joi.string().required(),
+     }),
+     [Segments.BODY]: Joi.object().keys({
+         is_paid: Joi.number().integer().required(),
+         status: Joi.string().required(),
+        //  shipping: Joi.number().required(),
+     })
+},
+
+orderValidator.create = { //ok
     [Segments.BODY]: Joi.object().keys({
-      address_id: Joi.string().required(),
-      service_code: Joi.string().required(),
-      products: Joi.array()
-        .items({
-          product_model_id: Joi.number().integer().required(),
-          amount: Joi.number().integer().required(),
-          logo_link: Joi.string().required(),
-          size: Joi.string().valid("PP", "P", "M", "G", "GG", "XG").required(),
-        })
-        .required(),
-    }),
-  }),
-  (orderValidator.shippingQuote = {
-    [Segments.BODY]: Joi.object().keys({
-      RecipientCEP: Joi.string().required(),
-      ShippingServiceCode: Joi.string().optional(),
-      ShippingItemArray: Joi.array()
-        .items({
-          Height: Joi.number().positive().min(1).required(),
-          Length: Joi.number().positive().min(10).required(),
-          Quantity: Joi.number().positive().min(1).required(),
-          Weight: Joi.number().positive().required(),
-          Width: Joi.number().positive().min(15).required(),
-        })
-        .required(),
-    }),
-  }),
-  (orderValidator.getUserOrder = {
-    //???
+        address_id: Joi.number().required(),
+        service_code: Joi.string().required(),
+        products: Joi.array().items(
+            Joi.object({
+                amount: Joi.number().integer().required(),
+                gender: Joi.string()
+                .valid("M", "F")
+                .required(),
+                logo_link: Joi.string().required(),
+                price: Joi.number().required(),
+                product_model_id: Joi.string().required(),
+                size: Joi.string()
+                .valid("PP", "P", "M", "G", "GG", "XG")
+                .required(),
+            })
+        ).required()
+        
+    })
+    
+},
+orderValidator.getShipping = { //ok
     [Segments.PARAMS]: Joi.object().keys({
       user_id: Joi.string().required(),
     }),

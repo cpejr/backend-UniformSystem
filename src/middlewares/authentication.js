@@ -4,16 +4,16 @@ module.exports = {
   async authenticateToken(request, response, next) {
     const authHeader = request.headers.authorization;
     const [scheme, token] = authHeader
-      ? authHeader.split(" ")
-      : [undefined, undefined];
+    ? authHeader.split(" ")
+    : [undefined, undefined];
     
     const tokenVerified = token.includes(',') ?  token.split(',')[0] : token;
-
+    
     if (!tokenVerified || tokenVerified === null)
       return response.status(401).json({ error: "No token provided" });
 
     if (!/^Bearer$/i.test(scheme))
-      return response.status(401).json({ error: "Token badformatted" });
+    return response.status(401).json({ error: "Token badformatted" });
 
     const validToken = await new Promise((res) => {
       jwt.verify(tokenVerified, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
