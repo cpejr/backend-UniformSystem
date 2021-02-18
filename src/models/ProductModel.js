@@ -2,16 +2,16 @@ const connection = require("../database/connection");
 
 module.exports = {
   async create(newProduct) {
-      const response = await connection("product").insert(newProduct);
-      return response;
+    const response = await connection("product").insert(newProduct);
+    return response;
   },
 
   async findProductId(product_id) {
-      const response = await connection("product")
-        .select("product_id")
-        .where({product_id: product_id})
-        .first();
-      return response;
+    const response = await connection("product")
+      .select("product_id")
+      .where({ product_id: product_id })
+      .first();
+    return response;
   },
 
   async getProductsAndOneOfItsModels({
@@ -20,7 +20,7 @@ module.exports = {
     product_type,
     gender,
     available,
-    minprice, 
+    minprice,
     maxprice,
   }) {
     const filter = {};
@@ -34,7 +34,7 @@ module.exports = {
     if (gender) {
       genderFilterGroup = await connection("product_model")
         .select("product_id")
-        .where({ gender })
+        .where({ gender });
 
       genderFilterGroup = genderFilterGroup.map(
         (product) => product.product_id
@@ -46,7 +46,7 @@ module.exports = {
       .join("product_model", "product.product_id", "product_model.product_id")
       .where({
         ...filter,
-      })
+      });
 
     if (typeof minprice !== "undefined")
       query.andWhere("product_model.price", ">=", minprice);
@@ -93,7 +93,14 @@ module.exports = {
     return result;
   },
 
-  async getAllModels({ page = 1, name, product_type, gender, minprice, maxprice }) {
+  async getAllModels({
+    page = 1,
+    name,
+    product_type,
+    gender,
+    minprice,
+    maxprice,
+  }) {
     const filter = {};
     if (gender) filter.gender = gender;
 
@@ -111,7 +118,7 @@ module.exports = {
     if (typeof product_type !== "undefined")
       query.whereIn("product_type", product_type);
     if (typeof name !== "undefined")
-      query.where("product.name", 'like', `%${name}%`);
+      query.where("product.name", "like", `%${name}%`);
 
     const response = await query;
 
@@ -131,50 +138,58 @@ module.exports = {
 
   async getProductById(productId) {
     const response = await connection("product")
-    .where({
-      "product_id": productId,
-    })
-    .select('*')
+      .where({
+        product_id: productId,
+      })
+      .select("*");
+
+    return response;
+  },
+
+  async getProductsByProductModelId(productsModelsIds, fields = "*") {
+    const response = await connection("product")
+      .join("product_model", "product.product_id", "product_model.product_id")
+      .whereIn("product_model.product_id", productsModelsIds)
+      .select(fields);
 
     return response;
   },
 
   async getProductsAndItsAllModels(product_id, filters) {
     const response = await connection("product")
-    .select("*")
-    .join("product_model", "product.product_id", "product_model.product_id")
-    .where({
-      "product.product_id": product_id,
-      ...filters
-    });
-    
-    let result;
-    if(response[0]){
+      .select("*")
+      .join("product_model", "product.product_id", "product_model.product_id")
+      .where({
+        "product.product_id": product_id,
+        ...filters,
+      });
 
-        result = {
-          product_id: response[0].product_id,
-          name: response[0].name,
-          description: response[0].description,
-          product_type: response[0].product_type,
-          models: response.map((item) => {
-            return {
-              product_model_id: item.product_model_id,
-              img_link: item.img_link,
-              price: item.price,
-              model_description: item.model_description,
-              gender: item.gender,
-              available: item.available,
-            };
-          }),
-        };
-    }else{
+    let result;
+    if (response[0]) {
       result = {
-        product_id: '',
-        name: '',
-        description: '',
-        product_type:'',
+        product_id: response[0].product_id,
+        name: response[0].name,
+        description: response[0].description,
+        product_type: response[0].product_type,
+        models: response.map((item) => {
+          return {
+            product_model_id: item.product_model_id,
+            img_link: item.img_link,
+            price: item.price,
+            model_description: item.model_description,
+            gender: item.gender,
+            available: item.available,
+          };
+        }),
+      };
+    } else {
+      result = {
+        product_id: "",
+        name: "",
+        description: "",
+        product_type: "",
         models: [],
-      }
+      };
     }
 
     return result;

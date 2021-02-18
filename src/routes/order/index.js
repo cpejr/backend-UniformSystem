@@ -48,8 +48,8 @@ orderRouter.get(
   authenticateToken,
   orderController.getProductsFromOrder
 );
-orderRouter.get(
-  "/shipping/:zip",
+orderRouter.post(
+  "/shippingQuote",
   celebrate(orderValidator.getShippingQuote),
   orderController.shippingQuote
 );

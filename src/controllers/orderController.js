@@ -7,6 +7,7 @@ const OrderModel = require("../models/OrderModel");
 const ProductInOrderModel = require("../models/ProductInOrderModel");
 const ProductInCartModel = require("../models/ProductInCartModel");
 const ProductModelModel = require("../models/ProductModelModel");
+const ProductModel = require("../models/ProductModel");
 
 module.exports = {
   async createOrder(req, res) {
@@ -109,20 +110,62 @@ module.exports = {
 
   async shippingQuote(req, res) {
     try {
-      const body = { ...req.body };
-      body.SellerCEP = process.env.CEPORIGEM;
-      body.RecipientCountry = "BR";
+      const { recipient_CEP, product_models } = { ...req.body };
 
-      const shippingQuote = await axios.post(
+      const product_models_ids = product_models.map((item) => item.id);
+
+      const products = await ProductModel.getProductsByProductModelId(
+        product_models_ids,
+        [
+          "product.product_id",
+          "product_model_id",
+          "height",
+          "length",
+          "weight",
+          "width",
+        ]
+      );
+
+      if (
+        products.length === 0 ||
+        products.length !== product_models_ids.length
+      )
+        return res.status(400).json({ message: "invalid product model ids" });
+
+      const ShippingItemArray = product_models.map((item) => {
+        const product = products.find((p) => p.product_model_id == item.id);
+
+        return {
+          Height: product.height,
+          Length: product.length,
+          Quantity: item.quantity,
+          Weight: product.weight,
+          Width: product.width,
+        };
+      });
+
+      const body = {
+        ShippingItemArray,
+        RecipientCEP: recipient_CEP,
+        SellerCEP: process.env.CEPORIGEM,
+        RecipientCountry: "BR",
+      };
+
+      console.log(body);
+      const quote = await axios.post(
         "http://api.frenet.com.br/shipping/quote",
-        { ...body },
+        body,
         {
           headers: {
             token: process.env.FRENET_TOKEN,
           },
         }
       );
+
+      return res.status(200).json(quote.data);
     } catch (err) {
+      console.warn(err);
+      console.warn(err.response?.data);
       res.status(500).json("Internal server error.");
     }
   },

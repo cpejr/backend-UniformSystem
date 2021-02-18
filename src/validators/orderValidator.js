@@ -38,19 +38,13 @@ orderValidator.create = {
 
 orderValidator.getShippingQuote = {
   ///ok
-  [Segments.PARAMS]: Joi.object().keys({
-    order_id: Joi.string().required(),
-  }),
   [Segments.BODY]: Joi.object().keys({
-    RecipientCEP: Joi.string().required(),
-    ShippingItemArray: Joi.array()
+    recipient_CEP: Joi.string().required(),
+    product_models: Joi.array()
       .items(
         Joi.object().keys({
-          Height: Joi.number().integer().min(0).required(),
-          Length: Joi.number().integer().min(0).required(),
-          Quantity: Joi.number().integer().min(1).required(),
-          Weight: Joi.number().integer().min(0).required(),
-          Width: Joi.number().integer().min(0).required(),
+          id: Joi.string().required(),
+          quantity: Joi.number().positive().required(),
         })
       )
       .required(),
