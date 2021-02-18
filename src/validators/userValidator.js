@@ -22,9 +22,9 @@ userValidator.update = { //ok
     }), 
     [Segments.BODY]: Joi.object().keys({
     updatedFields: Joi.object({
-        name: Joi.string().required(),
-        email: Joi.string().required(),
-        cpf: Joi.string().length(11).regex(/^\d+$/).required(),
+        name: Joi.string().optional(),
+        email: Joi.string().optional(),
+        cpf: Joi.string().length(11).regex(/^\d+$/).optional(),
     })
     })
 }

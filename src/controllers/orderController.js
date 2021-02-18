@@ -71,29 +71,6 @@ module.exports = {
         { available: true }
       );
 
-            //Para cada produto no pedido, alguns dados vem da requisição e outros do DB de models
-            let indexDB;
-            // Percorrer o vetor de produtos na requisição;
-            const productsInOrder = productIds.map((id, indexRequest) => {
-                // Achar o produto correspondente no vetor de models vindos do DB
-                indexDB = boughtProducts.map((product) => { return String(product.product_model_id) }).indexOf(id);
-                // Criando o objeto
-                
-                return {
-                    order_id: createdOrder_id,
-                    product_model_id: id,
-                    product_price: boughtProducts[indexDB].price,
-                    amount: products[indexRequest].amount,
-                    logo_link: products[indexRequest].logo_link,
-                    discount: 0,
-                    size: products[indexRequest].size,
-                    gender: products[indexRequest].gender,
-                };
-            });
-            // Manda o vetor para o model criar os produtos no DB
-            await ProductInOrderModel.create(productsInOrder);
-            await ProductInCartModel.deleteByUser(user_id);
-
       //Para cada produto no pedido, alguns dados vem da requisição e outros do DB de models
       let indexDB;
       // Percorrer o vetor de produtos na requisição;
@@ -145,15 +122,10 @@ module.exports = {
           },
         }
       );
-
-    async updateOrder(req, res) {
-        const { order_id } = req.params;
-        const updated_Fields = req.body;
-        
-        // Caso exista
-        delete updated_Fields.is_paid;
-        try {
-            await OrderModel.update(order_id, updated_Fields);
+    } catch (err) {
+      res.status(500).json("Internal server error.");
+    }
+  },
 
   async updateOrder(req, res) {
     const { order_id } = req.params;

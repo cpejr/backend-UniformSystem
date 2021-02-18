@@ -131,7 +131,7 @@ module.exports = {
   async deleteUserClient(request, response) {
     try {
       const loggedUserId = request.session.user_id;
-
+      
       const { user_id } = request.params;
 
       const loggedUser = request.session;
@@ -144,7 +144,7 @@ module.exports = {
         throw new Error('Invalid action. You are not the owner from this ID.')
       }
 
-      const foundUser = await UsersModel.getById(user_id)
+      const foundUser = await UsersModel.getById(user_id);
 
       if(!foundUser){
         throw new Error("User not found.")
