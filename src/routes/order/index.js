@@ -5,7 +5,7 @@ const { celebrate } = require("celebrate");
 const orderController = require("../../controllers/orderController");
 const orderValidator = require("../../validators/orderValidator");
 
-const { authenticateToken } = require("../../middlewares/authentication");
+const { authenticateToken, isAdminOrEmployee } = require("../../middlewares/authentication");
 
 orderRouter.post(
   "/",
