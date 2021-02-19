@@ -22,6 +22,9 @@ const swaggerOptions = {
       {
         url: "http://localhost:3333"
       },
+      {
+        url: "https://api.profituniformes.com.br"
+      },
     ],
   },
   apis: [ "./src/routes/**/documentacao/*.js"],
