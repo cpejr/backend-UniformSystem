@@ -10,22 +10,29 @@ orderValidator.update = { ///ok
      }),
      [Segments.BODY]: Joi.object().keys({
          is_paid: Joi.number().integer().required(),
-         status: Joi.string(),
-         shipping: Joi.number().required(),
+         status: Joi.string().required(),
+        //  shipping: Joi.number().required(),
      })
 },
+
 orderValidator.create = { //ok
     [Segments.BODY]: Joi.object().keys({
-        address_id: Joi.string().required(),
+        address_id: Joi.number().required(),
         service_code: Joi.string().required(),
-        products: Joi.array().items({
-            product_model_id: Joi.number().integer().required(),
-            amount: Joi.number().integer().required(),
-            logo_link: Joi.string().required(),
-            size: Joi.string()
-            .valid("PP", "P", "M", "G", "GG", "XG")
-            .required(),
-        }).required()
+        products: Joi.array().items(
+            Joi.object({
+                amount: Joi.number().integer().required(),
+                gender: Joi.string()
+                .valid("M", "F")
+                .required(),
+                logo_link: Joi.string().required(),
+                price: Joi.number().required(),
+                product_model_id: Joi.string().required(),
+                size: Joi.string()
+                .valid("PP", "P", "M", "G", "GG", "XG")
+                .required(),
+            })
+        ).required()
         
     })
     

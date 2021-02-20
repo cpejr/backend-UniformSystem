@@ -9,8 +9,7 @@ const Correios = require("node-correios");
 module.exports = {
     async createOrder(req, res) {
         try {
-            const { address_id, products } = req.body;
-
+            const { address_id, service_code, products } = req.body;
 
             // Criacão do OrderAdress a partir do id de adress do usuario recebido na requisição
             const address = await AdressModel.getById(address_id);
@@ -28,7 +27,7 @@ module.exports = {
                 nVlAltura: parseFloat(process.env.VLALTURA),
                 nVlLargura: parseFloat(process.env.VLLARGURA),
             };
-      
+
             const correios = new Correios();
             const result = await correios.calcPreco(args);
 
@@ -37,7 +36,7 @@ module.exports = {
             const newShipping = {
                 ...address,
                 shipping_value: result[0].Valor,
-                service_code: "0",
+                service_code: service_code,
             };
             const newOrderAddress_id = await ShippingDataModel.create(
                 newShipping
@@ -82,7 +81,7 @@ module.exports = {
             // Percorrer o vetor de produtos na requisição;
             const productsInOrder = productIds.map((id, indexRequest) => {
                 // Achar o produto correspondente no vetor de models vindos do DB
-                indexDB = boughtProducts.map((product) => { return product.product_model_id; }).indexOf(id);
+                indexDB = boughtProducts.map((product) => { return String(product.product_model_id) }).indexOf(id);
                 // Criando o objeto
                 
                 return {
@@ -93,6 +92,7 @@ module.exports = {
                     logo_link: products[indexRequest].logo_link,
                     discount: 0,
                     size: products[indexRequest].size,
+                    gender: products[indexRequest].gender,
                 };
             });
             // Manda o vetor para o model criar os produtos no DB
@@ -145,7 +145,9 @@ module.exports = {
     async updateOrder(req, res) {
         const { order_id } = req.params;
         const updated_Fields = req.body;
-
+        
+        // Caso exista
+        delete updated_Fields.is_paid;
         try {
             await OrderModel.update(order_id, updated_Fields);
 

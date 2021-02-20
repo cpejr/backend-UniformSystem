@@ -35,6 +35,7 @@ module.exports = {
           user.password
         );
       } catch (error) {
+
         return response.status(400).json({ error });
       }
 
@@ -96,13 +97,12 @@ module.exports = {
   },
 
   async getAdresses(request, response) {
-    try {
-      // const { user_id } = request.params;
+      try {
+        // const { user_id } = request.params;
+        const user_id = request.session.user_id;
+        const adresses = await AdressModel.getAdressByUserId(user_id);
+        response.status(200).json({ adresses });
 
-      const user_id = request.session.user_id;
-
-      const adresses = await AdressModel.getAdressByUserId(user_id);
-      response.status(200).json({ adresses });
     } catch (error) {
       response.status(500).json("internal server error");
     }
@@ -137,8 +137,14 @@ module.exports = {
 
       const { user_id } = request.params;
 
-      if (loggedUserId !== user_id) {
-        throw new Error("Invalid action. You are not the owner from this ID.");
+      const loggedUser = request.session;
+
+      if(loggedUser.user_type !== "client"){
+        return response.status(403).json("Operação proibida.");
+      }
+
+      if(loggedUserId !== user_id){
+        throw new Error('Invalid action. You are not the owner from this ID.')
       }
 
       const foundUser = await UsersModel.getById(user_id);
@@ -154,6 +160,7 @@ module.exports = {
 
       return response.status(200).json("Apagado com sucesso");
     } catch (error) {
+      console.log(error);
       return response.status(500).json("Internal server error");
     }
   },
