@@ -28,22 +28,6 @@
 *         name: product_type
 *         required: true
 *         description: Tipo do produto
-*       - in: body
-*         name: img_link
-*         required: false
-*         description: Link da imagem
-*       - in: body
-*         name: price
-*         required: true
-*         description: Preço do produto
-*       - in: body
-*         name: gender
-*         required: true
-*         description: Gênero. Pode ser M (masculino) ou F (feminino)
-*       - in: body
-*         name: model_description
-*         required: true
-*         description: Descrição do item
 *      tags: [Product]
 *      description: Criar produto
 *      responses: 

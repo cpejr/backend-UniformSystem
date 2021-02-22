@@ -15,9 +15,6 @@
 *        - name
 *        - description
 *        - product_type
-*        - price
-*        - gender
-*        - model_description
 *      properties:
 *        product_id:
 *           type: increments
@@ -31,13 +28,10 @@
 *        product_type:
 *            type: string
 *            description: Tipo do produto.
-*        price:
-*            type: number
-*            description: Preço do produto.
-*        gender:
-*            type: valid
-*            description: Gênero. Pode ser M (masculino) ou F (feminino). 
-*        model_description:
-*            type: string
-*            description: Descrição do item.
+*        created_at:
+*            type: date
+*            description: Campo autogerado.
+*        updated_at:
+*            type: date
+*            description: Campo autogerado. 
 */       
