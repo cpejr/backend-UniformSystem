@@ -123,10 +123,8 @@ module.exports = {
   async updateProduct(req, res) {
     const { product_id } = req.params;
     const { updated_fields } = req.body;
-    console.log(updated_fields);
     try {
       const existingProductId = await ProductModel.findProductId(product_id);
-      console.log("🚀 ~ file: productController.js ~ line 129 ~ updateProduct ~ existingProductId", existingProductId)
       if(!existingProductId) {
         return res.status(400).json({message: 'Product not found'});
       }
