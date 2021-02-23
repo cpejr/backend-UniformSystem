@@ -6,7 +6,7 @@ const FirebaseModel = require("../models/FirebaseModel");
 
 //estamos recebendo alguns erros que não estão estourando na tela, apesar de que a
 //ação nao vem sendo feita
-
+//5555
 module.exports = {
   async createUser(request, response) {
     let firebaseUid;
