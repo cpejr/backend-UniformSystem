@@ -28,6 +28,10 @@
 *         name: product_type
 *         required: true
 *         description: Tipo do produto
+*       - in: body
+*         name: models
+*         required: true
+*         description: Recebe um array vazio que será preenchido no product_models.
 *      tags: [Product]
 *      description: Criar produto
 *      responses: 
