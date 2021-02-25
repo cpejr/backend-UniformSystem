@@ -1,6 +1,6 @@
 /**
  * @swagger
- *  /order/{user_id}:
+ *  /order:
  *    post:
  *      summary: Cria uma ordem.
  *      requestBody:
@@ -42,7 +42,7 @@
  *         name: updated_at
  *         required: true
  *         description: Data da atualizacao da ordem.
- *      tags: [Address]
+ *      tags: [Order]
  *      description: Cria uma ordem.
  *      responses:
  *       '200':
