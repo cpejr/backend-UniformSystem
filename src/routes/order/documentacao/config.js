@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *   name: Order
- *   description: Ordens
+ *   description: Pedidos
  */
 
 /**
