@@ -2,7 +2,6 @@ const { Segments, Joi } = require("celebrate");
 
 const homeValidator = new Object();
 
-
 homeValidator.update = {
     [Segments.BODY]: Joi.object().keys({
         textWhoWeAre: Joi.string().optional(),
