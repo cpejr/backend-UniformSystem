@@ -1,11 +1,11 @@
-const express = require("express")
-const cartRouter = express.Router()
+const express = require("express");
+const cartRouter = express.Router();
 const { celebrate } = require("celebrate");
 
-const cartController = require("../../controllers/cartController");    // Controller
-const cartValidator = require("../../validators/cartValidator");       // Validator
+const cartController = require("../../controllers/cartController"); // Controller
+const cartValidator = require("../../validators/cartValidator"); // Validator
 
-const {authenticateToken} = require("../../middlewares/authentication")
+const { authenticateToken } = require("../../middlewares/authentication");
 
 cartRouter.get("/", authenticateToken, cartController.getCart);
 
