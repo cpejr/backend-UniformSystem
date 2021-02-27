@@ -10,15 +10,15 @@ module.exports = {
         product_type: req.body.product_type,
       };
 
-      const models = req.body.models;
+      // const models = req.body.models;
 
       const createdProductId = await ProductModel.create(product);
 
-      await models.forEach((model) => {
-        model.product_id = createdProductId[0];
-      });
+      // await models.forEach((model) => {
+      //   model.product_id = createdProductId[0];
+      // });
 
-      await ProductModelModel.createAll(models);
+      // await ProductModelModel.createAll(models);
 
       res.status(200).json({
         message: "Camisa criada com sucesso!",
@@ -59,6 +59,7 @@ module.exports = {
         products,
       });
     } catch (err) {
+      console.warn(err);
       res.status(500).json("Internal server error.");
     }
   },
@@ -72,6 +73,7 @@ module.exports = {
         product,
       });
     } catch (err) {
+      console.warn(err);
       res.status(500).json("Internal server error.");
     }
   },
@@ -87,6 +89,7 @@ module.exports = {
         models,
       });
     } catch (err) {
+      console.warn(err);
       res.status(500).json("Internal server error.");
     }
   },
@@ -97,7 +100,10 @@ module.exports = {
       const totalPages = count / process.env.ITENS_PER_PAGE;
 
       res.setHeader("X-Total-Count", totalPages);
-    } catch (err) {}
+    } catch (err) {
+      console.warn(err);
+      res.status(500).json("Internal server error.");
+    }
   },
 
   async deleteProduct(req, res) {
@@ -109,6 +115,7 @@ module.exports = {
         message: "Camisa apagada com sucesso.",
       });
     } catch (err) {
+      console.warn(err);
       res.status(400).json({ message: err.message });
     }
   },
@@ -118,7 +125,10 @@ module.exports = {
     const { updated_fields } = req.body;
     try {
       const existingProductId = await ProductModel.findProductId(product_id);
-      await ProductModel.update(existingProductId, updated_fields);
+      if(!existingProductId) {
+        return res.status(400).json({message: 'Product not found'});
+      }
+      await ProductModel.update(existingProductId.product_id, updated_fields);
       return res
         .status(200)
         .json("Informações da camisa atualizadas com sucesso");
@@ -141,6 +151,7 @@ module.exports = {
         .status(200)
         .json("Informações do modelo da camisa atualizadas com sucesso");
     } catch (err) {
+      console.warn(err);
       res.status(500).json("Internal server error.");
     }
   },
