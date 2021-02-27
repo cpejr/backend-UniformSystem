@@ -119,7 +119,10 @@ module.exports = {
     const { updated_fields } = req.body;
     try {
       const existingProductId = await ProductModel.findProductId(product_id);
-      await ProductModel.update(existingProductId, updated_fields);
+      if(!existingProductId) {
+        return res.status(400).json({message: 'Product not found'});
+      }
+      await ProductModel.update(existingProductId.product_id, updated_fields);
       return res
         .status(200)
         .json("Informações da camisa atualizadas com sucesso");
