@@ -5,11 +5,22 @@
 *      summary: Atualiza as informações da página Home.
 *      requestBody: 
 *         required: true
-*         description: Note que no bodyExample acima, cada item corresponde a uma "key" e sua informação corresponde a "data".
+*         description: Exemplo de body a ser enviado na requisição. Note que os dados são salvos no banco de dados de maneira diferente da enviada no body.
 *         content: 
 *          application/json:
 *            schema:
-*              $ref: '#/components/schemas/HomeInfo'      
+*              type: object
+*              example:
+*                textWhoWeAre: "Uma loja de e-commerce"
+*                textProducts: "Sic Mundos Creatus Est"
+*                contactInfo:
+*                  cellphone: "31 9 9563 4432"
+*                  address: "Rua dos Guaicurus, 120, Centro"
+*                  facebookUsername: "Profit Uniforms"
+*                  instagramUsername: "@profituniforms"
+*                  facebookLink: "https://facebook.com/profit"
+*                  instagramLink: "https://instagram.com/profit"
+*                  whatsAppNumber: "31 9 9563 4443"     
 *      parameters:
 *       - in: header
 *         name: Authorization Bearer Token
@@ -21,13 +32,27 @@
 *         required: true
 *         description: Texto expondo quem são os autores / donos.
 *       - in: body
-*         name: cellphone
-*         required: true
-*         description: Telefone celular de contato da empresa.
-*       - in: body
 *         name: textProducts
 *         required: true
 *         description: Texto que acompanha os produtos vendidos.
+*       - in: body
+*         name: contactInfo
+*         schema:
+*           type: object
+*           example:
+*             cellphone: "31 9 9563 4432"
+*             address: "Rua dos Guaicurus, 120, Centro"
+*             facebookUsername: "Profit Uniforms"
+*             instagramUsername: "@profituniroms"
+*             facebookLink: "https://facebook.com/profit"
+*             instagramLink: "https://instagram.com/profit"
+*             whatsAppNumber: "31 9 9563 4443"
+*         required: true
+*         description: Objeto com informações de contato da empresa
+*       - in: body
+*         name: cellphone
+*         required: true
+*         description: Telefone celular de contato da empresa.
 *       - in: body
 *         name: address
 *         required: true
@@ -44,20 +69,6 @@
 *         name: whatsAppNumber
 *         required: true
 *         description: Número de whatsApp da empresa para contato.
-*       - in: body
-*         name: BodyExample
-*         schema:
-*          type: object
-*          example:
-*           textWhoWeAre: "Uma loja de e-commerce"
-*           cellphone: "31 9 9563 4432"
-*           textProducts: "Sic Mundos Creatus Est"
-*           address: "Rua dos Guaicurus, 120, Centro"
-*           facebookLink: "https://facebook.com/profit"
-*           instagramLink: "https://instagram.com/profit"
-*           whatsAppNumber: "31 9 9563 4443"
-*         required: true
-*         description: Exemplo de body com atualização de todos os dados, mas é possível enviar só alguns dados no body.
 *      tags: [Home]
 *      description: Atualizar as informações da página Home.
 *      responses:
