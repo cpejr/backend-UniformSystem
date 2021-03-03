@@ -94,11 +94,11 @@ module.exports = {
     const search_product_id = req.params.product_id;
     const query = req.query;
     try {
-      const { product_id } = await ProductModel.findProductId(
+      const product = await ProductModel.findProductId(
         search_product_id
       );
 
-      if (product_id === undefined || product_id === null) {
+      if (!product) {
         return res.status(404).json({
           message: "This product does not exist",
         });
@@ -108,13 +108,14 @@ module.exports = {
         filters[`product_model.${key}`] = query[key];
       });
       const productFound = await ProductModel.getProductsAndItsAllModels(
-        product_id,
+        product.product_id,
         filters
       );
-
+        
       return res.status(200).json(productFound);
     } catch (err) {
-      return res.status(400).json({
+      console.warn(err);
+      return res.status(500).json({
         message: "Internal Server error",
       });
     }
