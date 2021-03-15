@@ -254,6 +254,9 @@ routes.post(
   orderController.createOrder
 );
 
+//CIELO
+routes.post("/cielolink", CieloController.getLink);
+
 // Session
 routes.post(
   "/login",
