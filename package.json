@@ -20,6 +20,7 @@
   "homepage": "https://github.com/cpejr/backend-UniformSystem#readme",
   "dependencies": {
     "aws-sdk": "^2.780.0",
+    "axios": "^0.21.1",
     "celebrate": "^13.0.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -32,7 +33,9 @@
     "node-correios": "^3.0.2",
     "pg": "^8.5.1",
     "react-uuid": "^1.0.2",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.0.0",
+    "swagger-jsdoc": "^4.0.0",
+    "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"

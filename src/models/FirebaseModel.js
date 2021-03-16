@@ -4,7 +4,7 @@ const firebase = require("firebase/app");
 require("firebase/auth");
 
 // var serviceAccount = require("../../serviceAccountKey.json");
-var firebaseConfig = {
+const firebaseConfig = {
   apiKey: process.env.FIREBASE_APIKEY,
   authDomain: process.env.FIREBASE_AUTHDOMAIN,
   databaseURL: process.env.FIREBASE_DATABASEURL,
@@ -42,107 +42,40 @@ module.exports = {
     return result.user.uid;
   },
 
-  async deleteUser(uid) {
-    return new Promise((resolve, reject) => {
-      admin
-        .auth()
-        .deleteUser(uid)
-        .then((result) => {
-          resolve(result);
-        })
-        .catch((error) => {
+  deleteUser(uid) {
+    return admin.auth().deleteUser(uid);
+  },
 
-          const errorMessage = error.message;
-          reject(errorMessage);
-        });
+  changeUserPassword(uid, newPassword) {
+    return admin.auth().updateUser(uid, {
+      password: newPassword,
     });
   },
 
-  async changeUserPassword(uid, newPassword) {
-    return new Promise((resolve, reject) => {
-      admin
-        .auth()
-        .updateUser(uid, {
-          password: newPassword,
-        })
-        .then((result) => {
-          resolve(result);
-        })
-        .catch((error) => {
-
-          const errorMessage = error.message;
-          reject(errorMessage);
-        });
-    });
+  sendPasswordChangeEmail(emailAddress) {
+    return firebase.auth().sendPasswordResetEmail(emailAddress);
   },
 
-  async sendPasswordChangeEmail(emailAddress) {
-    return new Promise((resolve, reject) => {
-      firebase
-        .auth()
-        .sendPasswordResetEmail(emailAddress)
-        .then((result) => {
-          resolve(result);
-        })
-        .catch((error) => {
-
-          const errorMessage = error;
-          reject(error);
-        });
-    });
-  },
-
-  async changeUserEmail(uid, newEmail) {
-    return new Promise((resolve, reject) => {
-      admin
-        .auth()
-        .updateUser(uid, {
-          email: newEmail,
-        })
-        .then((result) => {
-          resolve(result);
-        })
-        .catch((error) => {
-
-          const errorMessage = error.message;
-          reject(errorMessage);
-        });
+  changeUserEmail(uid, newEmail) {
+    return admin.auth().updateUser(uid, {
+      email: newEmail,
     });
   },
 
   async getUserEmails(uids) {
-    return new Promise((resolve, reject) => {
-      admin
-        .auth()
-        .getUsers(uids) //Must have entries <= 100
-        .then((results) => {
-          const users = results ? results.users : [];
-          const emails = users.map((user) => {
-            return { uid: user.uid, email: user.email };
-          });
-          resolve(emails);
-        })
-        .catch((error) => {
-
-          const errorMessage = error.message;
-          reject(errorMessage);
-        });
+    const results = await admin.auth().getUsers(uids);
+    const users = results ? results.users : [];
+    const emails = users.map((user) => {
+      return { uid: user.uid, email: user.email };
     });
+    return emails;
   },
 
   async login(email, password) {
-    return new Promise((resolve, reject) => {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then((result) => {
-          resolve(result.user.uid);
-        })
-        .catch((error) => {
-
-          const errorMessage = error.message;
-          reject(errorMessage);
-        });
-    });
+    const result = await firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password);
+      
+    return result.user.uid;
   },
 };

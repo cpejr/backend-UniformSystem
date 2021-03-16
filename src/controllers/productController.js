@@ -10,18 +10,10 @@ module.exports = {
         product_type: req.body.product_type,
       };
 
-      // const models = req.body.models;
-
       const createdProductId = await ProductModel.create(product);
 
-      // await models.forEach((model) => {
-      //   model.product_id = createdProductId[0];
-      // });
-
-      // await ProductModelModel.createAll(models);
-
       res.status(200).json({
-        message: "Camisa criada com sucesso!",
+        message: "Produto criado com sucesso!",
         product_id: createdProductId[0],
       });
     } catch (err) {
@@ -41,6 +33,7 @@ module.exports = {
         maxprice,
         minprice,
       } = req.query;
+
       const products = await ProductModel.getProductsAndOneOfItsModels({
         page,
         gender,
@@ -50,6 +43,7 @@ module.exports = {
         maxprice,
         minprice,
       });
+      
       const { count } = await ProductModel.getAllProductsCount();
 
       const totalPages = Math.ceil(count / process.env.ITENS_PER_PAGE);

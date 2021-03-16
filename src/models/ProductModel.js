@@ -146,6 +146,15 @@ module.exports = {
     return response;
   },
 
+  async getProductsByProductModelId(productsModelsIds, fields = "*") {
+    const response = await connection("product")
+      .join("product_model", "product.product_id", "product_model.product_id")
+      .whereIn("product_model.product_id", productsModelsIds)
+      .select(fields);
+
+    return response;
+  },
+
   async getProductsAndItsAllModels(product_id, filters) {
     const response = await connection("product")
       .select("*")
