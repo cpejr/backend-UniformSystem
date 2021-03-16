@@ -82,9 +82,13 @@ module.exports = {
       const password = await FirebaseModel.sendPasswordChangeEmail(email);
       response.status(200).json({ password });
     } catch (error) {
-      response.status(500).json({
-        message: error.message,
-      });
+      if (error.code) return response.status(400).json({ code: error.code });
+      else {
+        console.error(error);
+        return response.status(500).json({
+          message: error.message,
+        });
+      }
     }
   },
 
