@@ -163,35 +163,40 @@ module.exports = {
         "product.product_id": product_id,
         ...filters,
       });
-
     let result;
     if (response[0]) {
+      let models = [];
+      for (const [index, item] of response.entries()) {
+        console.log("🚀 ~ file: ProductModel.js ~ line 161 ~ getProductsAndItsAllModels ~ item", item)
+        const canDelete = await connection("product_in_order")
+          .select("*")
+          .where({ product_model_id: item.product_model_id });
+        models.push({
+          canDelete: canDelete.length === 0,
+          product_model_id: item.product_model_id,
+          img_link: item.img_link,
+          price: item.price,
+          model_description: item.model_description,
+          gender: item.gender,
+          available: item.available,
+        });
+      }
       result = {
         product_id: response[0].product_id,
         name: response[0].name,
         description: response[0].description,
         product_type: response[0].product_type,
-        models: response.map((item) => {
-          return {
-            product_model_id: item.product_model_id,
-            img_link: item.img_link,
-            price: item.price,
-            model_description: item.model_description,
-            gender: item.gender,
-            available: item.available,
-          };
-        }),
+        models: models,
       };
     } else {
-      result = {
-        product_id: "",
-        name: "",
-        description: "",
-        product_type: "",
-        models: [],
-      };
+      result = await connection("product")
+        .select("*")
+        .where({
+          product_id,
+          ...filters,
+        })
+        .first();
     }
-
     return result;
   },
 

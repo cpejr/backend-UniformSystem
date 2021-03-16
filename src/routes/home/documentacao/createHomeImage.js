@@ -16,6 +16,12 @@
 *          type: string
 *         required: true
 *         description: Autorização básica
+*       - in: file
+*         name: Image File
+*         schema: 
+*          type: file
+*         required: true
+*         description: Arquivo da imagem a ser adicionada na Home
 *       - in: body
 *         name: imgSrc
 *         required: true

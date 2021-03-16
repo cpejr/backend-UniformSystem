@@ -71,6 +71,7 @@ module.exports = {
       }
 
       response.status(500).json({ message: "Internal server error" });
+      console.log(error);
     }
   },
 
