@@ -7,7 +7,7 @@ module.exports = {
       ? authHeader.split(" ")
       : [undefined, undefined];
 
-    const tokenVerified = token.includes(",") ? token.split(",")[0] : token;
+    const tokenVerified = token && token.includes(",") ? token.split(",")[0] : token;
 
     if (!tokenVerified || tokenVerified === null)
       return response.status(401).json({ error: "No token provided" });

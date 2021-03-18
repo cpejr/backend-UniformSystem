@@ -110,11 +110,11 @@ module.exports = {
       // Caso nao tenha encontrado algum valor para o frete, não podemos realizar o pedido
       if (
         !result.ShippingSevicesArray[0] ||
-        result.ShippingSevicesArray[0]?.Error
+        result.ShippingSevicesArray[0].Error
       ) {
         return res
           .status(400)
-          .json({ message: "Invalid service_code or invalid shipping data", Msg: result.ShippingSevicesArray[0]?.Msg });
+          .json({ message: "Invalid service_code or invalid shipping data", Msg: result.ShippingSevicesArray[0].Msg });
       }
       console.log(result.ShippingSevicesArray[0]);
       const newShipping = {
@@ -234,7 +234,7 @@ module.exports = {
       return res.status(200).json(quote);
     } catch (err) {
       console.warn(err);
-      console.warn(err.response?.data);
+      console.warn(err.response.data);
       res.status(500).json("Internal server error.");
     }
   },
