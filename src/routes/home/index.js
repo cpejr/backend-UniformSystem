@@ -18,8 +18,6 @@ homeRouter.put(
 
 homeRouter.get(
     "/info",
-    authenticateToken,
-    isAdmin,
     homeController.readInfo
 );
 
