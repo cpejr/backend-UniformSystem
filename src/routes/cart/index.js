@@ -4,6 +4,7 @@ const { celebrate } = require("celebrate");
 
 const cartController = require("../../controllers/cartController"); // Controller
 const cartValidator = require("../../validators/cartValidator"); // Validator
+const upload = require("../../utils/multer");
 
 const { authenticateToken } = require("../../middlewares/authentication");
 
@@ -11,6 +12,7 @@ cartRouter.get("/", authenticateToken, cartController.getCart);
 
 cartRouter.put(
   "/addtocart",
+  upload,
   celebrate(cartValidator.addToCart),
   authenticateToken,
   cartController.addToCart
