@@ -33,8 +33,6 @@ homeRouter.post(
 homeRouter.get(
     "/images",
     celebrate(homeValidator.getHomeImage),
-    authenticateToken,
-    isAdmin,
     homeController.downloadImg
 );
 homeRouter.delete(
