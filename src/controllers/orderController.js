@@ -1,4 +1,3 @@
-const Correios = require("node-correios");
 const axios = require("axios");
 const _ = require("lodash");
 
@@ -9,6 +8,14 @@ const ProductInOrderModel = require("../models/ProductInOrderModel");
 const ProductInCartModel = require("../models/ProductInCartModel");
 const ProductModelModel = require("../models/ProductModelModel");
 const ProductModel = require("../models/ProductModel");
+const UsersModel = require("../models/UsersModel")
+
+const itemsCielo = {};
+const addressCielo = {};
+const userCielo = {}
+const ordeIdCielo;
+const zipCode;
+const shippingCieloArray = [];
 
 async function getShippingQuote(
   ShippingItemArray,
@@ -34,6 +41,7 @@ async function getShippingQuote(
     }
   );
 
+
   return response.data;
 }
 
@@ -49,6 +57,24 @@ module.exports = {
       if (!address) {
         return res.status(404).json({ message: "Adress not found" });
       }
+
+
+      addressCielo = {
+
+        Street: address.street,
+        Number:92,
+        Complement:address.complement,
+        District:address.neighborhood,
+        City:address.city,
+        State:address.state
+
+      };
+
+      zipCode = address.zip_code;
+
+      const user = await UsersModel.getById(address_id);
+
+     
 
       // Pega os id's dos products
       const productModelIds = products.map((item) => {
@@ -90,6 +116,12 @@ module.exports = {
           Quantity: p.amount,
           Weight: data.weight,
           Width: data.width,
+
+          itemsCielo = {
+          
+            Weight:data.weight
+
+          }
         };
       });
 
@@ -103,6 +135,18 @@ module.exports = {
         address.zip_code,
         shipping_service_code
       );
+
+  
+
+  for(var i = 0; i < ShippingSevicesArray.length; i++ ){
+  shippingCieloArray[i] = {
+
+    Name: result.ShippingSevicesArray[i].ServiceDescription,
+    Price: result.ShippingSevicesArray[i].ShippingPrice,
+    Deadline: result.ShippingSevicesArray[i].DeliveryTime,
+    Carrier:result.ShippingSevicesArray[i].Carrier
+}
+  }
 
       delete address.user_id;
       delete address.address_id;
@@ -127,6 +171,17 @@ module.exports = {
 
       // Criacao do order a partir dos dados recebidos na requisicao + adress criado logo acima
       const user_id = req.session.user_id;
+
+      const user = await UsersModel.getById(user_id);
+
+      userCielo = {
+      Identity:user_id,
+      FullName:user.name,
+      Email:user.email,
+      Phone:user.telefone
+
+      }
+    
 
       const order = {
         user_id: user_id,
@@ -166,6 +221,15 @@ module.exports = {
           logo_link: products[indexRequest].logo_link,
           discount: 0,
           size: products[indexRequest].size,
+
+          itemsCielo = {
+            Name: createdOrder_id,
+            Description:ProdutoExemplo01,
+            UnitPrice:dbProductObject.price,
+            Quantity: products[indexRequest].amount,
+            Weight:data.weight
+
+          }
         };
       });
       // Manda o vetor para o model criar os produtos no DB
@@ -362,6 +426,8 @@ module.exports = {
   async deliverAtMail(req, res) {
     const { order_id } = req.params;
 
+    ordeIdCielo = order_id;
+
     const { tracking_code } = req.body;
 
     const loggedUser = req.session.user_id;
@@ -391,3 +457,47 @@ module.exports = {
     }
   },
 };
+
+const response = await axios.post(
+  "https://cieloecommerce.cielo.com.br/api/public/v1/orders",
+{
+  body:{
+    OrderNumber:ordeIdCielo,
+    Cart:{  
+   
+       Items:[  
+         itemsCielo
+         ]
+    },
+    Shipping:{  
+       SourceZipCode:20020080,
+       TargetZipCode:zipCode,
+       Services:
+
+       shippingCieloArray,
+         
+        
+        
+       Address:{  
+       addressCielo
+       }
+    },
+
+    Customer:{  
+       userCielo
+    },
+    Options:{  
+      AntifraudEnabled:true,
+      ReturnUrl: "http://www.cielo.com.br/"
+    },
+  
+  }
+}
+  {
+    headers: {
+      
+        MerchantId: 00000000-0000-0000-0000-000000000000,
+        Content-type: application/json
+    },
+  }
+);
