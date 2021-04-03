@@ -490,12 +490,12 @@ const response = await axios.post(
     },
   
   }
-}
+},
   {
     headers: {
       
-        MerchantId: 00000000-0000-0000-0000-000000000000,
-        Content-type: application/json
+        MerchantId: "a0413171-39f1-4e87-b024-b2a3c77a83d6",
+        ContentType: "application/json"
     },
   }
 );
