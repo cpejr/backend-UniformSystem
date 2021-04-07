@@ -8,13 +8,13 @@ const ProductInOrderModel = require("../models/ProductInOrderModel");
 const ProductInCartModel = require("../models/ProductInCartModel");
 const ProductModelModel = require("../models/ProductModelModel");
 const ProductModel = require("../models/ProductModel");
-const UsersModel = require("../models/UsersModel")
+const UsersModel = require("../models/UsersModel");
 
 const itemsCielo = {};
 const addressCielo = {};
-const userCielo = {}
-const ordeIdCielo;
-const zipCode;
+const userCielo = {};
+const ordeIdCielo = 0;
+const zipCode = 0;
 const shippingCieloArray = [];
 
 async function getShippingQuote(
@@ -41,7 +41,6 @@ async function getShippingQuote(
     }
   );
 
-
   return response.data;
 }
 
@@ -58,23 +57,18 @@ module.exports = {
         return res.status(404).json({ message: "Adress not found" });
       }
 
-
       addressCielo = {
-
         Street: address.street,
-        Number:92,
-        Complement:address.complement,
-        District:address.neighborhood,
-        City:address.city,
-        State:address.state
-
+        Number: 92,
+        Complement: address.complement,
+        District: address.neighborhood,
+        City: address.city,
+        State: address.state,
       };
 
       zipCode = address.zip_code;
 
       const user = await UsersModel.getById(address_id);
-
-     
 
       // Pega os id's dos products
       const productModelIds = products.map((item) => {
@@ -110,18 +104,16 @@ module.exports = {
           (pr) => pr.product_model_id == p.product_model_id // Aqui tenq ser dois iguais!
         );
 
+        itemsCielo = {
+          Weight: data.weight,
+        };
+
         return {
           Height: data.height,
           Length: data.length,
           Quantity: p.amount,
           Weight: data.weight,
           Width: data.width,
-
-          itemsCielo = {
-          
-            Weight:data.weight
-
-          }
         };
       });
 
@@ -136,17 +128,14 @@ module.exports = {
         shipping_service_code
       );
 
-  
-
-  for(var i = 0; i < ShippingSevicesArray.length; i++ ){
-  shippingCieloArray[i] = {
-
-    Name: result.ShippingSevicesArray[i].ServiceDescription,
-    Price: result.ShippingSevicesArray[i].ShippingPrice,
-    Deadline: result.ShippingSevicesArray[i].DeliveryTime,
-    Carrier:result.ShippingSevicesArray[i].Carrier
-}
-  }
+      for (var i = 0; i < ShippingSevicesArray.length; i++) {
+        shippingCieloArray[i] = {
+          Name: result.ShippingSevicesArray[i].ServiceDescription,
+          Price: result.ShippingSevicesArray[i].ShippingPrice,
+          Deadline: result.ShippingSevicesArray[i].DeliveryTime,
+          Carrier: result.ShippingSevicesArray[i].Carrier,
+        };
+      }
 
       delete address.user_id;
       delete address.address_id;
@@ -158,7 +147,10 @@ module.exports = {
       ) {
         return res
           .status(400)
-          .json({ message: "Invalid service_code or invalid shipping data", Msg: result.ShippingSevicesArray[0].Msg });
+          .json({
+            message: "Invalid service_code or invalid shipping data",
+            Msg: result.ShippingSevicesArray[0].Msg,
+          });
       }
       console.log(result.ShippingSevicesArray[0]);
       const newShipping = {
@@ -172,16 +164,14 @@ module.exports = {
       // Criacao do order a partir dos dados recebidos na requisicao + adress criado logo acima
       const user_id = req.session.user_id;
 
-      const user = await UsersModel.getById(user_id);
+      user = await UsersModel.getById(user_id);
 
       userCielo = {
-      Identity:user_id,
-      FullName:user.name,
-      Email:user.email,
-      Phone:user.telefone
-
-      }
-    
+        Identity: user_id,
+        FullName: user.name,
+        Email: user.email,
+        Phone: user.telefone,
+      };
 
       const order = {
         user_id: user_id,
@@ -212,6 +202,14 @@ module.exports = {
           id
         );
 
+        itemsCielo = {
+          Name: createdOrder_id,
+          Description: ProdutoExemplo01,
+          UnitPrice: dbProductObject.price,
+          Quantity: products[indexRequest].amount,
+          Weight: data.weight,
+        };
+
         // Criando o objeto
         return {
           order_id: createdOrder_id,
@@ -221,15 +219,6 @@ module.exports = {
           logo_link: products[indexRequest].logo_link,
           discount: 0,
           size: products[indexRequest].size,
-
-          itemsCielo = {
-            Name: createdOrder_id,
-            Description:ProdutoExemplo01,
-            UnitPrice:dbProductObject.price,
-            Quantity: products[indexRequest].amount,
-            Weight:data.weight
-
-          }
         };
       });
       // Manda o vetor para o model criar os produtos no DB
@@ -456,46 +445,47 @@ module.exports = {
       res.status(500).json("Internal server error.");
     }
   },
-};
+  async getLink(request, response) {
+    const requestBody = {
+      OrderNumber: ordeIdCielo,
+      Cart: {
+        Items: [itemsCielo],
+      },
+      Shipping: {
+        SourceZipCode: 20020080,
+        TargetZipCode: zipCode,
+        Services: shippingCieloArray,
 
-const response = await axios.post(
-  "https://cieloecommerce.cielo.com.br/api/public/v1/orders",
-{
-  body:{
-    OrderNumber:ordeIdCielo,
-    Cart:{  
-   
-       Items:[  
-         itemsCielo
-         ]
-    },
-    Shipping:{  
-       SourceZipCode:20020080,
-       TargetZipCode:zipCode,
-       Services:
+        Address: {
+          addressCielo,
+        },
+      },
 
-       shippingCieloArray,
-         
-    Address:{  
-       addressCielo
-       }
-    },
+      Customer: {
+        userCielo,
+      },
+      Options: {
+        AntifraudEnabled: true,
+        ReturnUrl: "http://www.cielo.com.br/",
+      },
+    };
 
-    Customer:{  
-       userCielo
-    },
-    Options:{  
-      AntifraudEnabled:true,
-      ReturnUrl: "http://www.cielo.com.br/"
-    },
-  
-  }
-},
-  {
-    headers: {
-      
+    const url = `https://cieloecommerce.cielo.com.br/api/public/v1/orders`;
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
         MerchantId: "a0413171-39f1-4e87-b024-b2a3c77a83d6",
-        ContentType: "application/json"
-    },
-  }
-);
+      },
+    };
+
+    try {
+      let respostaCielo = await axios.post(url, requestBody, config);
+      respostaCielo = respostaCielo.data;
+      console.log(respostaCielo);
+      return response.status(200).json(respostaCielo);
+    } catch (error) {
+      console.log(error);
+      return response.status(500).json({ message: "Internal server error" });
+    }
+  },
+};
