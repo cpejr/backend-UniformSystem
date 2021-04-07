@@ -10,10 +10,10 @@ const ProductModelModel = require("../models/ProductModelModel");
 const ProductModel = require("../models/ProductModel");
 const UsersModel = require("../models/UsersModel");
 
-let itemsCielo = {};
+let itemsCielo = [];
 let addressCielo = {};
 let userCielo = {};
-let ordeIdCielo = 0;
+let orderIdCielo;
 let zipCode = 0;
 let shippingCieloArray = [];
 
@@ -59,7 +59,7 @@ module.exports = {
 
       addressCielo = {
         street: address.street,
-        number: "in street",
+        number: "25",
         complement: address.complement,
         district: address.neighborhood,
         city: address.city,
@@ -104,7 +104,7 @@ module.exports = {
           (pr) => pr.product_model_id == p.product_model_id // Aqui tenq ser dois iguais!
         );
 
-        itemsCielo = {
+        itemsCielo[0] = {
           weight: data.weight,
         };
 
@@ -168,7 +168,7 @@ module.exports = {
       console.log("OPA", userData);
 
       userCielo = {
-        identity: user_id,
+        identity: userData[0].cpf,
         fullName: userData[0].name,
         email: userData[0].email,
         phone: userData[0].telefone,
@@ -203,13 +203,13 @@ module.exports = {
           id
         );
 
-        itemsCielo = {
+        itemsCielo[0] = {
           name: createdOrder_id,
           description: "ProdutoExemplo01",
           unitPrice: 252, //dbProductObject.price,
           quantity: products[indexRequest].amount,
           type: "Asset",
-          ...itemsCielo,
+          ...itemsCielo[0],
         };
 
         // Criando o objeto
@@ -226,18 +226,21 @@ module.exports = {
       });
       // Manda o vetor para o model criar os produtos no DB
 
-      await ProductInOrderModel.create(productsInOrder);
+      const teste = await ProductInOrderModel.create(productsInOrder);
       await ProductInCartModel.deleteByUser(user_id);
+
+      console.log("ORDER ", teste);
+      orderIdCielo = "1212";
 
       // Se tudo deu certo, retorna que deu tudo certo
       const requestBody = {
-        orderNumber: ordeIdCielo,
+        orderNumber: orderIdCielo,
         cart: {
           discount: {
             type: "Percent",
             value: 0,
           },
-          items: [itemsCielo],
+          items: itemsCielo,
         },
         shipping: {
           sourceZipCode: "20020080",
@@ -262,6 +265,7 @@ module.exports = {
       console.log("services: ", shippingCieloArray);
       console.log("address: ", addressCielo);
       console.log("items: ", itemsCielo);
+
       const url = `https://cieloecommerce.cielo.com.br/api/public/v1/orders`;
       const config = {
         headers: {
@@ -273,7 +277,7 @@ module.exports = {
       let respostaCielo = await axios.post(url, requestBody, config);
       respostaCielo = respostaCielo.data;
       console.log(respostaCielo);
-      return response.status(200).json(respostaCielo);
+      return res.status(200).json(respostaCielo);
     } catch (err) {
       if (createdOrder_id) await OrderModel.delete(createdOrder_id);
       console.warn(err.message);
@@ -459,8 +463,6 @@ module.exports = {
 
   async deliverAtMail(req, res) {
     const { order_id } = req.params;
-
-    ordeIdCielo = order_id;
 
     const { tracking_code } = req.body;
 
