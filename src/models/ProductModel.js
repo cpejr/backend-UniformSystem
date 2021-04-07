@@ -149,7 +149,7 @@ module.exports = {
   async getProductsByProductModelId(productsModelsIds, fields = "*") {
     const response = await connection("product")
       .join("product_model", "product.product_id", "product_model.product_id")
-      .whereIn("product_model.product_id", productsModelsIds)
+      .whereIn("product_model.product_model_id", productsModelsIds)
       .select(fields);
 
     return response;

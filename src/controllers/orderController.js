@@ -117,11 +117,6 @@ module.exports = {
         };
       });
 
-      console.log(
-        "🚀 ~ file: orderController.js ~ line 96 ~ ShippingItemArray ~ ShippingItemArray",
-        ShippingItemArray
-      );
-
       const result = await getShippingQuote(
         ShippingItemArray,
         address.zip_code,
@@ -244,9 +239,11 @@ module.exports = {
 
       const product_models_ids = product_models.map(
         (item) => item.product_model_id
-      );
-
-      const products = await ProductModel.getProductsByProductModelId(
+        );
+        
+        console.log("🚀 ~ file: orderController.js ~ line 188 ~ shippingQuote ~ product_models_ids", product_models_ids)
+      
+        const products = await ProductModel.getProductsByProductModelId(
         product_models_ids,
         [
           "product.product_id",
@@ -257,6 +254,7 @@ module.exports = {
           "width",
         ]
       );
+        console.log("🚀 ~ file: orderController.js ~ line 204 ~ shippingQuote ~ products", products)
 
       if (
         products.length === 0 ||
