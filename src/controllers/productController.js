@@ -46,7 +46,7 @@ module.exports = {
       
       const result = await ProductModel.getAllProductsCount();
       let count = 0;
-      if(result.count){
+      if(result){
         count = result.count;
       }
 
