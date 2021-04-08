@@ -44,7 +44,11 @@ module.exports = {
         minprice,
       });
       
-      const { count } = await ProductModel.getAllProductsCount();
+      const result = await ProductModel.getAllProductsCount();
+      let count = 0;
+      if(result.count){
+        count = result.count;
+      }
 
       const totalPages = Math.ceil(count / process.env.ITENS_PER_PAGE);
 
