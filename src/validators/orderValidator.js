@@ -25,6 +25,7 @@ orderValidator.create = {
       .items(
         Joi.object({
           amount: Joi.number().integer().required(),
+          price: Joi.number().required(),
           gender: Joi.string().valid("M", "F").required(),
           logo_link: Joi.string().required(),
           product_model_id: Joi.string().required(),

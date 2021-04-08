@@ -43,6 +43,7 @@ module.exports = {
 
     let query = connection("product")
       .select("*")
+      .distinct()
       .join("product_model", "product.product_id", "product_model.product_id")
       .where({
         ...filter,
@@ -55,7 +56,7 @@ module.exports = {
     // Gender filter
     if (gender) query = query.whereIn("product.product_id", genderFilterGroup);
 
-    query.groupBy("product.product_id");
+    // query.groupBy("product.product_id");
 
     // Name filter
     if (name) {

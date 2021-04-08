@@ -161,6 +161,7 @@ module.exports = {
           logo_link: products[indexRequest].logo_link,
           discount: 0,
           size: products[indexRequest].size,
+          gender: products[indexRequest].gender,
         };
       });
       // Manda o vetor para o model criar os produtos no DB
