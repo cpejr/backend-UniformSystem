@@ -129,7 +129,7 @@ module.exports = {
   async getAllProductsCount() {
     const response = await connection("product")
       .select()
-      .count("product.product_id as count")
+      // .count("product.product_id as count")
       .join("product_model", "product.product_id", "product_model.product_id")
       .distinct("product.product_id")
       .first();
