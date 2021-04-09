@@ -16,6 +16,13 @@ orderRouter.post(
   authenticateToken,
   orderController.createOrder
 );
+
+// Rota destinada à atualização da order pela Cielo
+orderRouter.post(
+  "/updateOrderByCielo/:order_id",
+  orderController.updateOrderByCielo
+);
+
 orderRouter.put(
   "/:order_id",
   celebrate(orderValidator.update),

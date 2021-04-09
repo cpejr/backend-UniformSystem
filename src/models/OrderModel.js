@@ -22,6 +22,16 @@ module.exports = {
     }
   },
 
+  // Model destinado à atualização da order pela Cielo
+  async updateByCielo(order_id, updated_order) {
+      const response = await connection("order")
+        .where({
+          order_id,
+        })
+        .update(updated_order);
+      return response;
+  },
+
   async delete(order_id) {
     const response = await connection("order")
       .where("order_id", order_id)
