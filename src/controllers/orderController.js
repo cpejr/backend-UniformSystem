@@ -111,7 +111,7 @@ module.exports = {
           .status(400)
           .json({ message: "Invalid service_code or invalid shipping data", Msg: result.ShippingSevicesArray[0].Msg });
       }
-      console.log(result.ShippingSevicesArray[0]);
+
       const newShipping = {
         ...address,
         shipping_value: result.ShippingSevicesArray[0].ShippingPrice,
@@ -145,11 +145,6 @@ module.exports = {
         // Achar o produto correspondente no vetor de models vindos do DB
         const dbProductObject = boughtProducts.find(
           (product) => product.product_model_id == id // Aqui tenq ser dois iguais!
-        );
-        console.log(
-          "🚀 ~ file: orderController.js ~ line 142 ~ createOrder ~ boughtProducts",
-          boughtProducts,
-          id
         );
 
         // Criando o objeto
@@ -189,7 +184,6 @@ module.exports = {
         (item) => item.product_model_id
         );
         
-        console.log("🚀 ~ file: orderController.js ~ line 188 ~ shippingQuote ~ product_models_ids", product_models_ids)
       
         const products = await ProductModel.getProductsByProductModelId(
         product_models_ids,
@@ -202,7 +196,6 @@ module.exports = {
           "width",
         ]
       );
-        console.log("🚀 ~ file: orderController.js ~ line 204 ~ shippingQuote ~ products", products)
 
       if (
         products.length === 0 ||
