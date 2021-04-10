@@ -5,7 +5,6 @@ module.exports = {
     const response = await connection("product")
       .insert(newProduct)
       .returning(['product_id']);
-
       if(response.product_id){
         return response.product_id;
       }
