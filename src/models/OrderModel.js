@@ -6,7 +6,8 @@ module.exports = {
   async create(order) {
     order.order_id = uuid();
 
-    await connection("order").insert(order);
+    await connection("order")
+    .insert(order);
 
     return order.order_id;
   },

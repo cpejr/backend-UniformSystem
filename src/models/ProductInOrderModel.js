@@ -2,7 +2,8 @@ const connection = require("../database/connection");
 
 module.exports = {
   async create(products) {
-    const response = await connection("product_in_order").insert(products);
+    const response = await connection("product_in_order")
+    .insert(products);
     return response;
   },
 
