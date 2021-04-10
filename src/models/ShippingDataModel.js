@@ -2,7 +2,10 @@ const connection = require("../database/connection");
 
 module.exports = {
   async create(shipping_data) {
-    const response = await connection("shipping_data").insert(shipping_data);
+    const response = await connection("shipping_data")
+      .insert(shipping_data)
+      .returning(['shipping_data_id']);
+
     return response;
   },
 

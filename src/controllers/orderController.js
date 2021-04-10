@@ -125,7 +125,7 @@ module.exports = {
 
       const order = {
         user_id: user_id,
-        shipping_data_id: `${newOrderAddress_id[0]}`,
+        shipping_data_id: `${newOrderAddress_id[0].shipping_data_id || newOrderAddress_id[0]}`,
         status: "waitingPayment",
       };
 
