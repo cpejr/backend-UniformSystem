@@ -8,6 +8,10 @@ module.exports = {
         name: req.body.name,
         description: req.body.description,
         product_type: req.body.product_type,
+        height: req.body.height,
+        length: req.body.length,
+        weight: req.body.weight,
+        width: req.body.width,
       };
 
       const createdProductId = await ProductModel.create(product);
