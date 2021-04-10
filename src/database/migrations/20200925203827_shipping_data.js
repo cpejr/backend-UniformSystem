@@ -1,7 +1,7 @@
  
 exports.up = function(knex) {
     return knex.schema.createTable('shipping_data', function(table){
-        table.integer('shipping_data_id').primary();
+        table.increments('shipping_data_id').primary();
         table.string('street').notNullable();
         table.string('neighborhood').notNullable();
         table.string('city').notNullable();

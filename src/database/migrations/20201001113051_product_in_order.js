@@ -1,7 +1,7 @@
 
 exports.up = function(knex) {
     return knex.schema.createTable('product_in_order', function(table){
-    table.integer('product_in_order_id').primary();
+    table.increments('product_in_order_id').primary();
     table.integer('product_model_id').notNullable();
     table.foreign('product_model_id').references('product_model_id').inTable('product_model').onDelete('SET NULL');
     table.string('order_id');
