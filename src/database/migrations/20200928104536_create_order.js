@@ -3,9 +3,9 @@ exports.up = function(knex) {
     return knex.schema.createTable('order', function(table){
         table.string('order_id').primary();
         table.string('user_id').notNullable();
-        table.foreign('user_id').references('user_id').inTable('users');
+        table.foreign('user_id').references('user_id').inTable('users').onDelete('SET NULL').onUpdate('CASCADE');;
         table.integer('shipping_data_id').notNullable();
-        table.foreign('shipping_data_id').references('shipping_data_id').inTable('shipping_data');   
+        table.foreign('shipping_data_id').references('shipping_data_id').inTable('shipping_data').onDelete('SET NULL').onUpdate('CASCADE');;   
         table.enu('status', ['waitingPayment', 'preparing', 'delivered', 'pending']).notNullable();
         table.timestamps(true, true); //created_at
     });
