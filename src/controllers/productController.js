@@ -15,10 +15,9 @@ module.exports = {
       };
 
       const createdProductId = await ProductModel.create(product);
-
       res.status(200).json({
         message: "Produto criado com sucesso!",
-        product_id: createdProductId[0],
+        product_id: createdProductId,
       });
     } catch (err) {
       console.warn(err);
