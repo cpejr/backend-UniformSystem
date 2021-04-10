@@ -4,8 +4,7 @@ module.exports = {
   async create(newProduct) {
     const response = await connection("product")
       .insert(newProduct)
-      .returning('product_id');
-      
+      .returning(['product_id'])
     return response;
   },
 
