@@ -174,7 +174,6 @@ module.exports = {
     if (response[0]) {
       let models = [];
       for (const [index, item] of response.entries()) {
-        console.log("🚀 ~ file: ProductModel.js ~ line 161 ~ getProductsAndItsAllModels ~ item", item)
         const canDelete = await connection("product_in_order")
           .select("*")
           .where({ product_model_id: item.product_model_id });

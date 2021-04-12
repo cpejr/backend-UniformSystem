@@ -16,7 +16,7 @@ module.exports = {
         .update(updated_shipping_data);
       return response;
     } catch (error) {
-      console.log(error.message);
+      console.warn(error.message);
       throw new Error("Falha na atualização dos dados de frete.");
     }
   },
@@ -36,7 +36,7 @@ module.exports = {
         .del();
       return response;
     } catch (error) {
-      console.log(error.message);
+      console.warn(error.message);
       throw new Error("Falha na exclusão dos dados de frete.");
     }
   },
