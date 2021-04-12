@@ -39,10 +39,10 @@ module.exports = {
         return response.status(401).json({ error: "Token badformatted" });
     
         const verify = await new Promise((res) => {
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, user) => {
             if (err) return res({ verified: false, user: {} });
-    
-            return res({ verified: true, user: user.user });
+            const userFromDatabase = await UserModel.getUserByUid(user.user[0].firebase_uid);
+            return res({ verified: true, user: userFromDatabase });
         });
         });
     
