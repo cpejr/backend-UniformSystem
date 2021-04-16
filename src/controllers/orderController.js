@@ -104,6 +104,12 @@ module.exports = {
           (pr) => pr.product_model_id == p.product_model_id // Aqui tenq ser dois iguais!
         );
 
+        for (var i = 0; i < products.length; i++) {
+          itemsCielo[i] = {
+            weight: data.weight,
+          };
+        }
+
         itemsCielo[0] = {
           weight: data.weight,
         };
@@ -203,14 +209,16 @@ module.exports = {
           id
         );
 
-        itemsCielo[0] = {
-          name: createdOrder_id,
-          description: "ProdutoExemplo01",
-          unitPrice: 252, //dbProductObject.price,
-          quantity: products[indexRequest].amount,
-          type: "Asset",
-          ...itemsCielo[0],
-        };
+        for (var i = 0; i < products.length; i++) {
+          itemsCielo[i] = {
+            name: createdOrder_id,
+            description: "ProdutoExemplo01",
+            unitPrice: products[i].price / 100, //dbProductObject.price,
+            quantity: products[i].amount,
+            type: "Asset",
+            ...itemsCielo[i],
+          };
+        }
 
         // Criando o objeto
         return {
@@ -231,7 +239,7 @@ module.exports = {
 
       console.log("ORDER ", teste);
       orderIdCielo = "1212";
-
+      console.log("PRODUTO", itemsCielo);
       // Se tudo deu certo, retorna que deu tudo certo
       const requestBody = {
         orderNumber: orderIdCielo,
