@@ -110,10 +110,6 @@ module.exports = {
           };
         }
 
-        itemsCielo[0] = {
-          weight: data.weight,
-        };
-
         return {
           Height: data.height,
           Length: data.length,
@@ -213,7 +209,7 @@ module.exports = {
           itemsCielo[i] = {
             name: createdOrder_id,
             description: "ProdutoExemplo01",
-            unitPrice: products[i].price / 100, //dbProductObject.price,
+            unitPrice: products[i].price * 100, //dbProductObject.price,
             quantity: products[i].amount,
             type: "Asset",
             ...itemsCielo[i],
