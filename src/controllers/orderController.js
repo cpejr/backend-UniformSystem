@@ -154,7 +154,7 @@ module.exports = {
           Msg: result.ShippingSevicesArray[0].Msg,
         });
       }
-      console.log(result.ShippingSevicesArray[0]);
+
       const newShipping = {
         ...address,
         shipping_value: result.ShippingSevicesArray[0].ShippingPrice,
@@ -178,7 +178,9 @@ module.exports = {
 
       const order = {
         user_id: user_id,
-        shipping_data_id: `${newOrderAddress_id[0]}`,
+        shipping_data_id: `${
+          newOrderAddress_id[0].shipping_data_id || newOrderAddress_id[0]
+        }`,
         status: "waitingPayment",
       };
 
@@ -198,11 +200,6 @@ module.exports = {
         // Achar o produto correspondente no vetor de models vindos do DB
         const dbProductObject = boughtProducts.find(
           (product) => product.product_model_id == id // Aqui tenq ser dois iguais!
-        );
-        console.log(
-          "🚀 ~ file: orderController.js ~ line 142 ~ createOrder ~ boughtProducts",
-          boughtProducts,
-          id
         );
 
         for (var i = 0; i < products.length; i++) {
@@ -341,6 +338,26 @@ module.exports = {
     } catch (err) {
       console.warn(err);
       console.warn(err.response.data);
+      res.status(500).json("Internal server error.");
+    }
+  },
+
+  // Controller destinado à atualização da order pela Cielo
+  async updateOrderByCielo(req, res) {
+    const { order_id } = req.params;
+    const { payment_status } = req.body;
+
+    try {
+      // Status 2 é Pago, de acordo com a api da Cielo
+      if (payment_status === 2) {
+        let status = "pending";
+        await OrderModel.updateByCielo(order_id, status);
+      }
+
+      res.status(200).json({
+        message: "Order atualizada com sucesso",
+      });
+    } catch (err) {
       res.status(500).json("Internal server error.");
     }
   },

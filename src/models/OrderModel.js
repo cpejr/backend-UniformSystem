@@ -6,7 +6,8 @@ module.exports = {
   async create(order) {
     order.order_id = uuid();
 
-    await connection("order").insert(order);
+    await connection("order")
+    .insert(order);
 
     return order.order_id;
   },
@@ -20,6 +21,16 @@ module.exports = {
         .update(updated_order);
       return response;
     }
+  },
+
+  // Model destinado à atualização da order pela Cielo
+  async updateByCielo(order_id, updated_order) {
+      const response = await connection("order")
+        .where({
+          order_id,
+        })
+        .update(updated_order);
+      return response;
   },
 
   async delete(order_id) {

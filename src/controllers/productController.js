@@ -8,13 +8,16 @@ module.exports = {
         name: req.body.name,
         description: req.body.description,
         product_type: req.body.product_type,
+        height: req.body.height,
+        length: req.body.length,
+        weight: req.body.weight,
+        width: req.body.width,
       };
 
       const createdProductId = await ProductModel.create(product);
-
       res.status(200).json({
         message: "Produto criado com sucesso!",
-        product_id: createdProductId[0],
+        product_id: createdProductId[0].product_id || createdProductId[0],
       });
     } catch (err) {
       console.warn(err);
@@ -44,7 +47,11 @@ module.exports = {
         minprice,
       });
       
-      const { count } = await ProductModel.getAllProductsCount();
+      const result = await ProductModel.getAllProductsCount();
+      let count = 0;
+      if(result){
+        count = result.count;
+      }
 
       const totalPages = Math.ceil(count / process.env.ITENS_PER_PAGE);
 

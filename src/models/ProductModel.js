@@ -2,9 +2,14 @@ const connection = require("../database/connection");
 
 module.exports = {
   async create(newProduct) {
-    const response = await connection("product").insert(newProduct);
-    return response;
-  },
+    const response = await connection("product")
+      .insert(newProduct)
+      .returning(['product_id']);
+      if(response.product_id){
+        return response.product_id;
+      }
+      return response;
+    },
 
   async findProductId(product_id) {
     const response = await connection("product")
@@ -43,6 +48,7 @@ module.exports = {
 
     let query = connection("product")
       .select("*")
+      .distinct()
       .join("product_model", "product.product_id", "product_model.product_id")
       .where({
         ...filter,
@@ -55,7 +61,7 @@ module.exports = {
     // Gender filter
     if (gender) query = query.whereIn("product.product_id", genderFilterGroup);
 
-    query.groupBy("product.product_id");
+    // query.groupBy("product.product_id");
 
     // Name filter
     if (name) {
@@ -127,10 +133,11 @@ module.exports = {
 
   async getAllProductsCount() {
     const response = await connection("product")
-      .select()
+      .select("product.product_id")
+      .distinct()
       .count("product.product_id as count")
       .join("product_model", "product.product_id", "product_model.product_id")
-      .distinct("product.product_id")
+      .groupBy("product.product_id")
       .first();
 
     return response;
@@ -167,7 +174,6 @@ module.exports = {
     if (response[0]) {
       let models = [];
       for (const [index, item] of response.entries()) {
-        console.log("🚀 ~ file: ProductModel.js ~ line 161 ~ getProductsAndItsAllModels ~ item", item)
         const canDelete = await connection("product_in_order")
           .select("*")
           .where({ product_model_id: item.product_model_id });
