@@ -111,7 +111,7 @@ module.exports = {
           .status(400)
           .json({ message: "Invalid service_code or invalid shipping data", Msg: result.ShippingSevicesArray[0].Msg });
       }
-      console.log(result.ShippingSevicesArray[0]);
+
       const newShipping = {
         ...address,
         shipping_value: result.ShippingSevicesArray[0].ShippingPrice,
@@ -125,7 +125,7 @@ module.exports = {
 
       const order = {
         user_id: user_id,
-        shipping_data_id: `${newOrderAddress_id[0]}`,
+        shipping_data_id: `${newOrderAddress_id[0].shipping_data_id || newOrderAddress_id[0]}`,
         status: "waitingPayment",
       };
 
@@ -146,11 +146,6 @@ module.exports = {
         const dbProductObject = boughtProducts.find(
           (product) => product.product_model_id == id // Aqui tenq ser dois iguais!
         );
-        console.log(
-          "🚀 ~ file: orderController.js ~ line 142 ~ createOrder ~ boughtProducts",
-          boughtProducts,
-          id
-        );
 
         // Criando o objeto
         return {
@@ -161,6 +156,7 @@ module.exports = {
           logo_link: products[indexRequest].logo_link,
           discount: 0,
           size: products[indexRequest].size,
+          gender: products[indexRequest].gender,
         };
       });
       // Manda o vetor para o model criar os produtos no DB
@@ -188,7 +184,6 @@ module.exports = {
         (item) => item.product_model_id
         );
         
-        console.log("🚀 ~ file: orderController.js ~ line 188 ~ shippingQuote ~ product_models_ids", product_models_ids)
       
         const products = await ProductModel.getProductsByProductModelId(
         product_models_ids,
@@ -201,7 +196,6 @@ module.exports = {
           "width",
         ]
       );
-        console.log("🚀 ~ file: orderController.js ~ line 204 ~ shippingQuote ~ products", products)
 
       if (
         products.length === 0 ||
@@ -233,6 +227,26 @@ module.exports = {
     } catch (err) {
       console.warn(err);
       console.warn(err.response.data);
+      res.status(500).json("Internal server error.");
+    }
+  },
+
+  // Controller destinado à atualização da order pela Cielo
+  async updateOrderByCielo(req, res) {
+    const { order_id } = req.params;
+    const { payment_status } = req.body;
+
+    try {
+      // Status 2 é Pago, de acordo com a api da Cielo
+      if(payment_status === 2){
+        let status = "pending"
+        await OrderModel.updateByCielo(order_id, status);
+      }
+
+      res.status(200).json({
+        message: "Order atualizada com sucesso",
+      });
+    } catch (err) {
       res.status(500).json("Internal server error.");
     }
   },

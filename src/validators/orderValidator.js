@@ -25,9 +25,10 @@ orderValidator.create = {
       .items(
         Joi.object({
           amount: Joi.number().integer().required(),
+          price: Joi.number().required(),
           gender: Joi.string().valid("M", "F").required(),
           logo_link: Joi.string().required(),
-          product_model_id: Joi.string().required(),
+          product_model_id: Joi.number().integer().required(),
           size: Joi.string().valid("PP", "P", "M", "G", "GG", "XG").required(),
         })
       )
@@ -43,7 +44,7 @@ orderValidator.getShippingQuote = {
     product_models: Joi.array()
       .items(
         Joi.object().keys({
-          product_model_id: Joi.string().required(),
+          product_model_id: Joi.number().integer().required(),
           quantity: Joi.number().positive().required(),
         })
       )
