@@ -131,14 +131,19 @@ module.exports = {
       );
 
       for (var i = 0; i < result.ShippingSevicesArray.length; i++) {
-        shippingCieloArray[i] = {
-          name: result.ShippingSevicesArray[i].ServiceDescription,
-          price:
-            parseInt(result.ShippingSevicesArray[i].ShippingPrice, 10) || 10,
-          deadline:
-            parseInt(result.ShippingSevicesArray[i].DeliveryTime, 10) || 10,
-          carrier: 1,
-        };
+        if (
+          result.ShippingSevicesArray[i].ServiceDescription !== "MINI ENVIOS"
+        ) {
+          shippingCieloArray[i] = {
+            name: result.ShippingSevicesArray[i].ServiceDescription,
+            price:
+              parseInt(result.ShippingSevicesArray[i].ShippingPrice, 10) *
+                100 || 10,
+            deadline:
+              parseInt(result.ShippingSevicesArray[i].DeliveryTime, 10) || 10,
+            carrier: 1,
+          };
+        }
       }
 
       delete address.user_id;
@@ -196,22 +201,17 @@ module.exports = {
 
       // Para cada produto no pedido, alguns dados vem da requisição e outros do DB de models
       // Percorrer o vetor de produtos na requisição;
+      const allModels = await ProductModel.getAllModels("");
+      let modelName = [];
       const productsInOrder = productModelIds.map((id, indexRequest) => {
         // Achar o produto correspondente no vetor de models vindos do DB
         const dbProductObject = boughtProducts.find(
           (product) => product.product_model_id == id // Aqui tenq ser dois iguais!
         );
-
-        for (var i = 0; i < products.length; i++) {
-          itemsCielo[i] = {
-            name: createdOrder_id,
-            description: "ProdutoExemplo01",
-            unitPrice: products[i].price * 100, //dbProductObject.price,
-            quantity: products[i].amount,
-            type: "Asset",
-            ...itemsCielo[i],
-          };
-        }
+        const resultFilter = allModels.filter(
+          (item) => item.product_model_id === dbProductObject.product_model_id
+        );
+        modelName.push(resultFilter[0]);
 
         // Criando o objeto
         return {
@@ -225,6 +225,17 @@ module.exports = {
           gender: products[indexRequest].gender,
         };
       });
+      console.log("MODELNAME: ", modelName);
+      for (var i = 0; i < products.length; i++) {
+        itemsCielo[i] = {
+          name: modelName[i].model_description,
+          description: modelName[i].model_description,
+          unitPrice: products[i].price * 100, //dbProductObject.price,
+          quantity: products[i].amount,
+          type: "Asset",
+          ...itemsCielo[i],
+        };
+      }
       // Manda o vetor para o model criar os produtos no DB
 
       const teste = await ProductInOrderModel.create(productsInOrder);
@@ -521,7 +532,7 @@ module.exports = {
         Items: [itemsCielo],
       },
       Shipping: {
-        SourceZipCode: 20020080,
+        SourceZipCode: 30492025,
         TargetZipCode: zipCode,
         Services: shippingCieloArray,
 
