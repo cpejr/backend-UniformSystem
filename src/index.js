@@ -3,7 +3,7 @@ const { errors } = require('celebrate');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 const express = require('express');
-const routes = require('./routes');
+const routes = require('./routes/index.js');
 const cors = require('cors');
 
 const corsOptions = {
