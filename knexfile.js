@@ -18,18 +18,21 @@ module.exports = {
   },
 
   staging: {
-    client: "postgresql",
+    client: "pg",
     connection: {
-      database: "my_db",
-      user: "username",
-      password: "password",
+      host: process.env.DB_HOST,
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      ssl: { rejectUnauthorized: false },
     },
     pool: {
       min: 2,
       max: 10,
     },
     migrations: {
-      tableName: "migrations",
+      directory: "./src/database/migrations",
     },
   },
 
@@ -37,9 +40,10 @@ module.exports = {
     client: "pg",
     connection: {
       host: process.env.DB_HOST,
-      username: process.env.DB_USER,
+      port: process.env.DB_PORT,
+      database: process.env.DB_NAME,
+      user: process.env.DB_USER,
       password: process.env.DB_PASS,
-      database: process.env.DB_NAME
     },
     pool: {
       min: 2,

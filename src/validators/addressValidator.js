@@ -7,7 +7,8 @@ const addressValidator = new Object();
 addressValidator.create = {
     //ok
     [Segments.PARAMS]: Joi.object().keys({
-        user_id: Joi.string().required(),
+        // user_id: Joi.string().required(),
+        user_id: Joi.string(),
     }),
     [Segments.BODY]: Joi.object().keys({
         address: Joi.object({

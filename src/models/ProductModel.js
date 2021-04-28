@@ -2,16 +2,21 @@ const connection = require("../database/connection");
 
 module.exports = {
   async create(newProduct) {
-      const response = await connection("product").insert(newProduct);
+    const response = await connection("product")
+      .insert(newProduct)
+      .returning(['product_id']);
+      if(response.product_id){
+        return response.product_id;
+      }
       return response;
-  },
+    },
 
   async findProductId(product_id) {
-      const response = await connection("product")
-        .select("product_id")
-        .where({product_id: product_id})
-        .first();
-      return response;
+    const response = await connection("product")
+      .select("product_id")
+      .where({ product_id: product_id })
+      .first();
+    return response;
   },
 
   async getProductsAndOneOfItsModels({
@@ -20,7 +25,7 @@ module.exports = {
     product_type,
     gender,
     available,
-    minprice, 
+    minprice,
     maxprice,
   }) {
     const filter = {};
@@ -34,7 +39,7 @@ module.exports = {
     if (gender) {
       genderFilterGroup = await connection("product_model")
         .select("product_id")
-        .where({ gender })
+        .where({ gender });
 
       genderFilterGroup = genderFilterGroup.map(
         (product) => product.product_id
@@ -43,10 +48,11 @@ module.exports = {
 
     let query = connection("product")
       .select("*")
+      .distinct()
       .join("product_model", "product.product_id", "product_model.product_id")
       .where({
         ...filter,
-      })
+      });
 
     if (typeof minprice !== "undefined")
       query.andWhere("product_model.price", ">=", minprice);
@@ -55,7 +61,7 @@ module.exports = {
     // Gender filter
     if (gender) query = query.whereIn("product.product_id", genderFilterGroup);
 
-    query.groupBy("product.product_id");
+    // query.groupBy("product.product_id");
 
     // Name filter
     if (name) {
@@ -93,7 +99,14 @@ module.exports = {
     return result;
   },
 
-  async getAllModels({ page = 1, name, product_type, gender, minprice, maxprice }) {
+  async getAllModels({
+    page = 1,
+    name,
+    product_type,
+    gender,
+    minprice,
+    maxprice,
+  }) {
     const filter = {};
     if (gender) filter.gender = gender;
 
@@ -111,7 +124,7 @@ module.exports = {
     if (typeof product_type !== "undefined")
       query.whereIn("product_type", product_type);
     if (typeof name !== "undefined")
-      query.where("product.name", 'like', `%${name}%`);
+      query.where("product.name", "like", `%${name}%`);
 
     const response = await query;
 
@@ -120,10 +133,11 @@ module.exports = {
 
   async getAllProductsCount() {
     const response = await connection("product")
-      .select()
+      .select("product.product_id")
+      .distinct()
       .count("product.product_id as count")
       .join("product_model", "product.product_id", "product_model.product_id")
-      .distinct("product.product_id")
+      .groupBy("product.product_id")
       .first();
 
     return response;
@@ -131,52 +145,64 @@ module.exports = {
 
   async getProductById(productId) {
     const response = await connection("product")
-    .where({
-      "product_id": productId,
-    })
-    .select('*')
+      .where({
+        product_id: productId,
+      })
+      .select("*");
+
+    return response;
+  },
+
+  async getProductsByProductModelId(productsModelsIds, fields = "*") {
+    const response = await connection("product")
+      .join("product_model", "product.product_id", "product_model.product_id")
+      .whereIn("product_model.product_model_id", productsModelsIds)
+      .select(fields);
 
     return response;
   },
 
   async getProductsAndItsAllModels(product_id, filters) {
     const response = await connection("product")
-    .select("*")
-    .join("product_model", "product.product_id", "product_model.product_id")
-    .where({
-      "product.product_id": product_id,
-      ...filters
-    });
-    
+      .select("*")
+      .join("product_model", "product.product_id", "product_model.product_id")
+      .where({
+        "product.product_id": product_id,
+        ...filters,
+      });
     let result;
-    if(response[0]){
-
-        result = {
-          product_id: response[0].product_id,
-          name: response[0].name,
-          description: response[0].description,
-          product_type: response[0].product_type,
-          models: response.map((item) => {
-            return {
-              product_model_id: item.product_model_id,
-              img_link: item.img_link,
-              price: item.price,
-              model_description: item.model_description,
-              gender: item.gender,
-              available: item.available,
-            };
-          }),
-        };
-    }else{
-      result = {
-        product_id: '',
-        name: '',
-        description: '',
-        product_type:'',
-        models: [],
+    if (response[0]) {
+      let models = [];
+      for (const [index, item] of response.entries()) {
+        const canDelete = await connection("product_in_order")
+          .select("*")
+          .where({ product_model_id: item.product_model_id });
+        models.push({
+          canDelete: canDelete.length === 0,
+          product_model_id: item.product_model_id,
+          img_link: item.img_link,
+          price: item.price,
+          model_description: item.model_description,
+          gender: item.gender,
+          available: item.available,
+        });
       }
+      result = {
+        product_id: response[0].product_id,
+        name: response[0].name,
+        description: response[0].description,
+        product_type: response[0].product_type,
+        models: models,
+      };
+    } else {
+      result = await connection("product")
+        .select("*")
+        .where({
+          product_id,
+          ...filters,
+        })
+        .first();
     }
-
     return result;
   },
 

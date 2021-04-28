@@ -8,21 +8,16 @@ module.exports = {
         name: req.body.name,
         description: req.body.description,
         product_type: req.body.product_type,
+        height: req.body.height,
+        length: req.body.length,
+        weight: req.body.weight,
+        width: req.body.width,
       };
 
-      const models = req.body.models;
-
       const createdProductId = await ProductModel.create(product);
-
-      await models.forEach((model) => {
-        model.product_id = createdProductId[0];
-      });
-
-      await ProductModelModel.createAll(models);
-
       res.status(200).json({
-        message: "Camisa criada com sucesso!",
-        product_id: createdProductId[0],
+        message: "Produto criado com sucesso!",
+        product_id: createdProductId[0].product_id || createdProductId[0],
       });
     } catch (err) {
       console.warn(err);
@@ -41,6 +36,7 @@ module.exports = {
         maxprice,
         minprice,
       } = req.query;
+
       const products = await ProductModel.getProductsAndOneOfItsModels({
         page,
         gender,
@@ -50,7 +46,12 @@ module.exports = {
         maxprice,
         minprice,
       });
-      const { count } = await ProductModel.getAllProductsCount();
+      
+      const result = await ProductModel.getAllProductsCount();
+      let count = 0;
+      if(result){
+        count = result.count;
+      }
 
       const totalPages = Math.ceil(count / process.env.ITENS_PER_PAGE);
 
@@ -125,7 +126,10 @@ module.exports = {
     const { updated_fields } = req.body;
     try {
       const existingProductId = await ProductModel.findProductId(product_id);
-      await ProductModel.update(existingProductId, updated_fields);
+      if(!existingProductId) {
+        return res.status(400).json({message: 'Product not found'});
+      }
+      await ProductModel.update(existingProductId.product_id, updated_fields);
       return res
         .status(200)
         .json("Informações da camisa atualizadas com sucesso");
