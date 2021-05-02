@@ -233,14 +233,13 @@ module.exports = {
 
   // Controller destinado à atualização da order pela Cielo
   async updateOrderByCielo(req, res) {
-    const { order_id } = req.params;
-    const { payment_status } = req.body;
+    const { payment_status, order_number } = req.body;
 
     try {
       // Status 2 é Pago, de acordo com a api da Cielo
       if(payment_status === 2){
-        let status = "pending"
-        await OrderModel.updateByCielo(order_id, status);
+        let status = "pending";
+        await OrderModel.updateByCielo(order_number, status);
       }
 
       res.status(200).json({
