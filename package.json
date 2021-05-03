@@ -35,9 +35,9 @@
     "pg": "^8.5.1",
     "react-uuid": "^1.0.2",
     "sqlite3": "^5.0.0",
-    "uuid": "^8.3.2",
     "swagger-jsdoc": "^4.0.0",
-    "swagger-ui-express": "^4.1.6"
+    "swagger-ui-express": "^4.1.6",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.4"
