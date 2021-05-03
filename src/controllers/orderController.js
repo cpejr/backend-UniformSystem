@@ -546,7 +546,6 @@ module.exports = {
       },
       Options: {
         AntifraudEnabled: true,
-        ReturnUrl: "http://www.cielo.com.br/",
       },
     };
 
