@@ -270,7 +270,7 @@ module.exports = {
         },
         options: {
           antifraudEnabled: true,
-          returnUrl: "http://www.cielo.com.br/",
+          returnUrl: "https://uniform-system-frontend.herokuapp.com/",
         },
       };
       console.log("body: ", requestBody);
