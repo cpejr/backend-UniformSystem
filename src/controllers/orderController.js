@@ -1,4 +1,3 @@
-const Correios = require("node-correios");
 const axios = require("axios");
 const _ = require("lodash");
 
@@ -9,6 +8,14 @@ const ProductInOrderModel = require("../models/ProductInOrderModel");
 const ProductInCartModel = require("../models/ProductInCartModel");
 const ProductModelModel = require("../models/ProductModelModel");
 const ProductModel = require("../models/ProductModel");
+const UsersModel = require("../models/UsersModel");
+
+let itemsCielo = [];
+let addressCielo = {};
+let userCielo = {};
+let orderIdCielo;
+let zipCode = 0;
+let shippingCieloArray = [];
 
 async function getShippingQuote(
   ShippingItemArray,
@@ -22,7 +29,7 @@ async function getShippingQuote(
     RecipientCountry: "BR",
   };
 
-  if (shipping_service_code) body.ShippingServiceCode = shipping_service_code;
+  //if (shipping_service_code) body.ShippingServiceCode = shipping_service_code;
 
   const response = await axios.post(
     "http://api.frenet.com.br/shipping/quote",
@@ -49,6 +56,19 @@ module.exports = {
       if (!address) {
         return res.status(404).json({ message: "Adress not found" });
       }
+
+      addressCielo = {
+        street: address.street,
+        number: "25",
+        complement: address.complement,
+        district: address.neighborhood,
+        city: address.city,
+        state: address.state,
+      };
+
+      zipCode = address.zip_code;
+
+      const user = await UsersModel.getById(address_id);
 
       // Pega os id's dos products
       const productModelIds = products.map((item) => {
@@ -84,6 +104,12 @@ module.exports = {
           (pr) => pr.product_model_id == p.product_model_id // Aqui tenq ser dois iguais!
         );
 
+        for (var i = 0; i < products.length; i++) {
+          itemsCielo[i] = {
+            weight: data.weight,
+          };
+        }
+
         return {
           Height: data.height,
           Length: data.length,
@@ -93,11 +119,32 @@ module.exports = {
         };
       });
 
+      console.log(
+        "🚀 ~ file: orderController.js ~ line 96 ~ ShippingItemArray ~ ShippingItemArray",
+        ShippingItemArray
+      );
+
       const result = await getShippingQuote(
         ShippingItemArray,
         address.zip_code,
         shipping_service_code
       );
+
+      for (var i = 0; i < result.ShippingSevicesArray.length; i++) {
+        if (
+          result.ShippingSevicesArray[i].ServiceDescription !== "MINI ENVIOS"
+        ) {
+          shippingCieloArray[i] = {
+            name: result.ShippingSevicesArray[i].ServiceDescription,
+            price:
+              parseInt(result.ShippingSevicesArray[i].ShippingPrice, 10) *
+                100 || 10,
+            deadline:
+              parseInt(result.ShippingSevicesArray[i].DeliveryTime, 10) || 10,
+            carrier: 1,
+          };
+        }
+      }
 
       delete address.user_id;
       delete address.address_id;
@@ -107,9 +154,10 @@ module.exports = {
         !result.ShippingSevicesArray[0] ||
         result.ShippingSevicesArray[0].Error
       ) {
-        return res
-          .status(400)
-          .json({ message: "Invalid service_code or invalid shipping data", Msg: result.ShippingSevicesArray[0].Msg });
+        return res.status(400).json({
+          message: "Invalid service_code or invalid shipping data",
+          Msg: result.ShippingSevicesArray[0].Msg,
+        });
       }
 
       const newShipping = {
@@ -123,9 +171,21 @@ module.exports = {
       // Criacao do order a partir dos dados recebidos na requisicao + adress criado logo acima
       const user_id = req.session.user_id;
 
+      const userData = await UsersModel.getById(user_id);
+      console.log("OPA", userData);
+
+      userCielo = {
+        identity: userData[0].cpf,
+        fullName: userData[0].name,
+        email: userData[0].email,
+        phone: userData[0].telefone,
+      };
+
       const order = {
         user_id: user_id,
-        shipping_data_id: `${newOrderAddress_id[0].shipping_data_id || newOrderAddress_id[0]}`,
+        shipping_data_id: `${
+          newOrderAddress_id[0].shipping_data_id || newOrderAddress_id[0]
+        }`,
         status: "waitingPayment",
       };
 
@@ -141,11 +201,17 @@ module.exports = {
 
       // Para cada produto no pedido, alguns dados vem da requisição e outros do DB de models
       // Percorrer o vetor de produtos na requisição;
+      const allModels = await ProductModel.getAllModels("");
+      let modelName = [];
       const productsInOrder = productModelIds.map((id, indexRequest) => {
         // Achar o produto correspondente no vetor de models vindos do DB
         const dbProductObject = boughtProducts.find(
           (product) => product.product_model_id == id // Aqui tenq ser dois iguais!
         );
+        const resultFilter = allModels.filter(
+          (item) => item.product_model_id === dbProductObject.product_model_id
+        );
+        modelName.push(resultFilter[0]);
 
         // Criando o objeto
         return {
@@ -159,14 +225,71 @@ module.exports = {
           gender: products[indexRequest].gender,
         };
       });
+      console.log("MODELNAME: ", modelName);
+      for (var i = 0; i < products.length; i++) {
+        itemsCielo[i] = {
+          name: modelName[i].model_description,
+          description: modelName[i].model_description,
+          unitPrice: products[i].price * 100, //dbProductObject.price,
+          quantity: products[i].amount,
+          type: "Asset",
+          ...itemsCielo[i],
+        };
+      }
       // Manda o vetor para o model criar os produtos no DB
-      await ProductInOrderModel.create(productsInOrder);
+
+      const teste = await ProductInOrderModel.create(productsInOrder);
       await ProductInCartModel.deleteByUser(user_id);
 
+      console.log("ORDER ", teste);
+      orderIdCielo = "1212";
+      console.log("PRODUTO", itemsCielo);
       // Se tudo deu certo, retorna que deu tudo certo
-      return res.status(200).json({
-        message: "Pedido efetuado com sucesso",
-      });
+      const requestBody = {
+        orderNumber: orderIdCielo,
+        cart: {
+          discount: {
+            type: "Percent",
+            value: 0,
+          },
+          items: itemsCielo,
+        },
+        shipping: {
+          sourceZipCode: "20020080",
+          targetZipCode: zipCode,
+          type: "FixedAmount",
+          services: shippingCieloArray,
+
+          address: {
+            ...addressCielo,
+          },
+        },
+
+        customer: {
+          ...userCielo,
+        },
+        options: {
+          antifraudEnabled: true,
+          returnUrl: "http://www.cielo.com.br/",
+        },
+      };
+      console.log("body: ", requestBody);
+      console.log("services: ", shippingCieloArray);
+      console.log("address: ", addressCielo);
+      console.log("items: ", itemsCielo);
+
+      const url = `https://cieloecommerce.cielo.com.br/api/public/v1/orders`;
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          MerchantId: "a0413171-39f1-4e87-b024-b2a3c77a83d6",
+        },
+      };
+
+      let respostaCielo = await axios.post(url, requestBody, config);
+      respostaCielo = respostaCielo.data;
+      console.log(respostaCielo);
+      return res.status(200).json(respostaCielo);
     } catch (err) {
       if (createdOrder_id) await OrderModel.delete(createdOrder_id);
       console.warn(err.message);
@@ -182,10 +305,9 @@ module.exports = {
 
       const product_models_ids = product_models.map(
         (item) => item.product_model_id
-        );
-        
-      
-        const products = await ProductModel.getProductsByProductModelId(
+      );
+
+      const products = await ProductModel.getProductsByProductModelId(
         product_models_ids,
         [
           "product.product_id",
@@ -237,7 +359,7 @@ module.exports = {
 
     try {
       // Status 2 é Pago, de acordo com a api da Cielo
-      if(payment_status === 2){
+      if (payment_status === 2) {
         let status = "pending";
         await OrderModel.updateByCielo(order_number, status);
       }
@@ -399,6 +521,50 @@ module.exports = {
       });
     } catch (err) {
       res.status(500).json("Internal server error.");
+    }
+  },
+
+  async getLink(request, response) {
+    const requestBody = {
+      OrderNumber: ordeIdCielo,
+      Cart: {
+        Items: [itemsCielo],
+      },
+      Shipping: {
+        SourceZipCode: 30492025,
+        TargetZipCode: zipCode,
+        Services: shippingCieloArray,
+
+        Address: {
+          addressCielo,
+        },
+      },
+
+      Customer: {
+        userCielo,
+      },
+      Options: {
+        AntifraudEnabled: true,
+        ReturnUrl: "http://www.cielo.com.br/",
+      },
+    };
+
+    const url = `https://cieloecommerce.cielo.com.br/api/public/v1/orders`;
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        MerchantId: "a0413171-39f1-4e87-b024-b2a3c77a83d6",
+      },
+    };
+
+    try {
+      let respostaCielo = await axios.post(url, requestBody, config);
+      respostaCielo = respostaCielo.data;
+      console.log(respostaCielo);
+      return response.status(200).json(respostaCielo);
+    } catch (error) {
+      console.log(error);
+      return response.status(500).json({ message: "Internal server error" });
     }
   },
 };

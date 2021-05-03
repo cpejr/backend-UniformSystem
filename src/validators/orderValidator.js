@@ -15,7 +15,6 @@ orderValidator.update = {
     //  shipping: Joi.number().required(),
   }),
 };
-
 orderValidator.create = {
   //ok
   [Segments.BODY]: Joi.object().keys({
