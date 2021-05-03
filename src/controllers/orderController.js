@@ -241,8 +241,8 @@ module.exports = {
       const teste = await ProductInOrderModel.create(productsInOrder);
       await ProductInCartModel.deleteByUser(user_id);
 
-      console.log("ORDER ", teste);
-      orderIdCielo = "1212";
+      orderIdCielo = createdOrder_id;
+      console.log("ORDER ", orderIdCielo);
       console.log("PRODUTO", itemsCielo);
       // Se tudo deu certo, retorna que deu tudo certo
       const requestBody = {
@@ -270,7 +270,7 @@ module.exports = {
         },
         options: {
           antifraudEnabled: true,
-          returnUrl: "http://www.cielo.com.br/",
+          returnUrl: "https://uniform-system-frontend.herokuapp.com/",
         },
       };
       console.log("body: ", requestBody);
