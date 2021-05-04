@@ -29,7 +29,7 @@ async function getShippingQuote(
     RecipientCountry: "BR",
   };
 
-  //if (shipping_service_code) body.ShippingServiceCode = shipping_service_code;
+  if (shipping_service_code) body.ShippingServiceCode = shipping_service_code;
 
   const response = await axios.post(
     "http://api.frenet.com.br/shipping/quote",
@@ -317,7 +317,7 @@ module.exports = {
           "weight",
           "width",
         ]
-      );
+        );
 
       if (
         products.length === 0 ||
@@ -325,10 +325,16 @@ module.exports = {
       )
         return res.status(400).json({ message: "invalid product model ids" });
 
+      let totalWeight = 0;
+
       const ShippingItemArray = product_models.map((item) => {
         const product = products.find(
           (p) => p.product_model_id == item.product_model_id
         );
+        
+        totalWeight += product.weight * item.quantity;
+        
+        if(totalWeight > 30.0) return res.status(200).json({message: "Weight exceeded."});
 
         return {
           Height: product.height,
