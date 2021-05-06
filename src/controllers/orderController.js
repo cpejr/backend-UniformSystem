@@ -99,6 +99,7 @@ module.exports = {
       );
 
       // Constuir corpo da requisição para calculo do frete
+
       const ShippingItemArray = products.map((p) => {
         const data = productsData.find(
           (pr) => pr.product_model_id == p.product_model_id // Aqui tenq ser dois iguais!
@@ -118,11 +119,6 @@ module.exports = {
           Width: data.width,
         };
       });
-
-      console.log(
-        "🚀 ~ file: orderController.js ~ line 96 ~ ShippingItemArray ~ ShippingItemArray",
-        ShippingItemArray
-      );
 
       const result = await getShippingQuote(
         ShippingItemArray,
@@ -172,7 +168,6 @@ module.exports = {
       const user_id = req.session.user_id;
 
       const userData = await UsersModel.getById(user_id);
-      console.log("OPA", userData);
 
       userCielo = {
         identity: userData[0].cpf,
@@ -320,8 +315,7 @@ module.exports = {
         );
 
       if (
-        products.length === 0 ||
-        products.length !== product_models_ids.length
+        products.length === 0
       )
         return res.status(400).json({ message: "invalid product model ids" });
 
