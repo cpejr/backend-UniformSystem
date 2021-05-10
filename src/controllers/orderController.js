@@ -359,7 +359,7 @@ module.exports = {
 
     try {
       // Status 2 é Pago, de acordo com a api da Cielo
-      if (payment_status === 2) {
+      if (payment_status === "2") {
         let status = { status: "pending" };
         await OrderModel.updateByCielo(order_number, status);
       }
