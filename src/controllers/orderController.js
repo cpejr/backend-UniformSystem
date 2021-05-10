@@ -354,7 +354,6 @@ module.exports = {
 
   // Controller destinado à atualização da order pela Cielo
   async updateOrderByCielo(req, res) {
-    console.log("TESTE", req.body);
     const { payment_status, order_number } = req.body;
 
     try {
