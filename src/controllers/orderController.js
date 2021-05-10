@@ -312,11 +312,9 @@ module.exports = {
           "weight",
           "width",
         ]
-        );
+      );
 
-      if (
-        products.length === 0
-      )
+      if (products.length === 0)
         return res.status(400).json({ message: "invalid product model ids" });
 
       let totalWeight = 0;
@@ -325,10 +323,11 @@ module.exports = {
         const product = products.find(
           (p) => p.product_model_id == item.product_model_id
         );
-        
+
         totalWeight += product.weight * item.quantity;
-        
-        if(totalWeight > 30.0) return res.status(200).json({message: "Weight exceeded."});
+
+        if (totalWeight > 30.0)
+          return res.status(200).json({ message: "Weight exceeded." });
 
         return {
           Height: product.height,
@@ -355,12 +354,13 @@ module.exports = {
 
   // Controller destinado à atualização da order pela Cielo
   async updateOrderByCielo(req, res) {
+    console.log("TESTE", req.body);
     const { payment_status, order_number } = req.body;
 
     try {
       // Status 2 é Pago, de acordo com a api da Cielo
       if (payment_status === 2) {
-        let status = { "status": "pending" };
+        let status = { status: "pending" };
         await OrderModel.updateByCielo(order_number, status);
       }
 
