@@ -82,6 +82,10 @@ productValidator.updateProduct = {
     updated_fields: Joi.object({
       name: Joi.string().optional(),
       description: Joi.string().optional(),
+      height: Joi.string().optional(),
+      length: Joi.string().optional(),
+      weight: Joi.string().optional(),
+      width: Joi.string().optional(),
     }).required(),
   }),
 };

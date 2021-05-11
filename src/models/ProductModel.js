@@ -4,12 +4,12 @@ module.exports = {
   async create(newProduct) {
     const response = await connection("product")
       .insert(newProduct)
-      .returning(['product_id']);
-      if(response.product_id){
-        return response.product_id;
-      }
-      return response;
-    },
+      .returning(["product_id"]);
+    if (response.product_id) {
+      return response.product_id;
+    }
+    return response;
+  },
 
   async findProductId(product_id) {
     const response = await connection("product")
@@ -192,6 +192,10 @@ module.exports = {
         name: response[0].name,
         description: response[0].description,
         product_type: response[0].product_type,
+        height: response[0].height,
+        length: response[0].length,
+        weight: response[0].weight,
+        width: response[0].width,
         models: models,
       };
     } else {
