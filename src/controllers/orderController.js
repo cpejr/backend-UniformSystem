@@ -318,6 +318,9 @@ module.exports = {
         return res.status(400).json({ message: "invalid product model ids" });
 
       let totalWeight = 0;
+      let totalHeight = 0;
+      const maximumWeight = 30.0;
+      const maximumHeight = 250;
 
       const ShippingItemArray = product_models.map((item) => {
         const product = products.find(
@@ -326,8 +329,12 @@ module.exports = {
 
         totalWeight += product.weight * item.quantity;
 
-        if (totalWeight > 30.0)
+        totalHeight += product.height * item.quantity;
+
+        if (totalWeight > maximumWeight)
           return res.status(200).json({ message: "Weight exceeded." });
+        if (totalHeight > maximumHeight)
+          return res.status(200).json({ message: "Height exceeded." });
 
         return {
           Height: product.height,
@@ -461,15 +468,8 @@ module.exports = {
 
   async updateOrderAddress(req, res) {
     const { shipping_data_id } = req.params;
-    const {
-      street,
-      neighborhood,
-      city,
-      state,
-      zip_code,
-      country,
-      complement,
-    } = req.body;
+    const { street, neighborhood, city, state, zip_code, country, complement } =
+      req.body;
 
     const newOrderAddress = {
       street,
