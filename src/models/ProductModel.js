@@ -220,7 +220,7 @@ module.exports = {
 
   async delete(productId) {
     const response = await connection("product")
-      .where("product_id", productId)
+      .where("product_id", productId.product_id)
       .del();
 
     return response;
