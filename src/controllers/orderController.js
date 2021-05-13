@@ -25,7 +25,7 @@ async function getShippingQuote(
   const body = {
     ShippingItemArray,
     RecipientCEP,
-    SellerCEP: process.env.CEPORIGEM,
+    SellerCEP: process.env.CEP_ORIGEM,
     RecipientCountry: "BR",
   };
 
@@ -54,7 +54,7 @@ module.exports = {
       const address = await AdressModel.getById(address_id);
 
       if (!address) {
-        return res.status(404).json({ message: "Adress not found" });
+        return res.status(404).json({ message: "Address not found" });
       }
 
       addressCielo = {
@@ -67,8 +67,6 @@ module.exports = {
       };
 
       zipCode = address.zip_code;
-
-      const user = await UsersModel.getById(address_id);
 
       // Pega os id's dos products
       const productModelIds = products.map((item) => {
@@ -99,7 +97,6 @@ module.exports = {
       );
 
       // Constuir corpo da requisição para calculo do frete
-
       const ShippingItemArray = products.map((p) => {
         const data = productsData.find(
           (pr) => pr.product_model_id == p.product_model_id // Aqui tenq ser dois iguais!
@@ -133,8 +130,8 @@ module.exports = {
           shippingCieloArray[i] = {
             name: result.ShippingSevicesArray[i].ServiceDescription,
             price:
-              parseInt(result.ShippingSevicesArray[i].ShippingPrice, 10) *
-                100 || 10,
+              parseFloat(result.ShippingSevicesArray[i].ShippingPrice) * 100 ||
+              10,
             deadline:
               parseInt(result.ShippingSevicesArray[i].DeliveryTime, 10) || 10,
             carrier: 1,
@@ -220,20 +217,27 @@ module.exports = {
           gender: products[indexRequest].gender,
         };
       });
+
+      modelName = modelName.map((item) => ({
+        ...item,
+        weight: item.weight * 1000,
+      }));
+
       console.log("MODELNAME: ", modelName);
       for (var i = 0; i < products.length; i++) {
         itemsCielo[i] = {
+          ...itemsCielo[i],
           name: modelName[i].model_description,
           description: modelName[i].model_description,
-          unitPrice: products[i].price * 100, //dbProductObject.price,
+          unitPrice: Math.floor(products[i].price * 100), //dbProductObject.price,
           quantity: products[i].amount,
           type: "Asset",
-          ...itemsCielo[i],
+          weight: itemsCielo[i].weight * 1000,
         };
       }
       // Manda o vetor para o model criar os produtos no DB
 
-      const teste = await ProductInOrderModel.create(productsInOrder);
+      await ProductInOrderModel.create(productsInOrder);
       await ProductInCartModel.deleteByUser(user_id);
 
       orderIdCielo = createdOrder_id;
@@ -265,7 +269,7 @@ module.exports = {
         },
         options: {
           antifraudEnabled: true,
-          returnUrl: "https://uniform-system-frontend.herokuapp.com/",
+          returnUrl: process.env.CIELO_RETURN_URL,
         },
       };
       console.log("body: ", requestBody);
@@ -273,11 +277,11 @@ module.exports = {
       console.log("address: ", addressCielo);
       console.log("items: ", itemsCielo);
 
-      const url = `https://cieloecommerce.cielo.com.br/api/public/v1/orders`;
+      const url = process.env.CIELO_ENDPOINT_API;
       const config = {
         headers: {
           "Content-Type": "application/json",
-          MerchantId: "a0413171-39f1-4e87-b024-b2a3c77a83d6",
+          MerchantId: process.env.CIELO_MERCHANT_ID,
         },
       };
 
@@ -319,7 +323,7 @@ module.exports = {
 
       let totalWeight = 0;
       let totalHeight = 0;
-      const maximumWeight = 30.0;
+      const maximumWeightInGrams = 30000;
       const maximumHeight = 250;
 
       const ShippingItemArray = product_models.map((item) => {
@@ -331,7 +335,7 @@ module.exports = {
 
         totalHeight += product.height * item.quantity;
 
-        if (totalWeight > maximumWeight)
+        if (totalWeight > maximumWeightInGrams)
           return res.status(200).json({ message: "Weight exceeded." });
         if (totalHeight > maximumHeight)
           return res.status(200).json({ message: "Height exceeded." });
@@ -531,7 +535,7 @@ module.exports = {
         Items: [itemsCielo],
       },
       Shipping: {
-        SourceZipCode: 30492025,
+        SourceZipCode: parseInt(process.env.CEP_ORIGEM, 10),
         TargetZipCode: zipCode,
         Services: shippingCieloArray,
 
@@ -548,11 +552,11 @@ module.exports = {
       },
     };
 
-    const url = `https://cieloecommerce.cielo.com.br/api/public/v1/orders`;
+    const url = process.env.CIELO_ENDPOINT_API;
     const config = {
       headers: {
         "Content-Type": "application/json",
-        MerchantId: "a0413171-39f1-4e87-b024-b2a3c77a83d6",
+        MerchantId: process.env.CIELO_MERCHANT_ID,
       },
     };
 
