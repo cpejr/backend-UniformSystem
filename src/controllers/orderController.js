@@ -25,7 +25,7 @@ async function getShippingQuote(
   const body = {
     ShippingItemArray,
     RecipientCEP,
-    SellerCEP: process.env.CEPORIGEM,
+    SellerCEP: process.env.CEP_ORIGEM,
     RecipientCountry: "BR",
   };
 
