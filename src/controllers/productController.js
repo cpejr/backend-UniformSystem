@@ -14,6 +14,8 @@ module.exports = {
         width: req.body.width,
       };
 
+     
+
       const createdProductId = await ProductModel.create(product);
       res.status(200).json({
         message: "Produto criado com sucesso!",

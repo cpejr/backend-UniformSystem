@@ -95,7 +95,7 @@ module.exports = {
           "width",
         ]
       );
-
+      console.log("SHIPPING", productsData);
       // Constuir corpo da requisição para calculo do frete
       const ShippingItemArray = products.map((p) => {
         const data = productsData.find(
@@ -106,6 +106,7 @@ module.exports = {
           itemsCielo[i] = {
             weight: data.weight,
           };
+          console.log("SHIPPING", productsData);
         }
 
         return {
