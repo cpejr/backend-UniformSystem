@@ -17,7 +17,7 @@ addressValidator.create = {
       city: Joi.string().required(),
       state: Joi.string().required(),
       country: Joi.string().required(),
-      complement: Joi.string().required(),
+      complement: Joi.string().optional(),
       zip_code: Joi.number().integer().required(),
     }).required(),
   }),
