@@ -35,8 +35,7 @@ module.exports = {
           user.password
         );
       } catch (error) {
-
-        return response.status(400).json({ error });
+        return response.status(200).json({ message: error.message });
       }
 
       delete user.password;
@@ -51,7 +50,7 @@ module.exports = {
       }
 
       if (resposta.errno != null) {
-        return response.status(500).json({ message: "internal server error" });
+        return response.status(500).json({ message: "Internal server error" });
       } else {
         return response
           .status(200)
@@ -67,7 +66,7 @@ module.exports = {
       }
 
       if (error.errno == 19) {
-        return response.status(500).json({ message: "Cpf já existe." });
+        return response.status(200).json({ message: "Cpf já existe." });
       }
 
       response.status(500).json({ message: "Internal server error" });
@@ -102,12 +101,11 @@ module.exports = {
   },
 
   async getAdresses(request, response) {
-      try {
-        // const { user_id } = request.params;
-        const user_id = request.session.user_id;
-        const adresses = await AdressModel.getAdressByUserId(user_id);
-        response.status(200).json({ adresses });
-
+    try {
+      // const { user_id } = request.params;
+      const user_id = request.session.user_id;
+      const adresses = await AdressModel.getAdressByUserId(user_id);
+      response.status(200).json({ adresses });
     } catch (error) {
       response.status(500).json("internal server error");
     }
@@ -139,17 +137,17 @@ module.exports = {
   async deleteUserClient(request, response) {
     try {
       const loggedUserId = request.session.user_id;
-      
+
       const { user_id } = request.params;
 
       const loggedUser = request.session;
 
-      if(loggedUser.user_type !== "client"){
+      if (loggedUser.user_type !== "client") {
         return response.status(403).json("Operação proibida.");
       }
 
-      if(loggedUserId !== user_id){
-        throw new Error('Invalid action. You are not the owner from this ID.')
+      if (loggedUserId !== user_id) {
+        throw new Error("Invalid action. You are not the owner from this ID.");
       }
 
       const foundUser = await UsersModel.getById(user_id);

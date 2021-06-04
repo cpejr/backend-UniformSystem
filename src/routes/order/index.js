@@ -19,7 +19,7 @@ orderRouter.post(
 
 // Rota destinada à atualização da order pela Cielo
 orderRouter.post(
-  "/updateOrderByCielo/:order_id",
+  "/updateOrderByCielo",
   orderController.updateOrderByCielo
 );
 

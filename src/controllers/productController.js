@@ -14,6 +14,8 @@ module.exports = {
         width: req.body.width,
       };
 
+     
+
       const createdProductId = await ProductModel.create(product);
       res.status(200).json({
         message: "Produto criado com sucesso!",
@@ -46,10 +48,10 @@ module.exports = {
         maxprice,
         minprice,
       });
-      
+
       const result = await ProductModel.getAllProductsCount();
       let count = 0;
-      if(result){
+      if (result) {
         count = result.count;
       }
 
@@ -126,8 +128,8 @@ module.exports = {
     const { updated_fields } = req.body;
     try {
       const existingProductId = await ProductModel.findProductId(product_id);
-      if(!existingProductId) {
-        return res.status(400).json({message: 'Product not found'});
+      if (!existingProductId) {
+        return res.status(400).json({ message: "Product not found" });
       }
       await ProductModel.update(existingProductId.product_id, updated_fields);
       return res
